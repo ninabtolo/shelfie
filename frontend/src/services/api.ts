@@ -3,7 +3,7 @@ import { auth } from '../firebase/config';
 
 // cria a instância do axios
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 // Adiciona um interceptor de requisição para adicionar o token de autenticação
