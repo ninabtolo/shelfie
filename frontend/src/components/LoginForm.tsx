@@ -69,13 +69,19 @@ export default function LoginForm() {
           return;
         }
         
-        const isAvailable = await userApi.checkUsernameAvailability(newUsername);
+        // Debug: log da chamada da API
+        console.log(`Checking username availability for: ${newUsername}`);
         
-        if (!isAvailable) {
+        const response = await userApi.checkUsernameAvailability(newUsername);
+        console.log("Username availability response:", response);
+        
+        // Inverte a lógica! Se available for true, então o username está disponível
+        if (response === false) {
           setUsernameError("Este nome de usuário já está em uso");
         }
       } catch (error) {
         console.error("Error checking username:", error);
+        setUsernameError("Erro ao verificar disponibilidade do username");
       } finally {
         setIsCheckingUsername(false);
       }
@@ -397,9 +403,14 @@ export default function LoginForm() {
                       {usernameError && (
                         <FormErrorMessage color="pink.300">{usernameError}</FormErrorMessage>
                       )}
-                      {!usernameError && username && username.length >= 3 && (
-                        <Text fontSize="xs" color="pink.300" mt={1}>
-                          {isCheckingUsername ? "Verificando disponibilidade..." : "Nome de usuário disponível"}
+                      {!usernameError && username && username.length >= 3 && !isCheckingUsername && (
+                        <Text fontSize="xs" color="green.300" mt={1}>
+                          Nome de usuário disponível ✓
+                        </Text>
+                      )}
+                      {isCheckingUsername && (
+                        <Text fontSize="xs" color="blue.300" mt={1}>
+                          Verificando disponibilidade...
                         </Text>
                       )}
                     </FormControl>

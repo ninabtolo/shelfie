@@ -225,8 +225,15 @@ export const recommendationApi = {
 // user 
 export const userApi = {
   checkUsernameAvailability: async (username: string) => {
-    const response = await api.get(`/users/check-username?username=${encodeURIComponent(username)}`);
-    return response.data.available;
+    try {
+      const response = await api.get(`/users/check-username?username=${encodeURIComponent(username)}`);
+      console.log("API response for username availability:", response.data);
+      // Retornamos diretamente o valor de available
+      return response.data.available;
+    } catch (error) {
+      console.error("Error in checkUsernameAvailability:", error);
+      throw error;
+    }
   },
 
   updateUsername: async (username: string) => {
