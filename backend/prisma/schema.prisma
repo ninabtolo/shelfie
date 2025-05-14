@@ -1,0 +1,143 @@
+// /prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" 
+  url      = env("DATABASE_URL") // Variável de ambiente pro banco
+}
+
+//modelo para user 
+model User {
+  id                 String         @id // para o Firebase UID
+  email              String         @unique
+  username           String         @unique 
+  password           String
+  profilePicture     String?
+  books              Book[]         @relation("UserBooks")
+  tropes             Trope[]        @relation("UserTropes")
+  favorites          Book[]         @relation("FavoriteBooks")
+  readingList        Book[]         @relation("ReadingList") 
+  ratings            Rating[]
+  createdAt          DateTime       @default(now())
+  // relações de gostar ou não das tropes
+  likedTropes        Trope[]        @relation("LikedTropes")
+  dislikedTropes     Trope[]        @relation("DislikedTropes")
+  likedCategories    Category[]     @relation("LikedCategories")
+  dislikedCategories Category[]     @relation("DislikedCategories")
+  likedAuthors       Author[]       @relation("LikedAuthors")
+  dislikedAuthors    Author[]       @relation("DislikedAuthors")
+  // configurações 
+  settings           UserSettings?
+  // relações se seguir/ser seguido
+  following          User[]         @relation("UserFollows")
+  followers          User[]         @relation("UserFollows")
+  notifications      Notification[] @relation("UserNotifications")
+  sentNotifications  Notification[] @relation("SentNotifications")
+  //linguagens de leitura
+  languages  Language[]  @relation("UserLanguages")
+}
+
+// modelo de livro
+model Book {
+  id              String         @id @default(cuid())
+  googleBookId    String?        @unique // ID do Google Books API
+  title           String
+  author          String
+  description     String
+  coverUrl        String?
+  publishedDate   String?
+  pageCount       Int?
+  categories      String[]
+  isbn            String?
+  readBy          User[]         @relation("UserBooks")
+  favoritedBy     User[]         @relation("FavoriteBooks")
+  inReadingListOf User[]         @relation("ReadingList") 
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  ratings         Rating[]
+  notifications   Notification[] 
+}
+
+// avaliação
+model Rating {
+  id        String   @id @default(cuid())
+  userId    String
+  bookId    String
+  rating    Int // De 1 a 5
+  review    String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  book Book @relation(fields: [bookId], references: [id])
+}
+
+model Trope {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String
+  category    String 
+  users       User[]   @relation("UserTropes")
+  createdAt   DateTime @default(now())
+  // Tropes q você gosta ou não gosta 
+  likedBy     User[]   @relation("LikedTropes")
+  dislikedBy  User[]   @relation("DislikedTropes")
+}
+
+model Category {
+  id         String   @id @default(cuid())
+  name       String   @unique
+  likedBy    User[]   @relation("LikedCategories")
+  dislikedBy User[]   @relation("DislikedCategories")
+  createdAt  DateTime @default(now())
+}
+
+model Author {
+  id         String   @id @default(cuid())
+  name       String   @unique
+  likedBy    User[]   @relation("LikedAuthors")
+  dislikedBy User[]   @relation("DislikedAuthors")
+  createdAt  DateTime @default(now())
+}
+
+// configurações
+model UserSettings {
+  id                              String   @id @default(cuid())
+  userId                          String   @unique
+  automatedRecommendationsEnabled Boolean  @default(true)
+  createdAt                       DateTime @default(now())
+  updatedAt                       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+// notificações
+model Notification {
+  id      String  @id @default(cuid())
+  type    String // seguir ou compartilhar
+  message String
+  isRead  Boolean @default(false)
+
+  // notificação
+  userId String
+  user   User   @relation(fields: [userId], references: [id], name: "UserNotifications")
+
+  // compartilhar livro
+  bookId String?
+  book   Book?   @relation(fields: [bookId], references: [id])
+
+  // sender
+  fromUserId String?
+  fromUser   User?   @relation(fields: [fromUserId], references: [id], name: "SentNotifications")
+
+  createdAt DateTime @default(now())
+}
+
+model Language {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String
+  users     User[]   @relation("UserLanguages")
+}
