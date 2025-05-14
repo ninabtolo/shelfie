@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { auth } from '../firebase/config';
 
-// cria a instância do axios
+// cria a instância do axios com a URL da API do .env
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL || '/api', // Usa o valor do env ou cai para /api (que usará o proxy do Vite)
 });
 
 // Adiciona um interceptor de requisição para adicionar o token de autenticação
