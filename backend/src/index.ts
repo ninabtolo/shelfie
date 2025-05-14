@@ -3,13 +3,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import userRoutes from './routes/userRoutes';
-import bookRoutes from './routes/bookRoutes';
-import tropeRoutes from './routes/tropeRoutes';
-import preferenceRoutes from './routes/preferenceRoutes';
-import recommendationRoutes from './routes/recommendationRoutes';
-import notificationRoutes from './routes/notificationRoutes'; 
-import { authMiddleware } from '../middleware/authMiddleware';
+import routes from './routes';
+import { authMiddleware } from './middleware/authMiddleware'; 
 import { seedTropes } from './services/tropeService';
 
 // carrega as variáveis de ambiente 
@@ -31,12 +26,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Rotas 
-app.use('/api/users', userRoutes);
-app.use('/api/books', authMiddleware, bookRoutes); 
-app.use('/api/tropes', authMiddleware, tropeRoutes);
-app.use('/api/preferences', authMiddleware, preferenceRoutes);
-app.use('/api/recommendations', authMiddleware, recommendationRoutes);
-app.use('/api/notifications', authMiddleware, notificationRoutes); 
+app.use('/api', routes); // Usando o arquivo de rotas combinado
 
 // pra que isso?????
 app.get('/health', (_, res) => {
@@ -46,5 +36,5 @@ app.get('/health', (_, res) => {
 // onde está rodando
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 app.listen(PORT, '0.0.0.0', () => {
-  // removido log de inicialização
+  console.log(`Server running on port ${PORT}`);
 });

@@ -7,7 +7,7 @@ import {
   followUser, unfollowUser, getFollowers, getFollowing,
   searchUsers 
 } from '../controllers/userController';
-import { authMiddleware } from '../../middleware/authMiddleware';
+import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = Router();
 
