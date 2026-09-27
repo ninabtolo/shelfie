@@ -1,109 +1,215 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# ✨ Shelfie
 
 <p align="center">
- The fastest way to build apps with Next.js and Supabase
+  <strong>A magical reading space for personalized book recommendations inspired by your favorite reads.</strong>
 </p>
 
 <p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
+  Build your library, keep track of what you love, share books with other readers, and discover what to read next.
 </p>
-<br/>
 
-## Features
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js" />
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
+</p>
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Proxy
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+---
 
-## Demo
+## 📖 About
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+**Shelfie** is a social reading web app focused on creating a more personal and delightful way to keep track of books and discover new ones.
 
-## Deploy to Vercel
+Instead of feeling like a generic dashboard, Shelfie is designed to feel like a cozy digital reading space — a place where readers can build their own library, remember what they loved, connect with other readers, and receive recommendations shaped by their actual reading habits.
 
-Vercel deployment will guide you through creating a Supabase account and project.
+---
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+## ✨ What you'll be able to do
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+### 📚 Build your personal library
+Keep track of the books you've read, are currently reading, or decided to abandon.
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+### ⭐ Rate and review books
+Give books a 1–5 star rating and optionally leave a written review.
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+### ❤️ Save your favorites
+Mark the books that truly stood out to you.
 
-## Clone and run locally
+### 🌙 Keep a private wishlist
+Save books you want to read later without adding them to your public library.
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+### 🔎 Discover books
+Search for books using bibliographic data from the Google Books API.
 
-2. Create a Next.js app using the Supabase Starter template npx command
+### 🧑‍🤝‍🧑 Connect with other readers
+Find users, follow them, explore their public libraries, and discover what they're reading.
 
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
+### 💌 Share books
+Send a book directly to another reader with an optional message.
 
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
+> *"Please read this, I need someone to talk about it with."*
 
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
+### ✨ Get personalized recommendations
+Receive suggestions based on your reading history, favorite genres, authors, ratings, and reading preferences.
 
-3. Use `cd` to change into the app's directory
+### 🤖 Ask the AI reading assistant
+Describe what you're in the mood for and get conversational recommendations tailored to you.
 
-   ```bash
-   cd with-supabase-app
-   ```
+> *"I want something similar to The Secret History, but lighter and with more mystery."*
 
-4. Rename `.env.example` to `.env.local` and update the following:
+---
 
-  ```env
-  NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=[INSERT SUPABASE PROJECT API PUBLISHABLE OR ANON KEY]
-  ```
-  > [!NOTE]
-  > This example uses `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, which refers to Supabase's new **publishable** key format.
-  > Both legacy **anon** keys and new **publishable** keys can be used with this variable name during the transition period. Supabase's dashboard may show `NEXT_PUBLIC_SUPABASE_ANON_KEY`; its value can be used in this example.
-  > See the [full announcement](https://github.com/orgs/supabase/discussions/29260) for more information.
+## 🌙 The Shelfie experience
 
-  Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
+Shelfie is being designed around a **cozy, magical reading atmosphere**.
 
-5. You can now run the Next.js local development server:
+The interface will focus on:
 
-   ```bash
-   npm run dev
-   ```
+- literary-inspired typography;
+- warm and immersive layouts;
+- book covers as the main visual element;
+- subtle animations and micro-interactions;
+- responsive design across desktop and mobile;
+- a distinct visual identity for the AI recommendation experience.
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+The goal is for Shelfie to feel less like software you have to manage and more like a digital corner made for readers.
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+---
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+## 🚧 Current status
 
-## Feedback and issues
+> **Current phase: Foundation & Authentication**
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+### Done
 
-## More Supabase examples
+- [x] Next.js project setup
+- [x] Supabase integration
+- [x] User sign-up
+- [x] User login
+- [x] User logout
+- [x] Unique usernames
+- [x] Protected authenticated area
+- [x] Username display after login
+- [x] Basic navigation
+- [x] Initial database security with Row Level Security
+- [x] GitHub repository setup
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+### Next
+
+- [ ] Create Shelfie's visual identity
+- [ ] Build the authenticated home page
+- [ ] Add profile information
+- [ ] Integrate Google Books API
+- [ ] Start building the personal library
+
+---
+
+## 🗺️ Roadmap
+
+### Phase 1 — Foundation
+- [x] Authentication
+- [x] User profiles
+- [x] Protected routes
+- [x] Basic navigation
+- [ ] Base UI and design system
+
+### Phase 2 — Books
+- [ ] Book search
+- [ ] Book details
+- [ ] Personal library
+- [ ] Reading status
+- [ ] Favorites
+- [ ] Private wishlist
+
+### Phase 3 — Reviews
+- [ ] Star ratings
+- [ ] Written reviews
+- [ ] Review visibility
+- [ ] Reading statistics
+
+### Phase 4 — Social
+- [ ] Public profiles
+- [ ] Follow / unfollow users
+- [ ] Public libraries
+- [ ] Book sharing
+- [ ] Notifications
+
+### Phase 5 — Recommendations
+- [ ] Reading preference profile
+- [ ] Personalized recommendations
+- [ ] Book similarity with embeddings
+- [ ] Semantic search with pgvector
+
+### Phase 6 — AI Assistant
+- [ ] AI recommendation chat
+- [ ] Conversation history
+- [ ] Context-aware book suggestions
+- [ ] Recommendation explanations
+
+### Phase 7 — Polish & Release
+- [ ] Responsive design review
+- [ ] Loading and empty states
+- [ ] Accessibility
+- [ ] Testing
+- [ ] Performance review
+- [ ] Production deployment
+- [ ] Portfolio screenshots
+
+---
+
+## 🧰 Tech stack
+
+| Area | Technology |
+|---|---|
+| Framework | **Next.js** |
+| Language | **TypeScript** |
+| UI | **React** |
+| Styling | **Tailwind CSS** |
+| Components | **shadcn/ui** |
+| Animations | **Motion / Magic UI** |
+| Database & Auth | **Supabase + PostgreSQL** |
+| Book data | **Google Books API** |
+| Recommendations | **pgvector** |
+| AI | **Gemini API** |
+| Hosting | **Vercel** |
+| Version control | **Git + GitHub** |
+
+---
+
+## 📸 Preview
+
+> Coming soon — Shelfie is currently under active development.
+
+<!--
+<p align="center">
+  <img src="./docs/screenshots/home.png" width="85%" alt="Shelfie home page" />
+</p>
+-->
+
+---
+
+## 🌱 Built step by step
+
+Shelfie is being developed progressively, starting with a solid foundation and expanding one feature at a time.
+
+```text
+Authentication
+      ↓
+Books
+      ↓
+Library
+      ↓
+Reviews
+      ↓
+Social features
+      ↓
+Recommendations
+      ↓
+AI
+```
+
+<p align="center">
+  ✦ Built one page, one feature, and one book at a time. ✦
+</p>
