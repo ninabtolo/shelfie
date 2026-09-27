@@ -7,8 +7,7 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
-  // If the env vars are not set, skip proxy check. You can remove this
-  // once you setup the project.
+  // Keep local pages available when Supabase is not configured yet.
   if (!hasEnvVars) {
     return supabaseResponse;
   }

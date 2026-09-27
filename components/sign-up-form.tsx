@@ -20,6 +20,7 @@ export function SignUpForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const [username, setUsername] = useState("")
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
@@ -39,11 +40,26 @@ export function SignUpForm({
       return;
     }
 
+    if (username.length < 3 || username.length > 30) {
+        setError("Username must be between 3 and 30 characters.")
+        return
+    }
+
+    if (!/^[A-Za-z0-9_]+$/.test(username)) {
+      setError(
+        "Username can only contain letters, numbers and underscores."
+      )
+      return
+    }
+
     try {
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
+            data: {
+            username,
+          },
           emailRedirectTo: `${window.location.origin}/protected`,
         },
       });
@@ -66,6 +82,20 @@ export function SignUpForm({
         <CardContent>
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-6">
+              <div className="grid gap-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="test"
+                  placeholder="user_123"
+                  minLength={3}
+                  maxLength={30}
+                  pattern="[A-Za-z0-9_]+"
+                  required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                /> 
+              </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
