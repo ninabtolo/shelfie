@@ -80,7 +80,7 @@ The goal is for Shelfie to feel less like software you have to manage and more l
 
 ## 🚧 Current status
 
-> **Current phase: Foundation & Authentication**
+> **Current phase: Book search & details**
 
 ### Done
 
@@ -95,13 +95,13 @@ The goal is for Shelfie to feel less like software you have to manage and more l
 - [x] Basic navigation
 - [x] Initial database security with Row Level Security
 - [x] GitHub repository setup
+- [x] Google Books search on the authenticated home page
+- [x] Book details and search pagination
 
 ### Next
 
 - [ ] Create Shelfie's visual identity
-- [ ] Build the authenticated home page
 - [ ] Add profile information
-- [ ] Integrate Google Books API
 - [ ] Start building the personal library
 
 ---
@@ -116,8 +116,8 @@ The goal is for Shelfie to feel less like software you have to manage and more l
 - [ ] Base UI and design system
 
 ### Phase 2 — Books
-- [ ] Book search
-- [ ] Book details
+- [x] Book search
+- [x] Book details
 - [ ] Personal library
 - [ ] Reading status
 - [ ] Favorites
