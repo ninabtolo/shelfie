@@ -30,27 +30,25 @@ export function SignUpForm({
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
-    setIsLoading(true);
     setError(null);
 
     if (password !== repeatPassword) {
       setError("Passwords do not match");
-      setIsLoading(false);
       return;
     }
 
     if (username.length < 3 || username.length > 30) {
-        setError("Username must be between 3 and 30 characters.")
-        return
+      setError("Username must be between 3 and 30 characters.");
+      return;
     }
 
     if (!/^[A-Za-z0-9_]+$/.test(username)) {
-      setError(
-        "Username can only contain letters, numbers and underscores."
-      )
-      return
+      setError("Username can only contain letters, numbers and underscores.");
+      return;
     }
+
+    const supabase = createClient();
+    setIsLoading(true);
 
     try {
       const { error } = await supabase.auth.signUp({
@@ -86,7 +84,7 @@ export function SignUpForm({
                 <Label htmlFor="username">Username</Label>
                 <Input
                   id="username"
-                  type="test"
+                  type="text"
                   placeholder="user_123"
                   minLength={3}
                   maxLength={30}
