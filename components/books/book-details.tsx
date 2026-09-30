@@ -1,4 +1,5 @@
 import { BookCover } from "@/components/books/book-cover";
+import { AddToLibraryForm } from "@/components/books/add-to-library-form";
 import { Button } from "@/components/ui/button";
 import type { Book } from "@/lib/books/types";
 
@@ -36,6 +37,7 @@ export function BookDetails({ book }: { book: Book }) {
             </div>
           ))}
         </dl>
+        <AddToLibraryForm book={book} />
         <div className="space-y-2 border-t pt-6">
           <p className="text-xs text-muted-foreground">Book data provided by Google Books.</p>
           <Button variant="outline" asChild>

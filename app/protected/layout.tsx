@@ -31,6 +31,9 @@ export default async function ProtectedLayout({
             <Link href="/protected" className="hover:underline">
               Dashboard
             </Link>
+            <Link href="/protected/library" className="hover:underline">
+              My Library
+            </Link>
             <Link href="/protected/account" className="hover:underline">
               Account
             </Link>
