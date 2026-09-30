@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --background: 320 34% 96%;
+    --foreground: 270 18% 22%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 270 18% 22%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
+    --popover-foreground: 270 18% 22%;
+    --primary: 329 62% 63%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 320 42% 95%;
+    --secondary-foreground: 270 28% 35%;
+    --muted: 320 24% 95%;
+    --muted-foreground: 270 10% 48%;
+    --accent: 197 62% 94%;
+    --accent-foreground: 226 35% 32%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    --border: 320 22% 89%;
+    --input: 320 22% 86%;
+    --ring: 329 55% 59%;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -31,25 +31,25 @@
     --radius: 0.5rem;
   }
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
+    --background: 245 34% 11%;
+    --foreground: 300 25% 96%;
+    --card: 245 30% 15%;
+    --card-foreground: 300 25% 96%;
+    --popover: 245 30% 15%;
+    --popover-foreground: 300 25% 96%;
+    --primary: 287 63% 77%;
+    --primary-foreground: 245 34% 16%;
+    --secondary: 247 24% 22%;
+    --secondary-foreground: 295 35% 92%;
+    --muted: 247 24% 21%;
+    --muted-foreground: 280 15% 72%;
+    --accent: 220 35% 23%;
+    --accent-foreground: 205 60% 90%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    --border: 270 23% 29%;
+    --input: 270 23% 32%;
+    --ring: 287 63% 77%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -64,5 +64,133 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display), Georgia, serif;
+  }
+
+  .login-sky {
+    background:
+      radial-gradient(circle at 4% 7%, hsla(326, 82%, 80%, 0.92), transparent 64%),
+      radial-gradient(circle at 97% 93%, hsla(199, 97%, 76%, 0.92), transparent 66%),
+      radial-gradient(circle at 50% 45%, hsla(272, 75%, 78%, 0.972), transparent 70%),
+      linear-gradient(135deg, hsl(299, 90%, 84%), hsl(206, 100%, 81%)),
+      hsl(var(--background));
+  }
+
+  .dark .login-sky {
+    background:
+      radial-gradient(circle at 8% 18%, hsl(265 65% 30% / 0.42), transparent 32%),
+      radial-gradient(circle at 92% 80%, hsl(218 72% 27% / 0.45), transparent 36%),
+      radial-gradient(circle at 52% 42%, hsl(286 52% 27% / 0.35), transparent 38%),
+      hsl(var(--background));
+  }
+
+  .login-star {
+    --star-color: 48 100% 88%;
+    background: hsl(var(--star-color));
+    box-shadow: 0 0 8px 2px hsl(var(--star-color) / 0.95), 0 0 18px 4px hsl(43 100% 84% / 0.5);
+  }
+
+  .dark .login-star {
+    --star-color: 0 0% 100%;
+    box-shadow: 0 0 8px 2px hsl(var(--star-color) / 0.95), 0 0 18px 4px hsl(var(--star-color) / 0.42);
+  }
+
+  .login-card-shell {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .login-card {
+    transition: border-color 500ms ease, box-shadow 700ms ease;
+  }
+
+  .login-sky .rounded-xl.border.bg-card {
+    border-color: hsl(var(--border) / 0.7);
+    background-color: hsl(var(--card) / 0.85);
+    box-shadow: 0 24px 80px hsl(270 30% 30% / 0.12);
+    backdrop-filter: blur(16px);
+  }
+
+  .login-card-shell:hover .login-card,
+  .login-card-shell:focus-within .login-card {
+    border-color: hsl(var(--primary) / 0.82);
+    box-shadow:
+      0 0 0 1px hsl(var(--primary) / 0.34),
+      0 0 26px hsl(var(--primary) / 0.3),
+      0 24px 80px hsl(270 30% 30% / 0.12);
+  }
+
+  .dark .login-card-shell:hover .login-card,
+  .dark .login-card-shell:focus-within .login-card {
+    border-color: hsla(288, 69%, 87%, 0.72);
+    box-shadow:
+      0 0 0 1px hsl(287 75% 78% / 0.28),
+      0 0 24px hsl(287 75% 78% / 0.24),
+      0 24px 80px hsl(245 50% 3% / 0.38);
+  }
+}
+
+@media (max-width: 620px) {
+  html:not(.dark) .login-sky {
+    background:
+      radial-gradient(circle at 8% 8%, hsla(327, 88%, 90%, 0.48), transparent 62%),
+      radial-gradient(circle at 52% 42%, hsla(272, 75%, 79%, 0.42), transparent 72%),
+      linear-gradient(
+        110deg,
+        hsl(300, 72%, 86%) 0%,
+        hsl(281, 98%, 82%) 10%,
+        hsl(275, 78%, 86%) 20%,
+        hsl(283, 59%, 72%) 42%,
+        hsl(270, 79%, 79%) 62%,
+        hsl(251, 88%, 77%) 78%,
+        hsl(202, 65%, 76%) 92%,
+        hsl(205, 53%, 82%) 100%
+      );
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -10px, 0); }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes star-drift-one {
+  0%, 16%, 100% { opacity: 0; transform: translate3d(0, 0, 0) scale(0.45); }
+  28%, 43% { opacity: 1; transform: translate3d(12px, -9px, 0) scale(1.25); }
+  58% { opacity: 0; transform: translate3d(-10px, 12px, 0) scale(0.45); }
+}
+
+@keyframes star-drift-two {
+  0%, 22%, 100% { opacity: 0; transform: translate3d(0, 0, 0) scale(0.5); }
+  35%, 49% { opacity: 1; transform: translate3d(-13px, 10px, 0) scale(1.35); }
+  64% { opacity: 0; transform: translate3d(16px, -7px, 0) scale(0.45); }
+}
+
+@keyframes star-drift-three {
+  0%, 10%, 100% { opacity: 0; transform: translate3d(0, 0, 0) scale(0.45); }
+  22%, 37% { opacity: 1; transform: translate3d(11px, 14px, 0) scale(1.2); }
+  53% { opacity: 0; transform: translate3d(-17px, -10px, 0) scale(0.45); }
+}
+
+@keyframes gentle-glow {
+  0%, 100% { text-shadow: 0 0 0 hsl(var(--primary) / 0); }
+  50% { text-shadow: 0 0 22px hsl(var(--primary) / 0.3); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
   }
 }

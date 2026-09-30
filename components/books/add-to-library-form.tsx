@@ -59,22 +59,22 @@ export function AddToLibraryForm({ book }: { book: Book }) {
   return (
     <section className="space-y-3 border-t pt-6" aria-labelledby="add-to-library-title">
       <h2 id="add-to-library-title" className="font-semibold">Add to library</h2>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-        <div className="space-y-2">
-          <Label htmlFor="book-status">Status</Label>
+      <div className="grid gap-4 sm:grid-cols-[minmax(180px,auto)_auto] sm:items-end sm:gap-6">
+        <div className="grid gap-2">
+          <Label htmlFor="book-status" className="block">Status</Label>
           <select
             id="book-status"
             value={status}
             onChange={(event) => setStatus(event.target.value as typeof status)}
             disabled={pending}
-            className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
           >
             {statuses.map((option) => (
               <option key={option.value} value={option.value}>{option.label}</option>
             ))}
           </select>
         </div>
-        <Button type="button" onClick={addToLibrary} disabled={pending}>
+        <Button type="button" className="h-9" onClick={addToLibrary} disabled={pending}>
           {pending ? "Adding…" : "Add to library"}
         </Button>
       </div>

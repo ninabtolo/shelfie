@@ -5,13 +5,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { AuthShell } from "@/components/auth-shell";
 
 export default function Page() {
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <div className="flex flex-col gap-6">
-          <Card>
+    <AuthShell>
+      <div className="flex flex-col gap-6">
+          <Card className="login-card border-border/70 bg-card/85 shadow-[0_24px_80px_hsl(270_30%_30%/0.12)] backdrop-blur-xl">
             <CardHeader>
               <CardTitle className="text-2xl">
                 Thank you for signing up!
@@ -25,8 +25,7 @@ export default function Page() {
               </p>
             </CardContent>
           </Card>
-        </div>
       </div>
-    </div>
+    </AuthShell>
   );
 }
