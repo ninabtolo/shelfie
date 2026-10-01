@@ -75,7 +75,7 @@ export default async function LibraryPage() {
       {books.length ? (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {books.map((entry) => (
-            <li key={entry.id} className="flex gap-4 rounded-xl border bg-card p-4 shadow-sm">
+            <li key={entry.id} className="book-card flex gap-4 rounded-xl border bg-card p-4 shadow-sm">
               <Link
                 href={`/protected/books/${encodeURIComponent(entry.book.google_books_id)}?from=library`}
                 prefetch={false}

@@ -25,7 +25,7 @@ export async function BookResults({ query, page }: { query: string; page: number
               <Link
                 href={`/protected/books/${encodeURIComponent(book.google_books_id)}?${new URLSearchParams({ q: query, page: String(page) })}`}
                 prefetch={false}
-                className="flex h-full gap-4 rounded-xl border bg-card p-4 shadow-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="book-card flex h-full gap-4 rounded-xl border bg-card p-4 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <BookCover src={book.cover_url} title={book.title} className="w-20 shrink-0 self-start" />
                 <div className="min-w-0 space-y-2">

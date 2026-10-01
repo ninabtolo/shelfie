@@ -44,7 +44,7 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
           <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.28em] text-foreground/65">
             <Sparkles className="h-3.5 w-3.5" /> your personal bookshelf
           </p>
-          <div className="mt-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-foreground/5 text-foreground/75 shadow-[0_8px_30px_hsl(270_20%_30%/0.12)] animate-[float_6s_ease-in-out_infinite]">
+          <div className="mt-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-foreground/5 text-foreground/75 shadow-[0_8px_30px_hsl(270_20%_30%/0.12)]">
             <BookOpen className="h-6 w-6" strokeWidth={1.6} />
           </div>
         </div>

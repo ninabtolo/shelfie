@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
@@ -188,7 +187,6 @@ export function AddToLibraryForm({
         )}
       </div>
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
-      {isInLibrary && <Link href="/protected/library" className="text-sm font-medium text-primary underline">View my library</Link>}
     </section>
   );
 }
