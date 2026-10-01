@@ -1,5 +1,6 @@
 import { BookCover } from "@/components/books/book-cover";
 import { createClient } from "@/lib/supabase/server";
+import Link from "next/link";
 
 export const instant = false
 
@@ -74,18 +75,24 @@ export default async function LibraryPage() {
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {books.map((entry) => (
             <li key={entry.id} className="flex gap-4 rounded-xl border bg-card p-4 shadow-sm">
-              <BookCover
-                src={entry.book?.cover_url ?? null}
-                title={entry.book?.title ?? "Book"}
-                className="w-20 shrink-0 self-start"
-              />
-              <div className="min-w-0 space-y-2">
-                <h2 className="line-clamp-3 font-semibold">{entry.book?.title ?? "Book unavailable"}</h2>
-                <p className="line-clamp-2 text-sm text-muted-foreground">
-                  {entry.book?.authors?.join(", ") ?? "Unknown author"}
-                </p>
-                <p className="text-xs font-medium text-primary">{statusLabels[entry.status]}</p>
-              </div>
+              <Link
+                href={`/protected/books/${encodeURIComponent(entry.book.google_books_id)}?from=library`}
+                prefetch={false}
+                className="flex min-w-0 flex-1 gap-4 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <BookCover
+                  src={entry.book.cover_url}
+                  title={entry.book.title}
+                  className="w-20 shrink-0 self-start"
+                />
+                <div className="min-w-0 space-y-2">
+                  <h2 className="line-clamp-3 font-semibold">{entry.book.title}</h2>
+                  <p className="line-clamp-2 text-sm text-muted-foreground">
+                    {entry.book.authors?.join(", ") ?? "Unknown author"}
+                  </p>
+                  <p className="text-xs font-medium text-primary">{statusLabels[entry.status]}</p>
+                </div>
+              </Link>
             </li>
           ))}
         </ul>

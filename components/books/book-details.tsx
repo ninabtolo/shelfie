@@ -1,9 +1,18 @@
 import { BookCover } from "@/components/books/book-cover";
 import { AddToLibraryForm } from "@/components/books/add-to-library-form";
+import { BookDescription } from "@/components/books/book-description";
 import { Button } from "@/components/ui/button";
 import type { Book } from "@/lib/books/types";
 
-export function BookDetails({ book }: { book: Book }) {
+type BookStatus = "reading" | "read" | "abandoned";
+
+export function BookDetails({
+  book,
+  libraryStatus,
+}: {
+  book: Book;
+  libraryStatus?: BookStatus;
+}) {
   const metadata = [
     ["Publisher", book.publisher],
     ["Published", book.published_date],
@@ -34,11 +43,9 @@ export function BookDetails({ book }: { book: Book }) {
       </div>
       <section className="min-w-0 space-y-2" aria-labelledby="description-title">
         <h2 id="description-title" className="font-semibold">About this book</h2>
-        <p className="whitespace-pre-line break-words text-sm leading-relaxed text-muted-foreground">
-          {book.description ?? "No description available."}
-        </p>
+        <BookDescription description={book.description} />
       </section>
-      <AddToLibraryForm book={book} />
+      <AddToLibraryForm book={book} initialStatus={libraryStatus} />
       <div className="space-y-2 border-t pt-6">
         <p className="text-xs text-muted-foreground">Book data provided by Google Books.</p>
         <Button variant="outline" asChild>

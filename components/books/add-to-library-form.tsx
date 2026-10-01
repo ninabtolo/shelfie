@@ -13,16 +13,23 @@ const statuses = [
   { value: "abandoned", label: "Abandoned" },
 ] as const;
 
-export function AddToLibraryForm({ book }: { book: Book }) {
-  const [status, setStatus] = useState<(typeof statuses)[number]["value"]>("reading");
+type BookStatus = (typeof statuses)[number]["value"];
+
+export function AddToLibraryForm({
+  book,
+  initialStatus,
+}: {
+  book: Book;
+  initialStatus?: BookStatus;
+}) {
+  const [status, setStatus] = useState<BookStatus>(initialStatus ?? "reading");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [isInLibrary, setIsInLibrary] = useState(initialStatus !== undefined);
 
   async function addToLibrary() {
     setPending(true);
     setError(null);
-    setSuccess(false);
 
     const supabase = createClient();
     const { error: rpcError } = await supabase.rpc("add_book_to_library", {
@@ -52,7 +59,7 @@ export function AddToLibraryForm({ book }: { book: Book }) {
       return;
     }
 
-    setSuccess(true);
+    setIsInLibrary(true);
     setPending(false);
   }
 
@@ -66,7 +73,7 @@ export function AddToLibraryForm({ book }: { book: Book }) {
             id="book-status"
             value={status}
             onChange={(event) => setStatus(event.target.value as typeof status)}
-            disabled={pending}
+            disabled={pending || isInLibrary}
             className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
           >
             {statuses.map((option) => (
@@ -74,14 +81,14 @@ export function AddToLibraryForm({ book }: { book: Book }) {
             ))}
           </select>
         </div>
-        <Button type="button" className="h-9" onClick={addToLibrary} disabled={pending}>
-          {pending ? "Adding…" : "Add to library"}
+        <Button type="button" className="h-9" onClick={addToLibrary} disabled={pending || isInLibrary}>
+          {pending ? "Adding…" : isInLibrary ? "In my library" : "Add to library"}
         </Button>
       </div>
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
-      {success && (
-        <p role="status" className="text-sm text-green-600">
-          Book added to your library.{" "}
+      {isInLibrary && (
+        <p role="status" className="text-sm text-primary">
+          This book is in your library.{" "}
           <Link href="/protected/library" className="font-medium underline">
             View my library
           </Link>

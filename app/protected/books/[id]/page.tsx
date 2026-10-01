@@ -6,6 +6,7 @@ import { BookDetails } from "@/components/books/book-details";
 import { Button } from "@/components/ui/button";
 import { getBook, GoogleBooksError } from "@/lib/books/google-books";
 import { bookSearchHref, parseBookSearch, type SearchParams } from "@/lib/books/search";
+import { createClient } from "@/lib/supabase/server";
 
 export const instant = false;
 
@@ -18,7 +19,35 @@ async function BookContent({ id }: { id: string }) {
     return <p role="alert" className="rounded-lg border p-6 text-sm text-destructive">{error.message}</p>;
   }
   if (!book) notFound();
-  return <BookDetails book={book} />;
+
+  const supabase = await createClient();
+  const { data: savedBook, error: savedBookError } = await supabase
+    .from("books")
+    .select("id")
+    .eq("google_books_id", book.google_books_id)
+    .maybeSingle();
+
+  if (savedBookError) throw new Error("Could not check your library.");
+
+  let libraryStatus: "reading" | "read" | "abandoned" | undefined;
+  if (savedBook) {
+    const { data: libraryEntry, error: libraryEntryError } = await supabase
+      .from("user_books")
+      .select("status")
+      .eq("book_id", savedBook.id)
+      .maybeSingle();
+
+    if (libraryEntryError) throw new Error("Could not check your library.");
+    if (
+      libraryEntry?.status === "reading" ||
+      libraryEntry?.status === "read" ||
+      libraryEntry?.status === "abandoned"
+    ) {
+      libraryStatus = libraryEntry.status;
+    }
+  }
+
+  return <BookDetails book={book} libraryStatus={libraryStatus} />;
 }
 
 export default async function BookPage({ params, searchParams }: {
@@ -27,11 +56,14 @@ export default async function BookPage({ params, searchParams }: {
 }) {
   const [{ id }, search] = await Promise.all([params, searchParams]);
   const { query, page } = parseBookSearch(search);
+  const fromLibrary = search.from === "library";
 
   return (
     <div className="space-y-6 py-8">
       <Button variant="ghost" asChild>
-        <Link prefetch={false} href={bookSearchHref(query, page)}><ArrowLeft aria-hidden="true" />Back to search</Link>
+        <Link prefetch={false} href={fromLibrary ? "/protected/library" : bookSearchHref(query, page)}>
+          <ArrowLeft aria-hidden="true" />{fromLibrary ? "Back to library" : "Back to search"}
+        </Link>
       </Button>
       <Suspense key={id} fallback={<p role="status" className="py-8 text-muted-foreground">Loading book details…</p>}>
         <BookContent id={id} />
