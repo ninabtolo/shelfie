@@ -1,4 +1,5 @@
 import { BookCover } from "@/components/books/book-cover";
+import { RemoveFromLibraryButton } from "@/components/books/remove-from-library-button";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 
@@ -93,6 +94,7 @@ export default async function LibraryPage() {
                   <p className="text-xs font-medium text-primary">{statusLabels[entry.status]}</p>
                 </div>
               </Link>
+              <RemoveFromLibraryButton bookId={entry.book_id} title={entry.book.title} />
             </li>
           ))}
         </ul>
