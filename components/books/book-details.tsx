@@ -9,9 +9,11 @@ type BookStatus = "reading" | "read" | "abandoned";
 export function BookDetails({
   book,
   libraryStatus,
+  inWishlist,
 }: {
   book: Book;
   libraryStatus?: BookStatus;
+  inWishlist?: boolean;
 }) {
   const metadata = [
     ["Publisher", book.publisher],
@@ -45,7 +47,7 @@ export function BookDetails({
         <h2 id="description-title" className="font-semibold">About this book</h2>
         <BookDescription description={book.description} />
       </section>
-      <AddToLibraryForm book={book} initialStatus={libraryStatus} />
+      <AddToLibraryForm book={book} initialStatus={libraryStatus} initialInWishlist={inWishlist} />
       <div className="space-y-2 border-t pt-6">
         <p className="text-xs text-muted-foreground">Book data provided by Google Books.</p>
         <Button variant="outline" asChild>

@@ -17,14 +17,17 @@ type BookStatus = (typeof statuses)[number]["value"];
 export function AddToLibraryForm({
   book,
   initialStatus,
+  initialInWishlist = false,
 }: {
   book: Book;
   initialStatus?: BookStatus;
+  initialInWishlist?: boolean;
 }) {
   const [status, setStatus] = useState<BookStatus>(initialStatus ?? "reading");
   const [pendingAction, setPendingAction] = useState<"adding" | "removing" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isInLibrary, setIsInLibrary] = useState(initialStatus !== undefined);
+  const [isInWishlist, setIsInWishlist] = useState(initialInWishlist);
   const [checkingLibrary, setCheckingLibrary] = useState(true);
   const pending = pendingAction !== null || checkingLibrary;
 
@@ -66,6 +69,7 @@ export function AddToLibraryForm({
         if (status === "reading" || status === "read" || status === "abandoned") {
           setStatus(status);
           setIsInLibrary(true);
+          setIsInWishlist(false);
         } else {
           setIsInLibrary(false);
         }
@@ -79,6 +83,60 @@ export function AddToLibraryForm({
       active = false;
     };
   }, [book.google_books_id]);
+
+  async function toggleWishlist() {
+    setPendingAction("adding");
+    setError(null);
+    const supabase = createClient();
+
+    if (isInWishlist) {
+      const { data: savedBook, error: bookError } = await supabase
+        .from("books")
+        .select("id")
+        .eq("google_books_id", book.google_books_id)
+        .maybeSingle();
+
+      if (bookError || !savedBook) {
+        setError("Could not remove this book from your wishlist. Please try again.");
+        setPendingAction(null);
+        return;
+      }
+
+      const { error: deleteError } = await supabase
+        .from("wishlist")
+        .delete()
+        .eq("book_id", savedBook.id);
+      if (deleteError) {
+        setError("Could not remove this book from your wishlist. Please try again.");
+        setPendingAction(null);
+        return;
+      }
+      setIsInWishlist(false);
+    } else {
+      const { error: rpcError } = await supabase.rpc("add_book_to_wishlist", {
+        p_google_books_id: book.google_books_id,
+        p_title: book.title,
+        p_subtitle: book.subtitle,
+        p_authors: book.authors,
+        p_description: book.description,
+        p_isbn_10: book.isbn_10,
+        p_isbn_13: book.isbn_13,
+        p_publisher: book.publisher,
+        p_published_date: book.published_date,
+        p_page_count: book.page_count,
+        p_genres: book.genres,
+        p_language: book.language,
+        p_cover_url: book.cover_url,
+      });
+      if (rpcError) {
+        setError("Could not add this book to your wishlist. Please try again.");
+        setPendingAction(null);
+        return;
+      }
+      setIsInWishlist(true);
+    }
+    setPendingAction(null);
+  }
 
   async function removeFromLibrary() {
     if (!window.confirm("Remove this book from your library?")) return;
@@ -147,6 +205,30 @@ export function AddToLibraryForm({
       return;
     }
 
+    if (isInWishlist) {
+      const { data: savedBook, error: bookError } = await supabase
+        .from("books")
+        .select("id")
+        .eq("google_books_id", book.google_books_id)
+        .maybeSingle();
+      if (bookError || !savedBook) {
+        setError("Book added to library, but could not be removed from wishlist.");
+        setIsInLibrary(true);
+        setPendingAction(null);
+        return;
+      }
+      const { error: deleteError } = await supabase
+        .from("wishlist")
+        .delete()
+        .eq("book_id", savedBook.id);
+      if (deleteError) {
+        setError("Book added to library, but could not be removed from wishlist.");
+        setIsInLibrary(true);
+        setPendingAction(null);
+        return;
+      }
+      setIsInWishlist(false);
+    }
     setIsInLibrary(true);
     setPendingAction(null);
   }
@@ -186,6 +268,11 @@ export function AddToLibraryForm({
           </Button>
         )}
       </div>
+      {(!isInLibrary || isInWishlist) && (
+        <Button type="button" variant="outline" onClick={toggleWishlist} disabled={pending}>
+          {isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
+        </Button>
+      )}
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
     </section>
   );

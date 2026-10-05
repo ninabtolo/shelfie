@@ -30,6 +30,7 @@ async function BookContent({ id }: { id: string }) {
   if (savedBookError) throw new Error("Could not check your library.");
 
   let libraryStatus: "reading" | "read" | "abandoned" | undefined;
+  let inWishlist = false;
   if (savedBook) {
     const { data: libraryEntry, error: libraryEntryError } = await supabase
       .from("user_books")
@@ -45,9 +46,19 @@ async function BookContent({ id }: { id: string }) {
     ) {
       libraryStatus = libraryEntry.status;
     }
+
+    if (!libraryStatus) {
+      const { data: wishlistEntry, error: wishlistError } = await supabase
+        .from("wishlist")
+        .select("id")
+        .eq("book_id", savedBook.id)
+        .maybeSingle();
+      if (wishlistError) throw new Error("Could not check your wishlist.");
+      inWishlist = Boolean(wishlistEntry);
+    }
   }
 
-  return <BookDetails book={book} libraryStatus={libraryStatus} />;
+  return <BookDetails book={book} libraryStatus={libraryStatus} inWishlist={inWishlist} />;
 }
 
 export default async function BookPage({ params, searchParams }: {
@@ -57,12 +68,13 @@ export default async function BookPage({ params, searchParams }: {
   const [{ id }, search] = await Promise.all([params, searchParams]);
   const { query, page } = parseBookSearch(search);
   const fromLibrary = search.from === "library";
+  const fromWishlist = search.from === "wishlist";
 
   return (
     <div className="space-y-6 py-8">
       <Button variant="ghost" asChild>
-        <Link prefetch={false} href={fromLibrary ? "/protected/library" : bookSearchHref(query, page)}>
-          <ArrowLeft aria-hidden="true" />{fromLibrary ? "Back to library" : "Back to search"}
+        <Link prefetch={false} href={fromLibrary ? "/protected/library" : fromWishlist ? "/protected/wishlist" : bookSearchHref(query, page)}>
+          <ArrowLeft aria-hidden="true" />{fromLibrary ? "Back to library" : fromWishlist ? "Back to wishlist" : "Back to search"}
         </Link>
       </Button>
       <Suspense key={id} fallback={<p role="status" className="py-8 text-muted-foreground">Loading book details…</p>}>
