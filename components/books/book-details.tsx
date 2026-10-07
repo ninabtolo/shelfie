@@ -33,7 +33,7 @@ export function BookDetails({
         <p className="text-muted-foreground">{book.authors?.join(", ") ?? "Unknown author"}</p>
       </header>
       <div className="grid gap-8 border-b pb-8 sm:grid-cols-[180px_minmax(0,1fr)]">
-        <BookCover src={book.cover_url} title={book.title} className="w-40 sm:w-full" />
+        <BookCover src={book.cover_url} title={book.title} priority className="w-40 sm:w-full" />
         <dl className="grid gap-4 sm:grid-cols-2">
           {metadata.map(([label, value]) => (
             <div key={label} className="min-w-0 space-y-1">

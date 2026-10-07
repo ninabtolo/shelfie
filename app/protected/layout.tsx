@@ -40,6 +40,9 @@ export default async function ProtectedLayout({
             <Link href="/protected/account" className="hover:underline">
               Account
             </Link>
+            <Link href="/protected/profiles" className="hover:underline">
+              Profiles
+            </Link>
             <ThemeSwitcher />
             <LogoutButton />
           </div>

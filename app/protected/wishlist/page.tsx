@@ -55,7 +55,7 @@ export default async function WishlistPage() {
                 prefetch={false}
                 className="flex min-w-0 flex-1 gap-4 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <BookCover src={entry.book.cover_url} title={entry.book.title} className="w-20 shrink-0 self-start" />
+                <BookCover src={entry.book.cover_url} title={entry.book.title} priority={books.indexOf(entry) === 0} className="w-20 shrink-0 self-start" />
                 <div className="min-w-0 space-y-2">
                   <h2 className="line-clamp-3 font-semibold">{entry.book.title}</h2>
                   <p className="line-clamp-2 text-sm text-muted-foreground">

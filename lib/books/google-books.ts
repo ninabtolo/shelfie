@@ -8,7 +8,11 @@ const API_URL = "https://www.googleapis.com/books/v1/volumes";
 
 export class GoogleBooksError extends Error {}
 
-async function requestBooks(path: string, params = new URLSearchParams()) {
+async function requestBooks(
+  path: string,
+  params = new URLSearchParams(),
+  revalidate = 300,
+) {
   const apiKey = process.env.GOOGLE_BOOKS_API_KEY;
   if (!apiKey) {
     throw new GoogleBooksError("Book search is temporarily unavailable. Please try again later.");
@@ -20,7 +24,7 @@ async function requestBooks(path: string, params = new URLSearchParams()) {
   try {
     const response = await fetch(url, {
       headers: { Accept: "application/json" },
-      cache: "no-store",
+      next: { revalidate },
       signal: AbortSignal.timeout(10_000),
     });
 
@@ -67,7 +71,7 @@ export async function searchBooks(query: string, page = 1): Promise<{
 
 export async function getBook(id: string): Promise<Book | null> {
   if (!/^[a-zA-Z0-9_-]{1,128}$/.test(id)) return null;
-  const data = await requestBooks(`/${encodeURIComponent(id)}`);
+  const data = await requestBooks(`/${encodeURIComponent(id)}`, new URLSearchParams(), 3600);
   if (data === null) return null;
   const book = mapGoogleBook(data);
   if (!book) throw new GoogleBooksError("Could not load this book. Please try again.");

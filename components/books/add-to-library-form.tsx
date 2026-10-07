@@ -24,6 +24,7 @@ export function AddToLibraryForm({
   initialInWishlist?: boolean;
 }) {
   const [status, setStatus] = useState<BookStatus>(initialStatus ?? "reading");
+  const [isPublic, setIsPublic] = useState(true);
   const [pendingAction, setPendingAction] = useState<"adding" | "removing" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isInLibrary, setIsInLibrary] = useState(initialStatus !== undefined);
@@ -58,7 +59,7 @@ export function AddToLibraryForm({
 
       const { data: libraryEntry, error: libraryError } = await supabase
         .from("user_books")
-        .select("status")
+        .select("status, is_public")
         .eq("book_id", savedBook.id)
         .maybeSingle();
 
@@ -68,6 +69,7 @@ export function AddToLibraryForm({
         const status = libraryEntry?.status;
         if (status === "reading" || status === "read" || status === "abandoned") {
           setStatus(status);
+          setIsPublic(libraryEntry?.is_public !== false);
           setIsInLibrary(true);
           setIsInWishlist(false);
         } else {
@@ -182,6 +184,7 @@ export function AddToLibraryForm({
       p_google_books_id: book.google_books_id,
       p_title: book.title,
       p_status: status,
+      p_is_public: isPublic,
       p_subtitle: book.subtitle,
       p_authors: book.authors,
       p_description: book.description,
@@ -253,6 +256,18 @@ export function AddToLibraryForm({
             ))}
           </select>
         </div>
+        {!isInLibrary && (
+          <label className="flex items-center gap-2 text-sm sm:pb-2">
+            <input
+              type="checkbox"
+              checked={isPublic}
+              onChange={(event) => setIsPublic(event.target.checked)}
+              disabled={pending}
+              className="size-4 accent-primary"
+            />
+            Add to my public library
+          </label>
+        )}
         {isInLibrary ? (
           <Button
             type="button"

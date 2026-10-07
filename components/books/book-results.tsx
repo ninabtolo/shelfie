@@ -27,7 +27,7 @@ export async function BookResults({ query, page }: { query: string; page: number
                 prefetch={false}
                 className="book-card flex h-full gap-4 rounded-xl border bg-card p-4 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <BookCover src={book.cover_url} title={book.title} className="w-20 shrink-0 self-start" />
+                <BookCover src={book.cover_url} title={book.title} priority={books.indexOf(book) === 0} className="w-20 shrink-0 self-start" />
                 <div className="min-w-0 space-y-2">
                   <h3 className="line-clamp-3 font-semibold">{book.title}</h3>
                   <p className="line-clamp-2 text-sm text-muted-foreground">{book.authors?.join(", ") ?? "Unknown author"}</p>

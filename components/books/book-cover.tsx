@@ -5,10 +5,11 @@ import Image from "next/image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-export function BookCover({ src, title, className }: {
+export function BookCover({ src, title, className, priority = false }: {
   src: string | null;
   title: string;
   className?: string;
+  priority?: boolean;
 }) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
 
@@ -20,6 +21,9 @@ export function BookCover({ src, title, className }: {
           alt={`Cover of ${title}`}
           fill
           unoptimized
+          priority={priority}
+          loading={priority ? "eager" : "lazy"}
+          sizes="80px"
           className="object-contain"
           onError={() => setFailedSrc(src)}
         />

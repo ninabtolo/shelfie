@@ -9,6 +9,7 @@ type LibraryBook = {
   id: string;
   book_id: string;
   status: "reading" | "read" | "abandoned";
+  is_public: boolean;
 };
 
 type BookRecord = {
@@ -38,7 +39,7 @@ export default async function LibraryPage() {
   const supabase = await createClient();
   const { data: entries, error: entriesError } = await supabase
     .from("user_books")
-    .select("id, book_id, status")
+    .select("id, book_id, status, is_public")
     .order("updated_at", { ascending: false });
 
   if (entriesError) {
@@ -84,6 +85,7 @@ export default async function LibraryPage() {
                 <BookCover
                   src={entry.book.cover_url}
                   title={entry.book.title}
+                  priority={books.indexOf(entry) === 0}
                   className="w-20 shrink-0 self-start"
                 />
                 <div className="min-w-0 space-y-2">
@@ -92,6 +94,9 @@ export default async function LibraryPage() {
                     {entry.book.authors?.join(", ") ?? "Unknown author"}
                   </p>
                   <p className="text-xs font-medium text-primary">{statusLabels[entry.status]}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {entry.is_public ? "Public" : "Private"}
+                  </p>
                 </div>
               </Link>
               <RemoveFromLibraryButton bookId={entry.book_id} title={entry.book.title} />
