@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
@@ -18,10 +19,12 @@ export function AddToLibraryForm({
   book,
   initialStatus,
   initialInWishlist = false,
+  initialIsFavorite = false,
 }: {
   book: Book;
   initialStatus?: BookStatus;
   initialInWishlist?: boolean;
+  initialIsFavorite?: boolean;
 }) {
   const [status, setStatus] = useState<BookStatus>(initialStatus ?? "reading");
   const [isPublic, setIsPublic] = useState(true);
@@ -29,6 +32,7 @@ export function AddToLibraryForm({
   const [error, setError] = useState<string | null>(null);
   const [isInLibrary, setIsInLibrary] = useState(initialStatus !== undefined);
   const [isInWishlist, setIsInWishlist] = useState(initialInWishlist);
+  const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
   const [checkingLibrary, setCheckingLibrary] = useState(true);
   const pending = pendingAction !== null || checkingLibrary;
 
@@ -59,7 +63,7 @@ export function AddToLibraryForm({
 
       const { data: libraryEntry, error: libraryError } = await supabase
         .from("user_books")
-        .select("status, is_public")
+        .select("status, is_public, is_favorite")
         .eq("book_id", savedBook.id)
         .maybeSingle();
 
@@ -70,6 +74,7 @@ export function AddToLibraryForm({
         if (status === "reading" || status === "read" || status === "abandoned") {
           setStatus(status);
           setIsPublic(libraryEntry?.is_public !== false);
+          setIsFavorite(libraryEntry?.is_favorite === true);
           setIsInLibrary(true);
           setIsInWishlist(false);
         } else {
@@ -171,6 +176,7 @@ export function AddToLibraryForm({
     }
 
     setIsInLibrary(false);
+    setIsFavorite(false);
     setStatus("reading");
     setPendingAction(null);
   }
@@ -233,6 +239,39 @@ export function AddToLibraryForm({
       setIsInWishlist(false);
     }
     setIsInLibrary(true);
+    setIsFavorite(false);
+    setPendingAction(null);
+  }
+
+  async function toggleFavorite() {
+    if (!isInLibrary) return;
+
+    setPendingAction("adding");
+    setError(null);
+    const supabase = createClient();
+    const { data: savedBook, error: bookError } = await supabase
+      .from("books")
+      .select("id")
+      .eq("google_books_id", book.google_books_id)
+      .maybeSingle();
+    if (bookError || !savedBook) {
+      setError("Could not update your favorites. Please try again.");
+      setPendingAction(null);
+      return;
+    }
+
+    const { error: favoriteError } = await supabase
+      .from("user_books")
+      .update({ is_favorite: !isFavorite })
+      .eq("book_id", savedBook.id);
+
+    if (favoriteError) {
+      setError("Could not update your favorites. Please try again.");
+      setPendingAction(null);
+      return;
+    }
+
+    setIsFavorite((current) => !current);
     setPendingAction(null);
   }
 
@@ -269,14 +308,26 @@ export function AddToLibraryForm({
           </label>
         )}
         {isInLibrary ? (
-          <Button
-            type="button"
-            className="h-9 text-white hover:bg-primary/90"
-            onClick={removeFromLibrary}
-            disabled={pending}
-          >
-            {pendingAction === "removing" ? "Removing…" : "Remove from library"}
-          </Button>
+          <div className="grid gap-2 sm:grid-cols-2">
+            <Button
+              type="button"
+              variant={isFavorite ? "default" : "outline"}
+              className="h-9"
+              onClick={toggleFavorite}
+              disabled={pending}
+            >
+              <Star aria-hidden="true" fill={isFavorite ? "currentColor" : "none"} />
+              {isFavorite ? "Remove from favorites" : "Add to favorites"}
+            </Button>
+            <Button
+              type="button"
+              className="h-9 text-white hover:bg-primary/90"
+              onClick={removeFromLibrary}
+              disabled={pending}
+            >
+              {pendingAction === "removing" ? "Removing…" : "Remove from library"}
+            </Button>
+          </div>
         ) : (
           <Button type="button" className="h-9" onClick={addToLibrary} disabled={pending}>
             {pendingAction === "adding" ? "Adding…" : "Add to library"}

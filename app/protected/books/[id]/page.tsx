@@ -32,13 +32,14 @@ async function BookContent({ id }: { id: string }) {
   if (savedBookError) throw new Error("Could not check your library.");
 
   let libraryStatus: "reading" | "read" | "abandoned" | undefined;
+  let isFavorite = false;
   let inWishlist = false;
   let publicReviews: PublicReview[] = [];
   let myReviews: ReviewInput[] = [];
   if (savedBook) {
     const { data: libraryEntry, error: libraryEntryError } = await supabase
       .from("user_books")
-      .select("status")
+      .select("status, is_favorite")
       .eq("book_id", savedBook.id)
       .maybeSingle();
 
@@ -49,6 +50,7 @@ async function BookContent({ id }: { id: string }) {
       libraryEntry?.status === "abandoned"
     ) {
       libraryStatus = libraryEntry.status;
+      isFavorite = libraryEntry.is_favorite === true;
     }
 
     if (!libraryStatus) {
@@ -80,7 +82,7 @@ async function BookContent({ id }: { id: string }) {
     publicReviews = (publicReviewRows ?? []) as PublicReview[];
   }
 
-  return <BookDetails book={book} libraryStatus={libraryStatus} inWishlist={inWishlist} publicReviews={publicReviews} myReviews={myReviews} />;
+  return <BookDetails book={book} libraryStatus={libraryStatus} inWishlist={inWishlist} isFavorite={isFavorite} publicReviews={publicReviews} myReviews={myReviews} />;
 }
 
 export default async function BookPage({ params, searchParams }: {
