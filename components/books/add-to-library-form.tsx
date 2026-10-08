@@ -237,7 +237,7 @@ export function AddToLibraryForm({
   }
 
   return (
-    <section className="space-y-3 border-t pt-6" aria-labelledby="add-to-library-title">
+    <section className="space-y-3 border-y py-6" aria-labelledby="add-to-library-title">
       <h2 id="add-to-library-title" className="font-semibold">
         {isInLibrary ? "In my library" : "Add to library"}
       </h2>

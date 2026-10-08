@@ -1,6 +1,9 @@
 import { BookCover } from "@/components/books/book-cover";
 import { AddToLibraryForm } from "@/components/books/add-to-library-form";
 import { BookDescription } from "@/components/books/book-description";
+import { MyReviews } from "@/components/books/my-reviews";
+import { PublicReviews, type PublicReview } from "@/components/books/public-reviews";
+import { ReviewForm, type ReviewInput } from "@/components/books/review-form";
 import { Button } from "@/components/ui/button";
 import type { Book } from "@/lib/books/types";
 
@@ -10,10 +13,14 @@ export function BookDetails({
   book,
   libraryStatus,
   inWishlist,
+  publicReviews = [],
+  myReviews = [],
 }: {
   book: Book;
   libraryStatus?: BookStatus;
   inWishlist?: boolean;
+  publicReviews?: PublicReview[];
+  myReviews?: ReviewInput[];
 }) {
   const metadata = [
     ["Publisher", book.publisher],
@@ -27,11 +34,12 @@ export function BookDetails({
 
   return (
     <article className="space-y-8">
-      <header className="space-y-2 border-b pb-6">
+      <header className="space-y-2">
         <h1 className="break-words text-3xl font-bold">{book.title}</h1>
         {book.subtitle && <p className="text-lg text-muted-foreground">{book.subtitle}</p>}
         <p className="text-muted-foreground">{book.authors?.join(", ") ?? "Unknown author"}</p>
       </header>
+      <AddToLibraryForm book={book} initialStatus={libraryStatus} initialInWishlist={inWishlist} />
       <div className="grid gap-8 border-b pb-8 sm:grid-cols-[180px_minmax(0,1fr)]">
         <BookCover src={book.cover_url} title={book.title} priority className="w-40 sm:w-full" />
         <dl className="grid gap-4 sm:grid-cols-2">
@@ -47,7 +55,9 @@ export function BookDetails({
         <h2 id="description-title" className="font-semibold">About this book</h2>
         <BookDescription description={book.description} />
       </section>
-      <AddToLibraryForm book={book} initialStatus={libraryStatus} initialInWishlist={inWishlist} />
+      <ReviewForm book={book} initialStatus={libraryStatus} />
+      <MyReviews reviews={myReviews} />
+      <PublicReviews reviews={publicReviews} />
       <div className="space-y-2 border-t pt-6">
         <p className="text-xs text-muted-foreground">Book data provided by Google Books.</p>
         <Button variant="outline" asChild>

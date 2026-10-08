@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ArrowLeft } from "lucide-react";
 import { BookDetails } from "@/components/books/book-details";
+import type { PublicReview } from "@/components/books/public-reviews";
+import type { ReviewInput } from "@/components/books/review-form";
 import { Button } from "@/components/ui/button";
 import { getBook, GoogleBooksError } from "@/lib/books/google-books";
 import { bookSearchHref, parseBookSearch, type SearchParams } from "@/lib/books/search";
@@ -31,6 +33,8 @@ async function BookContent({ id }: { id: string }) {
 
   let libraryStatus: "reading" | "read" | "abandoned" | undefined;
   let inWishlist = false;
+  let publicReviews: PublicReview[] = [];
+  let myReviews: ReviewInput[] = [];
   if (savedBook) {
     const { data: libraryEntry, error: libraryEntryError } = await supabase
       .from("user_books")
@@ -56,9 +60,27 @@ async function BookContent({ id }: { id: string }) {
       if (wishlistError) throw new Error("Could not check your wishlist.");
       inWishlist = Boolean(wishlistEntry);
     }
+
+    const [{ data: publicReviewRows, error: publicReviewsError }, { data: myReviewRows, error: myReviewsError }] = await Promise.all([
+      supabase.from("public_reviews").select("review_id, username, avatar_url, rating, review_text, reading_status, created_at").eq("google_books_id", book.google_books_id).order("created_at", { ascending: false }),
+      supabase.from("reviews").select("id, rating, review_text, reading_status, is_public, user_books!inner(book_id)").eq("user_books.book_id", savedBook.id).order("created_at", { ascending: false }),
+    ]);
+    if (publicReviewsError || myReviewsError) throw new Error("Could not load reviews.");
+    publicReviews = (publicReviewRows ?? []) as PublicReview[];
+    myReviews = (myReviewRows ?? []).map(({ id, rating, review_text, reading_status, is_public }) => ({
+      id, rating, review_text, reading_status, is_public,
+    })) as ReviewInput[];
+  } else {
+    const { data: publicReviewRows, error: publicReviewsError } = await supabase
+      .from("public_reviews")
+      .select("review_id, username, avatar_url, rating, review_text, reading_status, created_at")
+      .eq("google_books_id", book.google_books_id)
+      .order("created_at", { ascending: false });
+    if (publicReviewsError) throw new Error("Could not load reviews.");
+    publicReviews = (publicReviewRows ?? []) as PublicReview[];
   }
 
-  return <BookDetails book={book} libraryStatus={libraryStatus} inWishlist={inWishlist} />;
+  return <BookDetails book={book} libraryStatus={libraryStatus} inWishlist={inWishlist} publicReviews={publicReviews} myReviews={myReviews} />;
 }
 
 export default async function BookPage({ params, searchParams }: {

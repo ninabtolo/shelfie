@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { BookCover } from "@/components/books/book-cover";
+import { PublicReviews, type PublicReview } from "@/components/books/public-reviews";
 import { createClient } from "@/lib/supabase/server";
 
 export const instant = false;
@@ -41,6 +42,13 @@ export default async function PublicProfilePage({
     .order("added_at", { ascending: false });
   if (booksError) throw new Error("Could not load public library.");
 
+  const { data: reviewRows, error: reviewsError } = await supabase
+    .from("public_reviews")
+    .select("review_id, username, avatar_url, rating, review_text, reading_status, created_at, title, google_books_id")
+    .eq("username", profile.username)
+    .order("created_at", { ascending: false });
+  if (reviewsError) throw new Error("Could not load public reviews.");
+
   return (
     <div className="space-y-8 py-8">
       <section className="flex items-center gap-4">
@@ -80,6 +88,7 @@ export default async function PublicProfilePage({
           </p>
         )}
       </section>
+      <PublicReviews reviews={(reviewRows ?? []) as PublicReview[]} title="Public reviews" />
     </div>
   );
 }
