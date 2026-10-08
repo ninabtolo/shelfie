@@ -1,8 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { ProfileEditor } from "@/components/profile/profile-editor";
 
-export const instant = false
-
 export default async function AccountPage() {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();

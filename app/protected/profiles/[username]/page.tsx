@@ -3,8 +3,6 @@ import { BookCover } from "@/components/books/book-cover";
 import { PublicReviews, type PublicReview } from "@/components/books/public-reviews";
 import { createClient } from "@/lib/supabase/server";
 
-export const instant = false;
-
 type PublicBook = {
   google_books_id: string;
   title: string;

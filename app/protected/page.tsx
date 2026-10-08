@@ -4,8 +4,6 @@ import { BookSearchForm } from "@/components/books/book-search-form";
 import { parseBookSearch, type SearchParams } from "@/lib/books/search";
 import { createClient } from "@/lib/supabase/server";
 
-export const instant = false;
-
 export default async function ProtectedPage({ searchParams }: {
   searchParams: Promise<SearchParams>;
 }) {

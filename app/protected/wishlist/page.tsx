@@ -3,8 +3,6 @@ import { BookCover } from "@/components/books/book-cover";
 import { WishlistActions } from "@/components/books/wishlist-actions";
 import { createClient } from "@/lib/supabase/server";
 
-export const instant = false;
-
 type WishlistEntry = { id: string; book_id: string };
 type BookRecord = {
   id: string;

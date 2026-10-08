@@ -3,8 +3,6 @@ import { RemoveFromLibraryButton } from "@/components/books/remove-from-library-
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 
-export const instant = false
-
 type LibraryBook = {
   id: string;
   book_id: string;

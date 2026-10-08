@@ -10,8 +10,6 @@ import { getBook, GoogleBooksError } from "@/lib/books/google-books";
 import { bookSearchHref, parseBookSearch, type SearchParams } from "@/lib/books/search";
 import { createClient } from "@/lib/supabase/server";
 
-export const instant = false;
-
 async function BookContent({ id }: { id: string }) {
   let book;
   try {

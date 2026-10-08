@@ -3,16 +3,12 @@ import { ThemeSwitcher } from "@/components/theme-switcher";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { connection } from "next/server";
-
-export const instant = false
 
 export default async function ProtectedLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  await connection();
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
 

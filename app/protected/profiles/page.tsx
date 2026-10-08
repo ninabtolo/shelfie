@@ -2,8 +2,6 @@ import Link from "next/link";
 import { ProfileSearchForm } from "@/components/profile/profile-search-form";
 import { createClient } from "@/lib/supabase/server";
 
-export const instant = false;
-
 export default async function ProfilesPage({
   searchParams,
 }: {
