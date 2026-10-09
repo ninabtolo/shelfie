@@ -4,6 +4,7 @@ import { BookDescription } from "@/components/books/book-description";
 import { MyReviews } from "@/components/books/my-reviews";
 import { PublicReviews, type PublicReview } from "@/components/books/public-reviews";
 import { ReviewForm, type ReviewInput } from "@/components/books/review-form";
+import { ShareBookForm, type ShareRecipient } from "@/components/books/share-book-form";
 import { Button } from "@/components/ui/button";
 import type { Book } from "@/lib/books/types";
 
@@ -16,6 +17,7 @@ export function BookDetails({
   isFavorite = false,
   publicReviews = [],
   myReviews = [],
+  shareRecipients = [],
 }: {
   book: Book;
   libraryStatus?: BookStatus;
@@ -23,6 +25,7 @@ export function BookDetails({
   isFavorite?: boolean;
   publicReviews?: PublicReview[];
   myReviews?: ReviewInput[];
+  shareRecipients?: ShareRecipient[];
 }) {
   const metadata = [
     ["Publisher", book.publisher],
@@ -42,6 +45,7 @@ export function BookDetails({
         <p className="text-muted-foreground">{book.authors?.join(", ") ?? "Unknown author"}</p>
       </header>
       <AddToLibraryForm book={book} initialStatus={libraryStatus} initialInWishlist={inWishlist} initialIsFavorite={isFavorite} />
+      <ShareBookForm book={book} recipients={shareRecipients} />
       <div className="grid gap-8 border-b pb-8 sm:grid-cols-[180px_minmax(0,1fr)]">
         <BookCover src={book.cover_url} title={book.title} priority className="w-40 sm:w-full" />
         <dl className="grid gap-4 sm:grid-cols-2">

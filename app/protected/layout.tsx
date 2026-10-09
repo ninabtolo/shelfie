@@ -33,6 +33,9 @@ export default async function ProtectedLayout({
             <Link href="/protected/wishlist" className="hover:underline">
               Wishlist
             </Link>
+            <Link href="/protected/shared-books" className="hover:underline">
+              Shared books
+            </Link>
             <Link href="/protected/account" className="hover:underline">
               Account
             </Link>

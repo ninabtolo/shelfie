@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { BookDetails } from "@/components/books/book-details";
 import type { PublicReview } from "@/components/books/public-reviews";
 import type { ReviewInput } from "@/components/books/review-form";
+import type { ShareRecipient } from "@/components/books/share-book-form";
 import { Button } from "@/components/ui/button";
 import { getBook, GoogleBooksError } from "@/lib/books/google-books";
 import { bookSearchHref, parseBookSearch, type SearchParams } from "@/lib/books/search";
@@ -34,6 +35,10 @@ async function BookContent({ id }: { id: string }) {
   let inWishlist = false;
   let publicReviews: PublicReview[] = [];
   let myReviews: ReviewInput[] = [];
+  let shareRecipients: ShareRecipient[] = [];
+  const { data: recipientRows, error: recipientsError } = await supabase.rpc("get_share_recipients");
+  if (recipientsError) throw new Error("Could not load people you follow.");
+  shareRecipients = (recipientRows ?? []) as ShareRecipient[];
   if (savedBook) {
     const { data: libraryEntry, error: libraryEntryError } = await supabase
       .from("user_books")
@@ -80,7 +85,7 @@ async function BookContent({ id }: { id: string }) {
     publicReviews = (publicReviewRows ?? []) as PublicReview[];
   }
 
-  return <BookDetails book={book} libraryStatus={libraryStatus} inWishlist={inWishlist} isFavorite={isFavorite} publicReviews={publicReviews} myReviews={myReviews} />;
+  return <BookDetails book={book} libraryStatus={libraryStatus} inWishlist={inWishlist} isFavorite={isFavorite} publicReviews={publicReviews} myReviews={myReviews} shareRecipients={shareRecipients} />;
 }
 
 export default async function BookPage({ params, searchParams }: {
@@ -91,12 +96,13 @@ export default async function BookPage({ params, searchParams }: {
   const { query, page } = parseBookSearch(search);
   const fromLibrary = search.from === "library";
   const fromWishlist = search.from === "wishlist";
+  const fromSharedBooks = search.from === "shared-books";
 
   return (
     <div className="space-y-6 py-8">
       <Button variant="ghost" asChild>
-        <Link prefetch={false} href={fromLibrary ? "/protected/library" : fromWishlist ? "/protected/wishlist" : bookSearchHref(query, page)}>
-          <ArrowLeft aria-hidden="true" />{fromLibrary ? "Back to library" : fromWishlist ? "Back to wishlist" : "Back to search"}
+        <Link prefetch={false} href={fromLibrary ? "/protected/library" : fromWishlist ? "/protected/wishlist" : fromSharedBooks ? "/protected/shared-books" : bookSearchHref(query, page)}>
+          <ArrowLeft aria-hidden="true" />{fromLibrary ? "Back to library" : fromWishlist ? "Back to wishlist" : fromSharedBooks ? "Back to shared books" : "Back to search"}
         </Link>
       </Button>
       <Suspense key={id} fallback={<p role="status" className="py-8 text-muted-foreground">Loading book details…</p>}>
