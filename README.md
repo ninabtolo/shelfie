@@ -130,8 +130,9 @@ The goal is for Shelfie to feel less like software you have to manage and more l
 - [ ] Reading statistics
 
 ### Phase 4 — Social
-- [ ] Public profiles
-- [ ] Follow / unfollow users
+- [x] Public profiles
+- [x] Follow / unfollow users
+- [x] Follow counts and owner-only followers/following lists
 - [ ] Public libraries
 - [ ] Book sharing
 - [ ] Notifications

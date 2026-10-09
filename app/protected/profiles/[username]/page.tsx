@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { BookCover } from "@/components/books/book-cover";
 import { PublicReviews, type PublicReview } from "@/components/books/public-reviews";
+import { FollowButton } from "@/components/profile/follow-button";
 import { createClient } from "@/lib/supabase/server";
 
 type PublicBook = {
@@ -25,6 +26,10 @@ export default async function PublicProfilePage({
 }) {
   const username = decodeURIComponent((await params).username);
   const supabase = await createClient();
+  const { data: userData } = await supabase.auth.getUser();
+  const { data: ownProfile } = userData.user
+    ? await supabase.from("profiles").select("username").eq("id", userData.user.id).maybeSingle()
+    : { data: null };
   const { data: profile, error: profileError } = await supabase
     .from("public_profiles")
     .select("username, bio, avatar_url")
@@ -33,37 +38,62 @@ export default async function PublicProfilePage({
 
   if (profileError) throw new Error("Could not load profile.");
   if (!profile) notFound();
-
-  const { data: books, error: booksError } = await supabase
-    .from("public_libraries")
-    .select("google_books_id, title, authors, cover_url, status, is_favorite")
-    .eq("username", profile.username)
-    .order("added_at", { ascending: false });
+  const [
+    { data: books, error: booksError },
+    { data: reviewRows, error: reviewsError },
+    { data: stats, error: statsError },
+    { data: followingProfile, error: followingProfileError },
+  ] = await Promise.all([
+    supabase
+      .from("public_libraries")
+      .select("google_books_id, title, authors, cover_url, status, is_favorite")
+      .eq("username", profile.username)
+      .order("added_at", { ascending: false }),
+    supabase
+      .from("public_reviews")
+      .select("review_id, username, avatar_url, rating, review_text, reading_status, created_at, title, google_books_id")
+      .eq("username", profile.username)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("public_follow_stats")
+      .select("followers_count, following_count")
+      .eq("username", profile.username)
+      .maybeSingle(),
+    userData.user && ownProfile?.username !== profile.username
+      ? supabase.rpc("is_following", { p_username: profile.username })
+      : Promise.resolve({ data: false, error: null }),
+  ]);
   if (booksError) throw new Error("Could not load public library.");
-
-  const { data: reviewRows, error: reviewsError } = await supabase
-    .from("public_reviews")
-    .select("review_id, username, avatar_url, rating, review_text, reading_status, created_at, title, google_books_id")
-    .eq("username", profile.username)
-    .order("created_at", { ascending: false });
   if (reviewsError) throw new Error("Could not load public reviews.");
+  if (statsError || followingProfileError) {
+    throw new Error("Could not load follow information.");
+  }
   const publicBooks = (books ?? []) as PublicBook[];
 
   return (
     <div className="space-y-8 py-8">
-      <section className="flex items-center gap-4">
-        {profile.avatar_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={profile.avatar_url} alt="" className="size-20 rounded-full object-cover" />
-        ) : (
-          <div className="flex size-20 items-center justify-center rounded-full bg-secondary text-2xl font-semibold">
-            {profile.username[0].toUpperCase()}
+      <section className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          {profile.avatar_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={profile.avatar_url} alt="" className="size-20 rounded-full object-cover" />
+          ) : (
+            <div className="flex size-20 items-center justify-center rounded-full bg-secondary text-2xl font-semibold">
+              {profile.username[0].toUpperCase()}
+            </div>
+          )}
+          <div>
+            <h1 className="text-3xl font-bold">@{profile.username}</h1>
+            <p className="mt-1 max-w-xl text-muted-foreground">{profile.bio || "No bio yet."}</p>
           </div>
-        )}
-        <div>
-          <h1 className="text-3xl font-bold">@{profile.username}</h1>
-          <p className="mt-1 max-w-xl text-muted-foreground">{profile.bio || "No bio yet."}</p>
         </div>
+        {userData.user && ownProfile?.username !== profile.username && (
+          <FollowButton username={profile.username} initialFollowing={Boolean(followingProfile)} />
+        )}
+      </section>
+      <section className="flex gap-6 border-y py-4 text-sm">
+        <p><strong>{stats?.followers_count ?? 0}</strong> followers</p>
+        <p><strong>{stats?.following_count ?? 0}</strong> following</p>
       </section>
       <section className="space-y-4">
         <h2 className="text-2xl font-semibold">Public library</h2>
