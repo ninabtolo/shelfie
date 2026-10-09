@@ -51,6 +51,9 @@ Send a book directly to another reader with an optional message.
 
 > *"Please read this, I need someone to talk about it with."*
 
+### 🔔 Receive notifications
+Get notified when someone follows you or shares a book with you. Notifications can be marked as read or deleted independently from the underlying follow or book share.
+
 ### ✨ Get personalized recommendations
 Receive suggestions based on your reading history, favorite genres, authors, ratings, and reading preferences.
 
@@ -80,7 +83,7 @@ The goal is for Shelfie to feel less like software you have to manage and more l
 
 ## 🚧 Current status
 
-> **Current phase: Book search & details**
+> **Current phase: Social reading features**
 
 ### Done
 
@@ -97,12 +100,24 @@ The goal is for Shelfie to feel less like software you have to manage and more l
 - [x] GitHub repository setup
 - [x] Google Books search on the authenticated home page
 - [x] Book details and search pagination
+- [x] Personal library with reading statuses
+- [x] Public and private library entries
+- [x] Favorites and private wishlist
+- [x] Star ratings and written reviews
+- [x] Public and owner-only review views
+- [x] Profile editing with bio and avatar
+- [x] Public user profiles
+- [x] Follow / unfollow users
+- [x] Follow counts and owner-only followers/following lists
+- [x] Book sharing with optional messages
+- [x] Notifications for new followers and shared books
+- [x] Notification unread count, read actions, and independent deletion
 
 ### Next
 
 - [ ] Create Shelfie's visual identity
-- [ ] Add profile information
-- [ ] Start building the personal library
+- [ ] Improve notification and social activity presentation
+- [ ] Add personalized recommendations
 
 ---
 
@@ -118,24 +133,24 @@ The goal is for Shelfie to feel less like software you have to manage and more l
 ### Phase 2 — Books
 - [x] Book search
 - [x] Book details
-- [ ] Personal library
-- [ ] Reading status
-- [ ] Favorites
-- [ ] Private wishlist
+- [x] Personal library
+- [x] Reading status
+- [x] Favorites
+- [x] Private wishlist
 
 ### Phase 3 — Reviews
-- [ ] Star ratings
-- [ ] Written reviews
-- [ ] Review visibility
+- [x] Star ratings
+- [x] Written reviews
+- [x] Review visibility
 - [ ] Reading statistics
 
 ### Phase 4 — Social
 - [x] Public profiles
 - [x] Follow / unfollow users
 - [x] Follow counts and owner-only followers/following lists
-- [ ] Public libraries
-- [ ] Book sharing
-- [ ] Notifications
+- [x] Public libraries
+- [x] Book sharing
+- [x] Notifications
 
 ### Phase 5 — Recommendations
 - [ ] Reading preference profile

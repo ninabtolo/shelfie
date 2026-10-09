@@ -36,6 +36,7 @@ export default async function ProtectedLayout({
             <Link href="/protected/shared-books" className="hover:underline">
               Shared books
             </Link>
+            <NotificationsLink />
             <Link href="/protected/account" className="hover:underline">
               Account
             </Link>
@@ -51,5 +52,30 @@ export default async function ProtectedLayout({
         {children}
       </main>
     </div>
+  );
+}
+
+async function NotificationsLink() {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("get_unread_notification_count");
+
+  if (error) {
+    throw new Error("Could not load notification count.");
+  }
+
+  const unreadCount = typeof data === "number" ? data : 0;
+
+  return (
+    <Link href="/protected/notifications" className="relative hover:underline">
+      Notifications
+      {unreadCount > 0 && (
+        <span
+          aria-label={`${unreadCount} unread notifications`}
+          className="ml-1 inline-flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-bold leading-none text-primary-foreground"
+        >
+          {unreadCount > 99 ? "99+" : unreadCount}
+        </span>
+      )}
+    </Link>
   );
 }
