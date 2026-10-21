@@ -28,6 +28,9 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+    --shelfie-line-pink: 326 82% 75%;
+    --shelfie-line-purple: 272 75% 75%;
+    --shelfie-line-blue: 199 97% 76%;
     --radius: 0.5rem;
   }
   .dark {
@@ -55,6 +58,9 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --shelfie-line-pink: 319 100% 78%;
+    --shelfie-line-purple: 264 100% 77%;
+    --shelfie-line-blue: 198 100% 72%;
   }
 }
 
@@ -235,7 +241,12 @@
   bottom: 0;
   left: 0;
   height: 3px;
-  background: linear-gradient(90deg, #ffb7ee, #bfe5ff);
+  background: linear-gradient(
+    90deg,
+    hsl(var(--shelfie-line-pink)) 0%,
+    hsl(var(--shelfie-line-purple)) 48%,
+    hsl(var(--shelfie-line-blue)) 100%
+  );
   content: "";
 }
 
@@ -309,8 +320,12 @@
   bottom: 0.15rem;
   left: 0;
   border-radius: 999px;
-  background: linear-gradient(100deg, rgb(255 183 238 / 0.85), rgb(191 229 255 / 0.85));
-  box-shadow: 0 5px 16px rgb(191 229 255 / 0.18);
+  background: linear-gradient(
+    100deg,
+    hsl(var(--shelfie-line-pink) / 0.94),
+    hsl(var(--shelfie-line-purple) / 0.92) 48%,
+    hsl(var(--shelfie-line-blue) / 0.94)
+  );
   pointer-events: none;
   transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1), width 280ms ease;
   will-change: transform, width;
@@ -336,11 +351,6 @@
 .shelfie-mobile-menu-toggle svg {
   width: 1.25rem;
   height: 1.25rem;
-}
-
-.dark .shelfie-nav-active-indicator {
-  background: linear-gradient(100deg, hsl(287 64% 68% / 0.58), hsl(205 76% 62% / 0.5));
-  box-shadow: none;
 }
 
 .shelfie-app .shelfie-primary-button {
@@ -547,11 +557,12 @@
 }
 
 .dark .shelfie-hero {
-  border-color: hsl(287 63% 77% / 0.22);
+  border-color: hsl(272 75% 76% / 0.34);
   background:
-    radial-gradient(circle at 18% 45%, hsl(287 63% 77% / 0.2), transparent 40%),
-    radial-gradient(circle at 84% 45%, hsl(205 75% 70% / 0.15), transparent 42%),
-    linear-gradient(112deg, hsl(245 32% 16% / 0.96), hsl(278 28% 20% / 0.92), hsl(235 30% 16% / 0.96));
+    radial-gradient(circle at 16% 46%, hsl(326 82% 72% / 0.38), transparent 42%),
+    radial-gradient(circle at 52% 42%, hsl(272 75% 70% / 0.34), transparent 48%),
+    radial-gradient(circle at 86% 46%, hsl(199 97% 70% / 0.3), transparent 44%),
+    linear-gradient(112deg, hsl(316 35% 19% / 0.98), hsl(276 39% 24% / 0.95), hsl(226 39% 20% / 0.98));
 }
 
 .shelfie-hero-stars {
@@ -572,14 +583,24 @@
 
 .shelfie-rule {
   height: 2px;
-  background: linear-gradient(90deg, rgb(255 183 238 / 0.95), rgb(191 229 255 / 0.95));
+  background: linear-gradient(
+    90deg,
+    hsl(var(--shelfie-line-pink) / 0.95) 0%,
+    hsl(var(--shelfie-line-purple) / 0.95) 48%,
+    hsl(var(--shelfie-line-blue) / 0.95) 100%
+  );
 }
 
 .shelfie-app .border-t,
 .shelfie-app .border-b,
 .shelfie-app .border-y {
   border-color: transparent;
-  border-image: linear-gradient(90deg, rgb(255 183 238 / 0.62), rgb(191 229 255 / 0.68)) 1;
+  border-image: linear-gradient(
+    90deg,
+    hsl(var(--shelfie-line-pink) / 0.62) 0%,
+    hsl(var(--shelfie-line-purple) / 0.62) 48%,
+    hsl(var(--shelfie-line-blue) / 0.68) 100%
+  ) 1;
 }
 
 .shelfie-app .border-t {
@@ -598,7 +619,12 @@
 .dark .shelfie-app .border-t,
 .dark .shelfie-app .border-b,
 .dark .shelfie-app .border-y {
-  border-image: linear-gradient(90deg, hsl(287 63% 77% / 0.42), hsl(205 75% 70% / 0.42)) 1;
+  border-image: linear-gradient(
+    90deg,
+    hsl(var(--shelfie-line-pink) / 0.62) 0%,
+    hsl(var(--shelfie-line-purple) / 0.62) 48%,
+    hsl(var(--shelfie-line-blue) / 0.68) 100%
+  ) 1;
 }
 
 .shelfie-surface {
@@ -851,13 +877,23 @@
   justify-content: flex-end;
   gap: 0.65rem;
   border-top: 2px solid;
-  border-image: linear-gradient(90deg, rgb(255 183 238 / 0.52), rgb(191 229 255 / 0.62)) 1;
+  border-image: linear-gradient(
+    90deg,
+    hsl(var(--shelfie-line-pink) / 0.52) 0%,
+    hsl(var(--shelfie-line-purple) / 0.52) 48%,
+    hsl(var(--shelfie-line-blue) / 0.62) 100%
+  ) 1;
   padding: 1rem 1.5rem 1.25rem;
   background: linear-gradient(100deg, rgb(255 183 238 / 0.06), rgb(191 229 255 / 0.08));
 }
 
 .dark .shelfie-confirm-actions {
-  border-image: linear-gradient(90deg, hsl(287 63% 77% / 0.28), hsl(205 75% 70% / 0.3)) 1;
+  border-image: linear-gradient(
+    90deg,
+    hsl(var(--shelfie-line-pink) / 0.52) 0%,
+    hsl(var(--shelfie-line-purple) / 0.52) 48%,
+    hsl(var(--shelfie-line-blue) / 0.62) 100%
+  ) 1;
   background: linear-gradient(100deg, hsl(287 63% 77% / 0.06), hsl(205 75% 70% / 0.07));
 }
 
@@ -867,7 +903,12 @@
   justify-content: space-between;
   gap: 1rem;
   border-bottom: 2px solid;
-  border-image: linear-gradient(90deg, rgb(255 183 238 / 0.65), rgb(191 229 255 / 0.65)) 1;
+  border-image: linear-gradient(
+    90deg,
+    hsl(var(--shelfie-line-pink) / 0.65) 0%,
+    hsl(var(--shelfie-line-purple) / 0.65) 48%,
+    hsl(var(--shelfie-line-blue) / 0.65) 100%
+  ) 1;
   padding: 1rem 1.25rem;
 }
 
@@ -976,7 +1017,21 @@
   }
 
   .shelfie-nav-link.is-active {
-    background: linear-gradient(100deg, rgb(255 183 238 / 0.32), rgb(191 229 255 / 0.32));
+    background: linear-gradient(
+      100deg,
+      hsl(var(--shelfie-line-pink) / 0.34),
+      hsl(var(--shelfie-line-purple) / 0.3) 48%,
+      hsl(var(--shelfie-line-blue) / 0.34)
+    );
+  }
+
+  .dark .shelfie-nav-link.is-active {
+    background: linear-gradient(
+      100deg,
+      hsl(var(--shelfie-line-pink) / 0.3),
+      hsl(var(--shelfie-line-purple) / 0.28) 48%,
+      hsl(var(--shelfie-line-blue) / 0.3)
+    );
   }
 
   .shelfie-nav-active-indicator {
