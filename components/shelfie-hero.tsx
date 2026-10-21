@@ -1,11 +1,12 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { UserRound, UsersRound } from "lucide-react";
+import { BarChart3, UserRound, UsersRound } from "lucide-react";
 
 const heroIcons = {
   user: UserRound,
   users: UsersRound,
+  stats: BarChart3,
 } as const;
 
 const starSets = [

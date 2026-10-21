@@ -1,29 +1,27 @@
 "use client";
 
 import {
-  Bell,
   BookHeart,
+  BarChart3,
   LayoutDashboard,
   Library,
   Menu,
   Share2,
-  UserRound,
   UsersRound,
   X,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { LogoutButton } from "@/components/logout-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { AccountActionsMenu } from "@/components/account-actions-menu";
 
 const links = [
   { href: "/protected", label: "Dashboard", icon: LayoutDashboard },
   { href: "/protected/library", label: "My Library", icon: Library },
   { href: "/protected/wishlist", label: "Wishlist", icon: BookHeart },
   { href: "/protected/shared-books", label: "Shared books", icon: Share2 },
-  { href: "/protected/notifications", label: "Notifications", icon: Bell },
-  { href: "/protected/account", label: "Account", icon: UserRound },
+  { href: "/protected/stats", label: "Stats", icon: BarChart3 },
   { href: "/protected/profiles", label: "Profiles", icon: UsersRound },
 ] as const;
 
@@ -87,18 +85,13 @@ export function ProtectedNav({ unreadCount }: { unreadCount: number }) {
             >
               <Icon aria-hidden="true" />
               <span>{label}</span>
-              {label === "Notifications" && unreadCount > 0 && (
-                <span aria-label={`${unreadCount} unread notifications`} className="shelfie-notification-count">
-                  {unreadCount > 99 ? "99+" : unreadCount}
-                </span>
-              )}
             </Link>
           );
         })}
       </div>
       <div className="flex shrink-0 items-center gap-1">
+        <AccountActionsMenu unreadCount={unreadCount} />
         <ThemeSwitcher />
-        <LogoutButton />
         <button
           type="button"
           className="shelfie-mobile-menu-toggle"
