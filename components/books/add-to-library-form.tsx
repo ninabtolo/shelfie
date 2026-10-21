@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 import type { Book } from "@/lib/books/types";
 import { useBookWishlist } from "@/components/books/book-wishlist";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 const statuses = [
   { value: "reading", label: "Reading" },
@@ -29,6 +30,7 @@ export function AddToLibraryForm({
   const [isPublic, setIsPublic] = useState(true);
   const [pendingAction, setPendingAction] = useState<"adding" | "removing" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
   const [isInLibrary, setIsInLibrary] = useState(initialStatus !== undefined);
   const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
   const [checkingLibrary, setCheckingLibrary] = useState(true);
@@ -90,8 +92,6 @@ export function AddToLibraryForm({
   }, [book.google_books_id]);
 
   async function removeFromLibrary() {
-    if (!window.confirm("Remove this book from your library?")) return;
-
     setPendingAction("removing");
     setError(null);
 
@@ -257,7 +257,7 @@ export function AddToLibraryForm({
             <Button
               type="button"
               className="h-10 min-w-0 w-full px-2 text-xs text-white hover:bg-primary/90 sm:text-sm"
-              onClick={removeFromLibrary}
+              onClick={() => setRemoveDialogOpen(true)}
               disabled={pending}
             >
               {pendingAction === "removing" ? "Removing…" : "Remove from library"}
@@ -282,6 +282,15 @@ export function AddToLibraryForm({
         )}
       </div>
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+      <ConfirmationDialog
+        open={removeDialogOpen}
+        title="Remove from your library?"
+        description={`Are you sure you want to remove “${book.title}” from your library?`}
+        confirmLabel="Remove book"
+        pendingLabel="Removing…"
+        onCancel={() => setRemoveDialogOpen(false)}
+        onConfirm={removeFromLibrary}
+      />
     </section>
   );
 }

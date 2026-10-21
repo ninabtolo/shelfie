@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, UserRound } from "lucide-react";
 import { ShelfieHero } from "@/components/shelfie-hero";
-import { FollowButton } from "@/components/profile/follow-button";
 import { ProfileSearchForm } from "@/components/profile/profile-search-form";
 import { createClient } from "@/lib/supabase/server";
 
@@ -12,10 +11,6 @@ export default async function ProfilesPage({
 }) {
   const query = ((await searchParams).q ?? "").trim();
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const { data: ownProfile } = userData.user
-    ? await supabase.from("profiles").select("username").eq("id", userData.user.id).maybeSingle()
-    : { data: null };
   let profiles: { username: string; bio: string | null; avatar_url: string | null }[] = [];
 
   if (query) {
@@ -28,20 +23,6 @@ export default async function ProfilesPage({
     if (error) throw new Error("Could not search profiles.");
     profiles = data ?? [];
   }
-  const followStates = await Promise.all(
-    profiles.map(async (profile) => {
-      if (!userData.user || ownProfile?.username === profile.username) {
-        return [profile.username, false] as const;
-      }
-      const { data, error } = await supabase.rpc("is_following", {
-        p_username: profile.username,
-      });
-      if (error) throw new Error("Could not load follow status.");
-      return [profile.username, Boolean(data)] as const;
-    }),
-  );
-  const followingByUsername = new Map(followStates);
-
   return (
     <div className="space-y-8">
       <ShelfieHero icon="users" title="Profiles" description="Find a Shelfie user by username." />
@@ -73,12 +54,6 @@ export default async function ProfilesPage({
                     </div>
                   </Link>
                   <div className="flex shrink-0 items-center gap-2">
-                    {userData.user && ownProfile?.username !== profile.username && (
-                      <FollowButton
-                        username={profile.username}
-                        initialFollowing={followingByUsername.get(profile.username) ?? false}
-                      />
-                    )}
                     <Link
                       href={`/protected/profiles/${encodeURIComponent(profile.username)}`}
                       aria-label={`Open @${profile.username}'s profile`}

@@ -75,7 +75,13 @@ export function ShareBookForm({
 
   return (
     <section className="space-y-4" aria-labelledby="share-book-title">
-      <Button type="button" variant="outline" onClick={() => setOpen(!open)} aria-expanded={open}>
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full sm:w-auto"
+        onClick={() => setOpen(!open)}
+        aria-expanded={open}
+      >
         <Share2 aria-hidden="true" />
         Share book
       </Button>

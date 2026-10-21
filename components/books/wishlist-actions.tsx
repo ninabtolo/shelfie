@@ -5,14 +5,15 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 export function WishlistActions({ bookId, title }: { bookId: string; title: string }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   async function removeBook() {
-    if (!window.confirm(`Remove "${title}" from your wishlist?`)) return;
     setPending(true);
     setError(null);
     const { error: deleteError } = await createClient()
@@ -28,20 +29,31 @@ export function WishlistActions({ bookId, title }: { bookId: string; title: stri
   }
 
   return (
-    <div className="flex shrink-0 flex-col items-end gap-2">
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="text-primary hover:bg-primary/10 hover:text-primary"
-        onClick={removeBook}
-        disabled={pending}
-        aria-label={`Remove ${title} from wishlist`}
-        title="Remove from wishlist"
-      >
-        <Trash2 aria-hidden="true" />
-      </Button>
-      {error && <p role="alert" className="max-w-32 text-right text-xs text-destructive">{error}</p>}
-    </div>
+    <>
+      <div className="flex shrink-0 flex-col items-end gap-2">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="text-primary hover:bg-primary/10 hover:text-primary"
+          onClick={() => setConfirmOpen(true)}
+          disabled={pending}
+          aria-label={`Remove ${title} from wishlist`}
+          title="Remove from wishlist"
+        >
+          <Trash2 aria-hidden="true" />
+        </Button>
+        {error && <p role="alert" className="max-w-32 text-right text-xs text-destructive">{error}</p>}
+      </div>
+      <ConfirmationDialog
+        open={confirmOpen}
+        title="Remove from your wishlist?"
+        description={`Are you sure you want to remove “${title}” from your wishlist?`}
+        confirmLabel="Remove book"
+        pendingLabel="Removing…"
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={removeBook}
+      />
+    </>
   );
 }

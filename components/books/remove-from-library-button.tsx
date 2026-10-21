@@ -5,15 +5,15 @@ import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 export function RemoveFromLibraryButton({ bookId, title }: { bookId: string; title: string }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   async function removeBook() {
-    if (!window.confirm(`Remove "${title}" from your library?`)) return;
-
     setPending(true);
     setError(null);
     const supabase = createClient();
@@ -32,20 +32,31 @@ export function RemoveFromLibraryButton({ bookId, title }: { bookId: string; tit
   }
 
   return (
-    <div className="flex shrink-0 flex-col items-end gap-2">
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="text-primary hover:bg-primary/10 hover:text-primary"
-        onClick={removeBook}
-        disabled={pending}
-        aria-label={`Remove ${title} from library`}
-        title="Remove from library"
-      >
-        <Trash2 aria-hidden="true" />
-      </Button>
-      {error && <p role="alert" className="max-w-32 text-right text-xs text-destructive">{error}</p>}
-    </div>
+    <>
+      <div className="flex shrink-0 flex-col items-end gap-2">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="text-primary hover:bg-primary/10 hover:text-primary"
+          onClick={() => setConfirmOpen(true)}
+          disabled={pending}
+          aria-label={`Remove ${title} from library`}
+          title="Remove from library"
+        >
+          <Trash2 aria-hidden="true" />
+        </Button>
+        {error && <p role="alert" className="max-w-32 text-right text-xs text-destructive">{error}</p>}
+      </div>
+      <ConfirmationDialog
+        open={confirmOpen}
+        title="Remove from your library?"
+        description={`Are you sure you want to remove “${title}” from your library?`}
+        confirmLabel="Remove book"
+        pendingLabel="Removing…"
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={removeBook}
+      />
+    </>
   );
 }

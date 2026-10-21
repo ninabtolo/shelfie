@@ -81,7 +81,7 @@ export default async function PublicProfilePage({
         </Link>
       </Button>
       <section className="shelfie-profile-hero shelfie-surface flex flex-col gap-3 p-4 sm:p-5">
-        <div className="flex w-full items-center justify-between gap-4">
+        <div className={`shelfie-profile-header flex w-full items-center justify-between gap-4 ${userData.user ? "has-follow-action" : ""}`}>
           <div className="flex min-w-0 items-center gap-4">
             {profile.avatar_url ? (
               // eslint-disable-next-line @next/next/no-img-element

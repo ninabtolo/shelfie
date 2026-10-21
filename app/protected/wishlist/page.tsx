@@ -45,7 +45,7 @@ export default async function WishlistPage() {
       {books.length ? (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {books.map((entry, index) => (
-            <li key={entry.id} className="book-card flex min-h-44 gap-4 rounded-xl border bg-card p-4 shadow-sm">
+            <li key={entry.id} className="book-card self-start flex gap-4 rounded-xl border bg-card p-4 shadow-sm">
               <Link
                 href={`/protected/books/${encodeURIComponent(entry.book.google_books_id)}?from=wishlist`}
                 prefetch={false}

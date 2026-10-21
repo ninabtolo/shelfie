@@ -316,6 +316,28 @@
   will-change: transform, width;
 }
 
+.shelfie-mobile-menu-toggle {
+  display: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.55rem;
+  color: hsl(var(--foreground));
+  transition: background 180ms ease, color 180ms ease;
+}
+
+.shelfie-mobile-menu-toggle:hover,
+.shelfie-mobile-menu-toggle:focus-visible {
+  background: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+}
+
+.shelfie-mobile-menu-toggle svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
 .dark .shelfie-nav-active-indicator {
   background: linear-gradient(100deg, hsl(287 64% 68% / 0.58), hsl(205 76% 62% / 0.5));
   box-shadow: none;
@@ -701,6 +723,7 @@
   padding: 1rem;
   background: rgb(31 24 42 / 0.34);
   backdrop-filter: blur(5px);
+  animation: shelfie-modal-fade 180ms ease both;
 }
 
 .shelfie-modal {
@@ -711,6 +734,59 @@
   border-radius: 1.25rem;
   background: hsl(var(--card));
   box-shadow: 0 24px 80px rgb(31 24 42 / 0.24);
+  animation: shelfie-modal-pop 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.shelfie-confirm-dialog {
+  width: min(100%, 34rem);
+  overflow: hidden;
+}
+
+.shelfie-confirm-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem 1.5rem 1.25rem;
+}
+
+.shelfie-confirm-icon {
+  display: inline-flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(255 183 238 / 0.58);
+  border-radius: 1rem;
+  color: hsl(var(--primary));
+  background: linear-gradient(135deg, rgb(255 183 238 / 0.2), rgb(191 229 255 / 0.32));
+  box-shadow: 0 8px 20px rgb(191 229 255 / 0.18);
+}
+
+.shelfie-confirm-icon svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.dark .shelfie-confirm-icon {
+  border-color: hsl(287 63% 77% / 0.32);
+  background: linear-gradient(135deg, hsl(287 63% 77% / 0.16), hsl(205 75% 70% / 0.18));
+  box-shadow: none;
+}
+
+.shelfie-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  border-top: 2px solid;
+  border-image: linear-gradient(90deg, rgb(255 183 238 / 0.52), rgb(191 229 255 / 0.62)) 1;
+  padding: 1rem 1.5rem 1.25rem;
+  background: linear-gradient(100deg, rgb(255 183 238 / 0.06), rgb(191 229 255 / 0.08));
+}
+
+.dark .shelfie-confirm-actions {
+  border-image: linear-gradient(90deg, hsl(287 63% 77% / 0.28), hsl(205 75% 70% / 0.3)) 1;
+  background: linear-gradient(100deg, hsl(287 63% 77% / 0.06), hsl(205 75% 70% / 0.07));
 }
 
 .shelfie-modal-header {
@@ -763,12 +839,80 @@
   }
 }
 
+@media (max-width: 520px) {
+  .shelfie-confirm-content {
+    padding: 1.25rem 1.15rem 1rem;
+  }
+
+  .shelfie-confirm-actions {
+    flex-direction: column-reverse;
+    padding: 0.9rem 1.15rem 1.15rem;
+  }
+
+  .shelfie-confirm-actions button {
+    width: 100%;
+  }
+}
+
 @media (max-width: 620px) {
   .shelfie-profile-action {
-    position: static;
-    align-self: flex-end;
-    margin-top: -0.25rem;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    align-self: auto;
+    margin-top: 0;
     transform: none;
+  }
+
+  .shelfie-profile-header.has-follow-action {
+    padding-right: 8.5rem;
+  }
+}
+
+@media (max-width: 2000px) {
+  .shelfie-nav {
+    position: relative;
+  }
+
+  .shelfie-nav-links {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% - 0.25rem);
+    right: 0;
+    left: 0;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 0.2rem;
+    overflow: visible;
+    border: 1px solid hsl(var(--border) / 0.9);
+    border-radius: 0.9rem;
+    padding: 0.5rem;
+    background: hsl(var(--card) / 0.98);
+    box-shadow: 0 12px 28px rgb(91 62 92 / 0.12);
+    backdrop-filter: blur(12px);
+  }
+
+  .shelfie-nav-links.is-open {
+    display: flex;
+  }
+
+  .shelfie-nav-link {
+    min-height: 2.5rem;
+    padding: 0.55rem 0.7rem;
+  }
+
+  .shelfie-nav-link.is-active {
+    background: linear-gradient(100deg, rgb(255 183 238 / 0.32), rgb(191 229 255 / 0.32));
+  }
+
+  .shelfie-nav-active-indicator {
+    display: none;
+  }
+
+  .shelfie-mobile-menu-toggle {
+    display: inline-flex;
   }
 }
 
@@ -821,6 +965,16 @@
 @keyframes float {
   0%, 100% { transform: translate3d(0, 0, 0); }
   50% { transform: translate3d(0, -10px, 0); }
+}
+
+@keyframes shelfie-modal-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shelfie-modal-pop {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 @keyframes twinkle {

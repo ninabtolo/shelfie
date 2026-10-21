@@ -28,10 +28,14 @@ export function ReviewForm({
   book,
   initialStatus = "reading",
   review,
+  embedded = false,
+  onSaved,
 }: {
   book?: Book;
   initialStatus?: BookStatus;
   review?: ReviewInput;
+  embedded?: boolean;
+  onSaved?: () => void;
 }) {
   const router = useRouter();
   const [status, setStatus] = useState<BookStatus>(review?.reading_status ?? initialStatus);
@@ -90,11 +94,12 @@ export function ReviewForm({
       setRating(0);
       setReviewText("");
     }
+    onSaved?.();
     router.refresh();
   }
 
   return (
-    <section className="shelfie-review-panel w-full" aria-labelledby="review-form-title">
+    <section className={`${embedded ? "w-full" : "shelfie-review-panel w-full"}`} aria-labelledby="review-form-title">
       <div className="space-y-2 p-5 pb-4 sm:p-6 sm:pb-5">
         <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-primary">A note for your future self</p>
         <h2 id="review-form-title" className="shelfie-heading text-2xl font-semibold">{editing ? "Edit review" : "Review this book"}</h2>
