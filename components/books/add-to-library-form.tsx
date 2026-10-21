@@ -34,7 +34,12 @@ export function AddToLibraryForm({
   const [isInLibrary, setIsInLibrary] = useState(initialStatus !== undefined);
   const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
   const [checkingLibrary, setCheckingLibrary] = useState(true);
-  const { isInWishlist, pending: wishlistPending, clearWishlist } = useBookWishlist();
+  const {
+    isInWishlist,
+    pending: wishlistPending,
+    clearWishlist,
+    setInLibrary,
+  } = useBookWishlist();
   const pending = pendingAction !== null || checkingLibrary || wishlistPending;
 
   useEffect(() => {
@@ -57,6 +62,7 @@ export function AddToLibraryForm({
       if (!savedBook) {
         if (active) {
           setIsInLibrary(false);
+          setInLibrary(false);
           setCheckingLibrary(false);
         }
         return;
@@ -77,8 +83,10 @@ export function AddToLibraryForm({
           setIsPublic(libraryEntry?.is_public !== false);
           setIsFavorite(libraryEntry?.is_favorite === true);
           setIsInLibrary(true);
+          setInLibrary(true);
         } else {
           setIsInLibrary(false);
+          setInLibrary(false);
         }
       }
 
@@ -89,7 +97,7 @@ export function AddToLibraryForm({
     return () => {
       active = false;
     };
-  }, [book.google_books_id]);
+  }, [book.google_books_id, setInLibrary]);
 
   async function removeFromLibrary() {
     setPendingAction("removing");
@@ -120,6 +128,7 @@ export function AddToLibraryForm({
     }
 
     setIsInLibrary(false);
+    setInLibrary(false);
     setIsFavorite(false);
     setStatus("reading");
     setPendingAction(null);
@@ -149,6 +158,10 @@ export function AddToLibraryForm({
     });
 
     if (rpcError) {
+      if (rpcError.code === "23505") {
+        setIsInLibrary(true);
+        setInLibrary(true);
+      }
       setError(
         rpcError.code === "23505"
           ? "This book is already in your library."
@@ -158,6 +171,9 @@ export function AddToLibraryForm({
       return;
     }
 
+    setIsInLibrary(true);
+    setInLibrary(true);
+
     if (isInWishlist) {
       const { data: savedBook, error: bookError } = await supabase
         .from("books")
@@ -166,7 +182,6 @@ export function AddToLibraryForm({
         .maybeSingle();
       if (bookError || !savedBook) {
         setError("Book added to library, but could not be removed from wishlist.");
-        setIsInLibrary(true);
         setPendingAction(null);
         return;
       }
@@ -176,13 +191,11 @@ export function AddToLibraryForm({
         .eq("book_id", savedBook.id);
       if (deleteError) {
         setError("Book added to library, but could not be removed from wishlist.");
-        setIsInLibrary(true);
         setPendingAction(null);
         return;
       }
       clearWishlist();
     }
-    setIsInLibrary(true);
     setIsFavorite(false);
     setPendingAction(null);
   }

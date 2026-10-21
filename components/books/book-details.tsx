@@ -40,7 +40,11 @@ export function BookDetails({
   ];
 
   return (
-    <BookWishlistProvider book={book} initialInWishlist={inWishlist}>
+    <BookWishlistProvider
+      book={book}
+      initialInWishlist={inWishlist}
+      initialInLibrary={libraryStatus !== undefined}
+    >
       <article className="space-y-8">
         <header className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
           <div className="space-y-2">

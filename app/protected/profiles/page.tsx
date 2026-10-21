@@ -25,7 +25,7 @@ export default async function ProfilesPage({
   }
   return (
     <div className="space-y-8">
-      <ShelfieHero icon="users" title="Profiles" description="Find a Shelfie user by username." />
+      <ShelfieHero title="Profiles" description="Find a Shelfie user by username." />
       <ProfileSearchForm query={query} />
       {query && <div className="shelfie-rule" aria-hidden="true" />}
       {query ? (

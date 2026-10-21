@@ -1,13 +1,6 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { BarChart3, UserRound, UsersRound } from "lucide-react";
-
-const heroIcons = {
-  user: UserRound,
-  users: UsersRound,
-  stats: BarChart3,
-} as const;
 
 const starSets = [
   [
@@ -30,16 +23,13 @@ const starSets = [
 export function ShelfieHero({
   title,
   description,
-  icon,
 }: {
   title: string;
   description: string;
-  icon?: keyof typeof heroIcons;
 }) {
   const pathname = usePathname();
   const seed = [...pathname].reduce((total, character) => total + character.charCodeAt(0), 0);
   const stars = starSets[seed % starSets.length];
-  const Icon = icon ? heroIcons[icon] : null;
 
   return (
     <section className="shelfie-hero">
@@ -52,7 +42,6 @@ export function ShelfieHero({
         ))}
       </div>
       <div className="relative z-10 flex flex-col items-center gap-2 text-center">
-        {Icon && <Icon aria-hidden="true" className="size-6 text-primary" strokeWidth={1.8} />}
         <h1 className="shelfie-heading text-4xl font-semibold tracking-tight sm:text-5xl">{title}</h1>
         <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">{description}</p>
       </div>

@@ -1,17 +1,10 @@
-import { BookCover } from "@/components/books/book-cover";
-import { RemoveFromLibraryButton } from "@/components/books/remove-from-library-button";
+import {
+  LibraryBookList,
+  type LibraryBook,
+  type LibraryBookWithDetails,
+} from "@/components/books/library-book-list";
 import { ShelfieHero } from "@/components/shelfie-hero";
 import { createClient } from "@/lib/supabase/server";
-import { Star } from "lucide-react";
-import Link from "next/link";
-
-type LibraryBook = {
-  id: string;
-  book_id: string;
-  status: "reading" | "read" | "abandoned";
-  is_public: boolean;
-  is_favorite: boolean;
-};
 
 type BookRecord = {
   id: string;
@@ -19,21 +12,6 @@ type BookRecord = {
   title: string;
   authors: string[] | null;
   cover_url: string | null;
-};
-
-type LibraryBookWithDetails = LibraryBook & {
-  book: {
-    google_books_id: string;
-    title: string;
-    authors: string[] | null;
-    cover_url: string | null;
-  };
-};
-
-const statusLabels: Record<LibraryBook["status"], string> = {
-  reading: "Reading",
-  read: "Read",
-  abandoned: "Abandoned",
 };
 
 export default async function LibraryPage() {
@@ -72,40 +50,7 @@ export default async function LibraryPage() {
     <div className="space-y-8">
       <ShelfieHero title="My library" description="Books you have added to your personal library." />
       {books.length ? (
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {books.map((entry, index) => (
-            <li key={entry.id} className="book-card flex gap-4 rounded-xl border bg-card p-4 shadow-sm">
-              <Link
-                href={`/protected/books/${encodeURIComponent(entry.book.google_books_id)}?from=library`}
-                prefetch={false}
-                className="flex min-w-0 flex-1 gap-4 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <BookCover
-                  src={entry.book.cover_url}
-                  title={entry.book.title}
-                  priority={index === 0}
-                  className="w-20 shrink-0 self-start"
-                />
-                <div className="min-w-0 space-y-2">
-                  <h2 className="line-clamp-3 font-semibold">{entry.book.title}</h2>
-                  <p className="line-clamp-2 text-sm text-muted-foreground">
-                    {entry.book.authors?.join(", ") ?? "Unknown author"}
-                  </p>
-                  {entry.is_favorite && (
-                    <p className="flex items-center gap-1 text-xs font-medium text-primary">
-                      <Star aria-hidden="true" className="size-3.5" fill="currentColor" /> Favorite
-                    </p>
-                  )}
-                  <p className="text-xs font-medium text-primary">{statusLabels[entry.status]}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {entry.is_public ? "Public" : "Private"}
-                  </p>
-                </div>
-              </Link>
-              <RemoveFromLibraryButton bookId={entry.book_id} title={entry.book.title} />
-            </li>
-          ))}
-        </ul>
+        <LibraryBookList books={books} />
       ) : (
         <p className="rounded-lg border border-dashed p-8 text-center text-muted-foreground">
           Your library is empty. Search for a book to get started.

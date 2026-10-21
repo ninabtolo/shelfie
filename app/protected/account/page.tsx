@@ -56,7 +56,7 @@ export default async function AccountPage() {
 
   return (
     <section className="flex flex-col gap-8">
-      <ShelfieHero icon="user" title="My account" description="Manage your profile and connections." />
+      <ShelfieHero title="My account" description="Manage your profile and connections." />
       <section className="space-y-4" aria-labelledby="connections-title">
         <h2 id="connections-title" className="flex items-center gap-2 text-sm font-medium uppercase tracking-[0.16em] text-muted-foreground"><UsersRound aria-hidden="true" className="size-4 text-primary" /> My connections</h2>
         <div className="flex flex-wrap items-baseline gap-x-8 gap-y-2">

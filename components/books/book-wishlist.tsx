@@ -8,10 +8,12 @@ import type { Book } from "@/lib/books/types";
 
 type BookWishlistContextValue = {
   isInWishlist: boolean;
+  isInLibrary: boolean;
   pending: boolean;
   error: string | null;
   toggleWishlist: () => Promise<void>;
   clearWishlist: () => void;
+  setInLibrary: (value: boolean) => void;
 };
 
 const BookWishlistContext = createContext<BookWishlistContextValue | null>(null);
@@ -19,13 +21,16 @@ const BookWishlistContext = createContext<BookWishlistContextValue | null>(null)
 export function BookWishlistProvider({
   book,
   initialInWishlist = false,
+  initialInLibrary = false,
   children,
 }: {
   book: Book;
   initialInWishlist?: boolean;
+  initialInLibrary?: boolean;
   children: ReactNode;
 }) {
   const [isInWishlist, setIsInWishlist] = useState(initialInWishlist);
+  const [isInLibrary, setIsInLibrary] = useState(initialInLibrary);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -84,7 +89,17 @@ export function BookWishlistProvider({
   }
 
   return (
-    <BookWishlistContext.Provider value={{ isInWishlist, pending, error, toggleWishlist, clearWishlist: () => setIsInWishlist(false) }}>
+    <BookWishlistContext.Provider
+      value={{
+        isInWishlist,
+        isInLibrary,
+        pending,
+        error,
+        toggleWishlist,
+        clearWishlist: () => setIsInWishlist(false),
+        setInLibrary: setIsInLibrary,
+      }}
+    >
       {children}
     </BookWishlistContext.Provider>
   );
@@ -97,7 +112,9 @@ function useBookWishlist() {
 }
 
 export function WishlistButton() {
-  const { isInWishlist, pending, error, toggleWishlist } = useBookWishlist();
+  const { isInWishlist, isInLibrary, pending, error, toggleWishlist } = useBookWishlist();
+
+  if (isInLibrary) return null;
 
   return (
     <div className="flex flex-col items-end gap-2">
