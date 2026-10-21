@@ -185,6 +185,620 @@
   }
 }
 
+/* Authenticated Shelfie surfaces. These styles are intentionally scoped so the
+   pre-authentication experience keeps its existing visual system. */
+.shelfie-app {
+  --background: 40 100% 99%;
+  --foreground: 270 18% 22%;
+  --card: 0 0% 100%;
+  --card-foreground: 270 18% 22%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 270 18% 22%;
+  --secondary: 320 42% 97%;
+  --secondary-foreground: 270 28% 35%;
+  --muted: 320 24% 97%;
+  --muted-foreground: 270 10% 48%;
+  --accent: 197 62% 96%;
+  --accent-foreground: 226 35% 32%;
+  --border: 320 22% 89%;
+  --input: 320 22% 86%;
+  background: #fffdfa;
+  color: hsl(var(--foreground));
+}
+
+.dark .shelfie-app {
+  --background: 245 34% 11%;
+  --foreground: 300 25% 96%;
+  --card: 245 30% 15%;
+  --card-foreground: 300 25% 96%;
+  --popover: 245 30% 15%;
+  --popover-foreground: 300 25% 96%;
+  --secondary: 247 24% 22%;
+  --secondary-foreground: 295 35% 92%;
+  --muted: 247 24% 21%;
+  --muted-foreground: 280 15% 72%;
+  --accent: 220 35% 23%;
+  --accent-foreground: 205 60% 90%;
+  --border: 270 23% 29%;
+  --input: 270 23% 32%;
+  background: hsl(var(--background));
+}
+
+.shelfie-header {
+  position: relative;
+  background: hsl(var(--background) / 0.94);
+}
+
+.shelfie-header::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #ffb7ee, #bfe5ff);
+  content: "";
+}
+
+.shelfie-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: hsl(var(--foreground));
+}
+
+.shelfie-brand svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: hsl(var(--primary));
+}
+
+.shelfie-nav-links {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.15rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.shelfie-nav-links::-webkit-scrollbar {
+  display: none;
+}
+
+.shelfie-nav-link {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  min-height: 2.45rem;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  padding: 0.5rem 0.65rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.92rem;
+  white-space: nowrap;
+  transition: color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+
+.shelfie-nav-link svg {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+}
+
+.shelfie-nav-link:hover,
+.shelfie-nav-link:focus-visible {
+  color: hsl(var(--foreground));
+  background: hsl(var(--primary) / 0.08);
+}
+
+.shelfie-nav-link.is-active {
+  color: hsl(var(--foreground));
+}
+
+.shelfie-nav-active-indicator {
+  position: absolute;
+  z-index: 0;
+  top: 0.15rem;
+  bottom: 0.15rem;
+  left: 0;
+  border-radius: 999px;
+  background: linear-gradient(100deg, rgb(255 183 238 / 0.85), rgb(191 229 255 / 0.85));
+  box-shadow: 0 5px 16px rgb(191 229 255 / 0.18);
+  pointer-events: none;
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1), width 280ms ease;
+  will-change: transform, width;
+}
+
+.dark .shelfie-nav-active-indicator {
+  background: linear-gradient(100deg, hsl(287 64% 68% / 0.58), hsl(205 76% 62% / 0.5));
+  box-shadow: none;
+}
+
+.shelfie-app .shelfie-primary-button {
+  transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease, background-color 180ms ease;
+}
+
+.shelfie-app .shelfie-primary-button:hover:not(:disabled),
+.shelfie-app .shelfie-primary-button:focus-visible:not(:disabled) {
+  box-shadow: 0 8px 20px hsl(var(--primary) / 0.24);
+  filter: brightness(0.96);
+  transform: translateX(2px);
+}
+
+.shelfie-app .shelfie-primary-button:active:not(:disabled) {
+  transform: translateX(0);
+}
+
+.shelfie-app .shelfie-main > * {
+  animation: shelfie-page-enter 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.shelfie-app .shelfie-hero,
+.shelfie-app .shelfie-section-heading,
+.shelfie-app .shelfie-search-empty {
+  animation: shelfie-section-enter 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.shelfie-app .book-card,
+.shelfie-app .shelfie-profile-card,
+.shelfie-app .shelfie-notification-card,
+.shelfie-app .shelfie-loading-card {
+  animation: shelfie-card-enter 440ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.shelfie-app li:nth-child(2) > .book-card,
+.shelfie-app .shelfie-profile-card:nth-child(2),
+.shelfie-app .shelfie-notification-card:nth-child(2),
+.shelfie-app .shelfie-loading-card:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+.shelfie-app li:nth-child(3) > .book-card,
+.shelfie-app .shelfie-profile-card:nth-child(3),
+.shelfie-app .shelfie-notification-card:nth-child(3),
+.shelfie-app .shelfie-loading-card:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+.shelfie-app li:nth-child(4) > .book-card,
+.shelfie-app .shelfie-profile-card:nth-child(4),
+.shelfie-app .shelfie-notification-card:nth-child(4),
+.shelfie-app .shelfie-loading-card:nth-child(4) {
+  animation-delay: 180ms;
+}
+
+.shelfie-app li:nth-child(5) > .book-card,
+.shelfie-app .shelfie-profile-card:nth-child(5),
+.shelfie-app .shelfie-notification-card:nth-child(5),
+.shelfie-app .shelfie-loading-card:nth-child(5) {
+  animation-delay: 240ms;
+}
+
+.shelfie-app li:nth-child(6) > .book-card,
+.shelfie-app .shelfie-profile-card:nth-child(6),
+.shelfie-app .shelfie-notification-card:nth-child(6),
+.shelfie-app .shelfie-loading-card:nth-child(6) {
+  animation-delay: 300ms;
+}
+
+.shelfie-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: hsl(var(--muted) / 0.8);
+}
+
+.shelfie-skeleton::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.14), transparent);
+  content: "";
+  transform: translateX(-100%);
+  animation: shelfie-shimmer 1.35s ease-in-out infinite;
+}
+
+.dark .shelfie-skeleton {
+  background: hsl(var(--muted) / 0.92);
+}
+
+.shelfie-notification-count {
+  display: inline-flex;
+  min-width: 1.2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.1rem 0.3rem;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.shelfie-app h1,
+.shelfie-app h2,
+.shelfie-app h3 {
+  font-family: var(--font-display), Georgia, serif;
+  letter-spacing: -0.025em;
+}
+
+.shelfie-main {
+  min-height: calc(100svh - 5rem);
+}
+
+.shelfie-heading {
+  font-family: var(--font-display), Georgia, serif;
+}
+
+.shelfie-hero {
+  position: relative;
+  display: flex;
+  min-height: 8rem;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid rgb(255 183 238 / 0.26);
+  border-radius: 2rem;
+  padding: 2rem 1.5rem;
+  background:
+    radial-gradient(circle at 22% 50%, rgb(255 183 238 / 0.2), transparent 40%),
+    radial-gradient(circle at 82% 38%, rgb(191 229 255 / 0.22), transparent 42%),
+    linear-gradient(112deg, rgb(191 229 255 / 0.25), rgb(255 183 238 / 0.19), rgb(191 229 255 / 0.25));
+}
+
+.dark .shelfie-hero {
+  border-color: hsl(287 63% 77% / 0.22);
+  background:
+    radial-gradient(circle at 18% 45%, hsl(287 63% 77% / 0.2), transparent 40%),
+    radial-gradient(circle at 84% 45%, hsl(205 75% 70% / 0.15), transparent 42%),
+    linear-gradient(112deg, hsl(245 32% 16% / 0.96), hsl(278 28% 20% / 0.92), hsl(235 30% 16% / 0.96));
+}
+
+.shelfie-hero-stars {
+  position: absolute;
+  inset: 0;
+}
+
+.shelfie-star {
+  --star-color: 40 100% 66%;
+  background: hsl(var(--star-color));
+  box-shadow: 0 0 8px 2px hsl(var(--star-color) / 0.8), 0 0 18px 4px hsl(43 100% 84% / 0.36);
+}
+
+.dark .shelfie-star {
+  --star-color: 0 0% 100%;
+  box-shadow: 0 0 8px 2px hsl(var(--star-color) / 0.75), 0 0 18px 4px hsl(287 75% 78% / 0.3);
+}
+
+.shelfie-rule {
+  height: 2px;
+  background: linear-gradient(90deg, rgb(255 183 238 / 0.95), rgb(191 229 255 / 0.95));
+}
+
+.shelfie-app .border-t,
+.shelfie-app .border-b,
+.shelfie-app .border-y {
+  border-color: transparent;
+  border-image: linear-gradient(90deg, rgb(255 183 238 / 0.62), rgb(191 229 255 / 0.68)) 1;
+}
+
+.shelfie-app .border-t {
+  border-top-width: 2px;
+}
+
+.shelfie-app .border-b {
+  border-bottom-width: 2px;
+}
+
+.shelfie-app .border-y {
+  border-top-width: 2px;
+  border-bottom-width: 2px;
+}
+
+.dark .shelfie-app .border-t,
+.dark .shelfie-app .border-b,
+.dark .shelfie-app .border-y {
+  border-image: linear-gradient(90deg, hsl(287 63% 77% / 0.42), hsl(205 75% 70% / 0.42)) 1;
+}
+
+.shelfie-surface {
+  border: 1px solid hsl(var(--border) / 0.75);
+  border-radius: 1rem;
+  background: hsl(var(--card) / 0.82);
+  box-shadow: 0 10px 32px rgb(91 62 92 / 0.04);
+}
+
+.shelfie-profile-hero {
+  position: relative;
+  background:
+    radial-gradient(circle at 18% 50%, rgb(255 183 238 / 0.16), transparent 34%),
+    linear-gradient(110deg, rgb(255 183 238 / 0.12), rgb(191 229 255 / 0.16));
+}
+
+.dark .shelfie-profile-hero {
+  background:
+    radial-gradient(circle at 18% 50%, hsl(287 63% 77% / 0.15), transparent 34%),
+    linear-gradient(110deg, hsl(287 63% 77% / 0.08), hsl(205 75% 70% / 0.1));
+}
+
+.dark .shelfie-surface {
+  background: hsl(var(--card) / 0.88);
+  box-shadow: 0 14px 32px rgb(0 0 0 / 0.2);
+}
+
+.shelfie-app input,
+.shelfie-app select,
+.shelfie-app textarea {
+  background-color: hsl(var(--background) / 0.82);
+}
+
+.shelfie-app .book-card {
+  border-color: hsl(var(--border) / 0.78);
+  background: hsl(var(--card) / 0.92);
+  box-shadow: 0 10px 30px rgb(91 62 92 / 0.035);
+}
+
+.shelfie-app .book-card:hover,
+.shelfie-app .book-card:focus-within {
+  background: hsl(var(--card));
+  box-shadow: 0 12px 28px hsl(var(--primary) / 0.12);
+}
+
+.shelfie-app .book-card h2,
+.shelfie-app .book-card h3,
+.shelfie-app .shelfie-profile-card h2 {
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+  letter-spacing: normal;
+}
+
+.shelfie-profile-arrow {
+  display: inline-flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.55rem;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  box-shadow: 0 5px 14px hsl(var(--primary) / 0.18);
+  transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+}
+
+.shelfie-profile-arrow:hover,
+.shelfie-profile-arrow:focus-visible {
+  box-shadow: 0 8px 20px hsl(var(--primary) / 0.24);
+  filter: brightness(0.96);
+  transform: translateX(2px);
+}
+
+.shelfie-empty-state-icon {
+  display: flex;
+  width: fit-content;
+  height: fit-content;
+  align-items: center;
+  justify-content: center;
+  margin-inline: auto;
+  color: hsl(329 72% 66%);
+}
+
+.dark .shelfie-empty-state-icon {
+  color: hsl(287 72% 78%);
+}
+
+.shelfie-search-empty {
+  text-align: center;
+}
+
+.shelfie-app .space-y-8 > .shelfie-search-empty {
+  margin-top: 1.5rem;
+}
+
+.shelfie-connection-trigger {
+  border-radius: 0.5rem;
+  color: hsl(var(--foreground));
+  transition: color 180ms ease, background 180ms ease;
+}
+
+.shelfie-connection-trigger:hover,
+.shelfie-connection-trigger:focus-visible {
+  background: hsl(var(--primary) / 0.08);
+  color: hsl(var(--primary));
+}
+
+.shelfie-section-heading {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.65rem;
+  width: fit-content;
+  font-size: 1.875rem;
+  line-height: 1.15;
+  font-weight: 600;
+}
+
+.shelfie-section-heading svg {
+  flex: 0 0 auto;
+}
+
+.shelfie-profile-action {
+  position: absolute;
+  top: 50%;
+  right: 1.25rem;
+  transform: translateY(-50%);
+}
+
+.shelfie-profile-hero button:disabled {
+  opacity: 1;
+  cursor: default;
+}
+
+.shelfie-message {
+  border: 1px solid rgb(255 183 238 / 0.24);
+  background: linear-gradient(100deg, rgb(255 183 238 / 0.13), rgb(191 229 255 / 0.15));
+}
+
+.dark .shelfie-message {
+  border-color: hsl(287 63% 77% / 0.2);
+  background: linear-gradient(100deg, hsl(287 63% 77% / 0.12), hsl(205 75% 70% / 0.1));
+}
+
+.shelfie-notification-card {
+  border-color: hsl(var(--border) / 0.75);
+  box-shadow: 0 8px 24px rgb(91 62 92 / 0.035);
+}
+
+.shelfie-review-panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid hsl(var(--border) / 0.78);
+  border-radius: 1.2rem;
+  background: hsl(var(--card) / 0.96);
+  box-shadow: 0 12px 34px rgb(91 62 92 / 0.05);
+}
+
+.dark .shelfie-review-panel {
+  background: hsl(var(--card) / 0.96);
+}
+
+.shelfie-step-number {
+  display: inline-flex;
+  width: 1.6rem;
+  height: 1.6rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid hsl(var(--primary) / 0.42);
+  border-radius: 999px;
+  color: hsl(var(--primary));
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.shelfie-rating-box {
+  border: 1px solid rgb(255 183 238 / 0.4);
+  border-radius: 1rem;
+  background: linear-gradient(110deg, rgb(255 183 238 / 0.12), rgb(191 229 255 / 0.14));
+}
+
+.dark .shelfie-rating-box {
+  border-color: hsl(287 63% 77% / 0.22);
+  background: linear-gradient(110deg, hsl(287 63% 77% / 0.1), hsl(205 75% 70% / 0.1));
+}
+
+.shelfie-modal-backdrop {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgb(31 24 42 / 0.34);
+  backdrop-filter: blur(5px);
+}
+
+.shelfie-modal {
+  width: min(100%, 38rem);
+  max-height: min(80svh, 40rem);
+  overflow: auto;
+  border: 1px solid hsl(var(--border) / 0.8);
+  border-radius: 1.25rem;
+  background: hsl(var(--card));
+  box-shadow: 0 24px 80px rgb(31 24 42 / 0.24);
+}
+
+.shelfie-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 2px solid;
+  border-image: linear-gradient(90deg, rgb(255 183 238 / 0.65), rgb(191 229 255 / 0.65)) 1;
+  padding: 1rem 1.25rem;
+}
+
+.shelfie-modal-close {
+  display: inline-flex;
+  width: 2.25rem;
+  height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: hsl(var(--muted-foreground));
+  transition: background 180ms ease, color 180ms ease;
+}
+
+.shelfie-modal-close:hover,
+.shelfie-modal-close:focus-visible {
+  background: hsl(var(--primary) / 0.1);
+  color: hsl(var(--foreground));
+}
+
+.shelfie-app button,
+.shelfie-app a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 980px) {
+  .shelfie-nav {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .shelfie-nav-links {
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
+    padding-bottom: 0.15rem;
+  }
+
+  .shelfie-nav > .flex-1 {
+    flex: 1 1 auto;
+  }
+}
+
+@media (max-width: 620px) {
+  .shelfie-profile-action {
+    position: static;
+    align-self: flex-end;
+    margin-top: -0.25rem;
+    transform: none;
+  }
+}
+
+@media (max-width: 620px) {
+  .shelfie-nav {
+    gap: 0.75rem;
+  }
+
+  .shelfie-brand {
+    font-size: 1.6rem;
+  }
+
+  .shelfie-nav-link {
+    min-height: 2.2rem;
+    padding: 0.4rem 0.55rem;
+    font-size: 0.82rem;
+  }
+
+  .shelfie-nav-link svg {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  .shelfie-hero {
+    min-height: 7.5rem;
+    border-radius: 1.4rem;
+    padding: 1.5rem 1rem;
+  }
+}
+
 @media (max-width: 620px) {
   html:not(.dark) .login-sky {
     background:
@@ -237,10 +851,30 @@
   50% { text-shadow: 0 0 22px hsl(var(--primary) / 0.3); }
 }
 
+@keyframes shelfie-page-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shelfie-section-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shelfie-card-enter {
+  from { opacity: 0; transform: translateY(12px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes shelfie-shimmer {
+  to { transform: translateX(100%); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
 }

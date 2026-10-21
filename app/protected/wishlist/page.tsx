@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BookCover } from "@/components/books/book-cover";
 import { WishlistActions } from "@/components/books/wishlist-actions";
+import { ShelfieHero } from "@/components/shelfie-hero";
 import { createClient } from "@/lib/supabase/server";
 
 type WishlistEntry = { id: string; book_id: string };
@@ -39,21 +40,18 @@ export default async function WishlistPage() {
   });
 
   return (
-    <div className="space-y-8 py-8">
-      <section className="space-y-2">
-        <h1 className="text-3xl font-bold">My Wishlist</h1>
-        <p className="text-muted-foreground">Books you want to read someday.</p>
-      </section>
+    <div className="space-y-8">
+      <ShelfieHero title="Wishlist" description="Books you want to read someday." />
       {books.length ? (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {books.map((entry) => (
-            <li key={entry.id} className="book-card flex gap-4 rounded-xl border bg-card p-4 shadow-sm">
+          {books.map((entry, index) => (
+            <li key={entry.id} className="book-card flex min-h-44 gap-4 rounded-xl border bg-card p-4 shadow-sm">
               <Link
                 href={`/protected/books/${encodeURIComponent(entry.book.google_books_id)}?from=wishlist`}
                 prefetch={false}
                 className="flex min-w-0 flex-1 gap-4 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <BookCover src={entry.book.cover_url} title={entry.book.title} priority={books.indexOf(entry) === 0} className="w-20 shrink-0 self-start" />
+                <BookCover src={entry.book.cover_url} title={entry.book.title} priority={index === 0} className="w-20 shrink-0 self-start" />
                 <div className="min-w-0 space-y-2">
                   <h2 className="line-clamp-3 font-semibold">{entry.book.title}</h2>
                   <p className="line-clamp-2 text-sm text-muted-foreground">

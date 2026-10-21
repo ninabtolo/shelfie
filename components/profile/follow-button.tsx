@@ -8,9 +8,11 @@ import { createClient } from "@/lib/supabase/client";
 export function FollowButton({
   username,
   initialFollowing,
+  disabled = false,
 }: {
   username: string;
   initialFollowing: boolean;
+  disabled?: boolean;
 }) {
   const router = useRouter();
   const [following, setFollowing] = useState(initialFollowing);
@@ -39,7 +41,7 @@ export function FollowButton({
 
   return (
     <div className="flex flex-col items-end gap-2">
-      <Button type="button" onClick={toggleFollow} disabled={pending}>
+      <Button type="button" className="h-9 min-w-28 px-4 text-sm" onClick={toggleFollow} disabled={pending || disabled}>
         {pending ? "Updating..." : following ? "Following" : "Follow"}
       </Button>
       {error && <p role="alert" className="text-right text-xs text-destructive">{error}</p>}

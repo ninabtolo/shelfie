@@ -1,5 +1,5 @@
-import { LogoutButton } from "@/components/logout-button";
-import { ThemeSwitcher } from "@/components/theme-switcher";
+import { BookOpen } from "lucide-react";
+import { ProtectedNav } from "@/components/protected-nav";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -16,66 +16,26 @@ export default async function ProtectedLayout({
     redirect("/auth/login");
   }
 
-  return (
-    <div className="min-h-svh">
-      <header className="border-b">
-        <nav className="mx-auto flex h-16 max-w-5xl items-center justify-between px-5">
-          <Link href="/protected" className="font-semibold">
-            Shelfie
-          </Link>
-          <div className="flex items-center gap-5 text-sm">
-            <Link href="/protected" className="hover:underline">
-              Dashboard
-            </Link>
-            <Link href="/protected/library" className="hover:underline">
-              My Library
-            </Link>
-            <Link href="/protected/wishlist" className="hover:underline">
-              Wishlist
-            </Link>
-            <Link href="/protected/shared-books" className="hover:underline">
-              Shared books
-            </Link>
-            <NotificationsLink />
-            <Link href="/protected/account" className="hover:underline">
-              Account
-            </Link>
-            <Link href="/protected/profiles" className="hover:underline">
-              Profiles
-            </Link>
-            <ThemeSwitcher />
-            <LogoutButton />
-          </div>
-        </nav>
-      </header>
-      <main className="mx-auto flex w-full max-w-5xl flex-col gap-8 p-5">
-        {children}
-      </main>
-    </div>
-  );
-}
+  const { data: unreadData, error: unreadError } = await supabase.rpc("get_unread_notification_count");
 
-async function NotificationsLink() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.rpc("get_unread_notification_count");
-
-  if (error) {
+  if (unreadError) {
     throw new Error("Could not load notification count.");
   }
 
-  const unreadCount = typeof data === "number" ? data : 0;
-
   return (
-    <Link href="/protected/notifications" className="relative hover:underline">
-      Notifications
-      {unreadCount > 0 && (
-        <span
-          aria-label={`${unreadCount} unread notifications`}
-          className="ml-1 inline-flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-bold leading-none text-primary-foreground"
-        >
-          {unreadCount > 99 ? "99+" : unreadCount}
-        </span>
-      )}
-    </Link>
+    <div className="shelfie-app min-h-svh">
+      <header className="shelfie-header">
+        <nav className="shelfie-nav mx-auto flex min-h-20 max-w-7xl items-center gap-5 px-5 py-3 sm:px-8">
+          <Link href="/protected" className="shelfie-brand shrink-0" aria-label="Shelfie dashboard">
+            <BookOpen aria-hidden="true" />
+            <span>Shelfie</span>
+          </Link>
+          <ProtectedNav unreadCount={typeof unreadData === "number" ? unreadData : 0} />
+        </nav>
+      </header>
+      <main className="shelfie-main mx-auto flex w-full max-w-7xl flex-col px-5 py-8 sm:px-8 lg:py-10">
+        {children}
+      </main>
+    </div>
   );
 }

@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
+import { Mail, UsersRound } from "lucide-react";
+import { ShelfieHero } from "@/components/shelfie-hero";
 import { ProfileEditor } from "@/components/profile/profile-editor";
 import {
   FollowersList,
@@ -53,13 +55,18 @@ export default async function AccountPage() {
   if (followStatsError) throw new Error("Could not load follow counts.");
 
   return (
-    <section className="flex flex-col gap-6 py-8">
-      <div>
-        <p className="text-sm text-muted-foreground">Authenticated area</p>
-        <h1 className="text-3xl font-bold">My account</h1>
-      </div>
-      <div className="rounded-xl border p-6">
-        <p className="text-sm text-muted-foreground">E-mail</p>
+    <section className="flex flex-col gap-8">
+      <ShelfieHero icon="user" title="My account" description="Manage your profile and connections." />
+      <section className="space-y-4" aria-labelledby="connections-title">
+        <h2 id="connections-title" className="flex items-center gap-2 text-sm font-medium uppercase tracking-[0.16em] text-muted-foreground"><UsersRound aria-hidden="true" className="size-4 text-primary" /> My connections</h2>
+        <div className="flex flex-wrap items-baseline gap-x-8 gap-y-2">
+          <FollowersList profiles={followers} count={followStats?.followers_count ?? followers.length} />
+          <FollowingList profiles={following} count={followStats?.following_count ?? following.length} />
+        </div>
+        <div className="shelfie-rule" aria-hidden="true" />
+      </section>
+      <div className="shelfie-surface p-5 sm:p-6">
+        <p className="flex items-center gap-2 text-sm text-muted-foreground"><Mail aria-hidden="true" className="size-4" /> E-mail</p>
         <p className="mt-1 font-medium">{email}</p>
       </div>
       <ProfileEditor
@@ -68,11 +75,6 @@ export default async function AccountPage() {
         initialBio={profile.bio ?? ""}
         initialAvatarUrl={profile.avatar_url}
       />
-      <section className="space-y-3">
-        <h2 className="text-2xl font-semibold">My connections</h2>
-        <FollowersList profiles={followers} count={followStats?.followers_count ?? followers.length} />
-        <FollowingList profiles={following} count={followStats?.following_count ?? following.length} />
-      </section>
     </section>
   );
 }

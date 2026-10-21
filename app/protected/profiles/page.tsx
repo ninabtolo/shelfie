@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { ArrowRight, UserRound } from "lucide-react";
+import { ShelfieHero } from "@/components/shelfie-hero";
 import { FollowButton } from "@/components/profile/follow-button";
 import { ProfileSearchForm } from "@/components/profile/profile-search-form";
 import { createClient } from "@/lib/supabase/server";
@@ -41,18 +43,16 @@ export default async function ProfilesPage({
   const followingByUsername = new Map(followStates);
 
   return (
-    <div className="space-y-8 py-8">
-      <section className="space-y-2">
-        <h1 className="text-3xl font-bold">Profiles</h1>
-        <p className="text-muted-foreground">Find a Shelfie user by username.</p>
-      </section>
+    <div className="space-y-8">
+      <ShelfieHero icon="users" title="Profiles" description="Find a Shelfie user by username." />
       <ProfileSearchForm query={query} />
+      {query && <div className="shelfie-rule" aria-hidden="true" />}
       {query ? (
         profiles.length ? (
-          <ul className="grid gap-4 sm:grid-cols-2">
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {profiles.map((profile) => (
-              <li key={profile.username} className="rounded-xl border bg-card p-5">
-                <div className="flex items-start justify-between gap-4">
+              <li key={profile.username} className="shelfie-profile-card shelfie-surface p-4 sm:p-5">
+                <div className="flex items-center justify-between gap-4">
                   <Link
                     href={`/protected/profiles/${encodeURIComponent(profile.username)}`}
                     className="flex min-w-0 items-center gap-4 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -72,19 +72,22 @@ export default async function ProfilesPage({
                       </p>
                     </div>
                   </Link>
-                  {userData.user && ownProfile?.username !== profile.username && (
-                    <FollowButton
-                      username={profile.username}
-                      initialFollowing={followingByUsername.get(profile.username) ?? false}
-                    />
-                  )}
+                  <div className="flex shrink-0 items-center gap-2">
+                    {userData.user && ownProfile?.username !== profile.username && (
+                      <FollowButton
+                        username={profile.username}
+                        initialFollowing={followingByUsername.get(profile.username) ?? false}
+                      />
+                    )}
+                    <Link
+                      href={`/protected/profiles/${encodeURIComponent(profile.username)}`}
+                      aria-label={`Open @${profile.username}'s profile`}
+                      className="shelfie-profile-arrow"
+                    >
+                      <ArrowRight aria-hidden="true" className="size-4" />
+                    </Link>
+                  </div>
                 </div>
-                <Link
-                  href={`/protected/profiles/${encodeURIComponent(profile.username)}`}
-                  className="mt-4 block text-sm font-medium text-primary hover:underline"
-                >
-                  View books, favorites and reviews →
-                </Link>
               </li>
             ))}
           </ul>
@@ -94,9 +97,16 @@ export default async function ProfilesPage({
           </p>
         )
       ) : (
-        <p className="rounded-lg border border-dashed p-8 text-center text-muted-foreground">
-          Search for a username to get started.
-        </p>
+        <section className="shelfie-search-empty space-y-4">
+          <div className="shelfie-rule" aria-hidden="true" />
+          <div className="space-y-3 py-4">
+            <div className="shelfie-empty-state-icon" aria-hidden="true">
+              <UserRound className="size-6" />
+            </div>
+            <p className="shelfie-heading text-2xl text-foreground">Search for a username to get started.</p>
+          </div>
+          <div className="shelfie-rule" aria-hidden="true" />
+        </section>
       )}
     </div>
   );

@@ -1,3 +1,5 @@
+import { ProtectedLoading } from "@/components/shelfie-loading";
+
 export default function Loading() {
-  return <p role="status" className="py-8 text-muted-foreground">Loading…</p>;
+  return <ProtectedLoading />;
 }

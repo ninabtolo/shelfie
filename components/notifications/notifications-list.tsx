@@ -89,7 +89,7 @@ export function NotificationsList({
 
   if (!notifications.length) {
     return (
-      <div className="rounded-xl border border-dashed p-10 text-center">
+      <div className="shelfie-surface border-dashed p-10 text-center">
         <Bell className="mx-auto mb-3 size-8 text-muted-foreground" aria-hidden="true" />
         <p className="font-medium">You&apos;re all caught up.</p>
         <p className="mt-1 text-sm text-muted-foreground">New follows and shared books will appear here.</p>
@@ -118,7 +118,7 @@ export function NotificationsList({
         {notifications.map((notification) => (
           <li
             key={notification.id}
-            className={`rounded-xl border bg-card p-4 ${notification.readAt ? "" : "border-primary/50 bg-primary/5"}`}
+            className={`shelfie-notification-card rounded-xl border bg-card p-4 ${notification.readAt ? "" : "border-primary/50 bg-primary/5"}`}
           >
             <div className="flex items-start gap-3">
               <Bell className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
@@ -148,14 +148,9 @@ export function NotificationsList({
                   )}
                 </p>
                 {notification.shareMessage && (
-                  <p className="rounded-md bg-muted p-3 text-sm">{notification.shareMessage}</p>
+                  <p className="shelfie-message rounded-md p-3 text-sm">{notification.shareMessage}</p>
                 )}
-                <p className="text-xs text-muted-foreground">
-                  {new Intl.DateTimeFormat("en", { dateStyle: "medium", timeStyle: "short" }).format(
-                    new Date(notification.createdAt),
-                  )}
-                </p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
                   {notification.type === "book_share" && notification.bookId && (
                     <Button asChild variant="link" size="sm" className="h-auto px-0">
                       <Link href={`/protected/books/${encodeURIComponent(notification.bookId)}?from=notifications`}>
@@ -163,23 +158,39 @@ export function NotificationsList({
                       </Link>
                     </Button>
                   )}
-                  {!notification.readAt && (
+                  {notification.type === "follow" && (
+                    <Button asChild variant="link" size="sm" className="h-auto px-0">
+                      <Link href={`/protected/profiles/${encodeURIComponent(notification.actorUsername)}`}>
+                        View this profile
+                      </Link>
+                    </Button>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    {new Intl.DateTimeFormat("en", { dateStyle: "medium", timeStyle: "short" }).format(
+                      new Date(notification.createdAt),
+                    )}
+                  </p>
+                </div>
+                {!notification.readAt && (
+                  <div className="flex flex-wrap gap-2">
                     <Button type="button" variant="outline" size="sm" onClick={() => markRead(notification.id)} disabled={pendingId !== null}>
                       Mark as read
                     </Button>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label="Delete notification"
-                onClick={() => deleteNotification(notification.id)}
-                disabled={pendingId !== null}
-              >
-                <Trash2 aria-hidden="true" />
-              </Button>
+              <div className="flex shrink-0 items-start">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Delete notification"
+                  onClick={() => deleteNotification(notification.id)}
+                  disabled={pendingId !== null}
+                >
+                  <Trash2 aria-hidden="true" />
+                </Button>
+              </div>
             </div>
           </li>
         ))}

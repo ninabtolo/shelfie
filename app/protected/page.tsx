@@ -1,8 +1,11 @@
 import { Suspense } from "react";
 import { BookResults } from "@/components/books/book-results";
 import { BookSearchForm } from "@/components/books/book-search-form";
+import { BookResultsLoading } from "@/components/shelfie-loading";
+import { ShelfieHero } from "@/components/shelfie-hero";
 import { parseBookSearch, type SearchParams } from "@/lib/books/search";
 import { createClient } from "@/lib/supabase/server";
+import { BookOpen } from "lucide-react";
 
 export default async function ProtectedPage({ searchParams }: {
   searchParams: Promise<SearchParams>;
@@ -33,23 +36,27 @@ export default async function ProtectedPage({ searchParams }: {
   }
 
   return (
-    <div className="space-y-8 pb-8">
-      <section className="flex flex-col gap-3 pt-8">
-        <p className="text-sm text-muted-foreground">Authenticated area</p>
-        <h1 className="text-3xl font-bold">Welcome, @{username}</h1>
-        <p className="text-muted-foreground">
-          Your personalized library awaits for you
-        </p>
+    <div className="space-y-8">
+      <ShelfieHero title={`Welcome, @${username}`} description="Your personalized library awaits for you." />
+      <section className="space-y-5" aria-label="Book search">
+        <BookSearchForm query={query} />
+        {query && <div className="shelfie-rule" aria-hidden="true" />}
       </section>
-      <BookSearchForm query={query} />
       {query ? (
-        <Suspense key={`${query}:${page}`} fallback={<p role="status" className="py-8 text-center text-muted-foreground">Searching Google Books…</p>}>
+        <Suspense key={`${query}:${page}`} fallback={<BookResultsLoading />}>
           <BookResults query={query} page={page} />
         </Suspense>
       ) : (
-        <p className="rounded-lg border border-dashed p-8 text-center text-muted-foreground">
-          Search for a book to get started.
-        </p>
+        <section className="shelfie-search-empty space-y-4">
+          <div className="shelfie-rule" aria-hidden="true" />
+          <div className="space-y-3 py-4">
+            <div className="shelfie-empty-state-icon" aria-hidden="true">
+              <BookOpen className="size-6" />
+            </div>
+            <p className="shelfie-heading text-2xl text-foreground">Search for a book to get started.</p>
+          </div>
+          <div className="shelfie-rule" aria-hidden="true" />
+        </section>
       )}
     </div>
   );

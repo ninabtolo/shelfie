@@ -1,6 +1,8 @@
 import { BookCover } from "@/components/books/book-cover";
 import { RemoveFromLibraryButton } from "@/components/books/remove-from-library-button";
+import { ShelfieHero } from "@/components/shelfie-hero";
 import { createClient } from "@/lib/supabase/server";
+import { Star } from "lucide-react";
 import Link from "next/link";
 
 type LibraryBook = {
@@ -8,6 +10,7 @@ type LibraryBook = {
   book_id: string;
   status: "reading" | "read" | "abandoned";
   is_public: boolean;
+  is_favorite: boolean;
 };
 
 type BookRecord = {
@@ -37,7 +40,7 @@ export default async function LibraryPage() {
   const supabase = await createClient();
   const { data: entries, error: entriesError } = await supabase
     .from("user_books")
-    .select("id, book_id, status, is_public")
+    .select("id, book_id, status, is_public, is_favorite")
     .order("updated_at", { ascending: false });
 
   if (entriesError) {
@@ -66,14 +69,11 @@ export default async function LibraryPage() {
   });
 
   return (
-    <div className="space-y-8 py-8">
-      <section className="space-y-2">
-        <h1 className="text-3xl font-bold">My Library</h1>
-        <p className="text-muted-foreground">Books you have added to your personal library.</p>
-      </section>
+    <div className="space-y-8">
+      <ShelfieHero title="My library" description="Books you have added to your personal library." />
       {books.length ? (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {books.map((entry) => (
+          {books.map((entry, index) => (
             <li key={entry.id} className="book-card flex gap-4 rounded-xl border bg-card p-4 shadow-sm">
               <Link
                 href={`/protected/books/${encodeURIComponent(entry.book.google_books_id)}?from=library`}
@@ -83,7 +83,7 @@ export default async function LibraryPage() {
                 <BookCover
                   src={entry.book.cover_url}
                   title={entry.book.title}
-                  priority={books.indexOf(entry) === 0}
+                  priority={index === 0}
                   className="w-20 shrink-0 self-start"
                 />
                 <div className="min-w-0 space-y-2">
@@ -91,6 +91,11 @@ export default async function LibraryPage() {
                   <p className="line-clamp-2 text-sm text-muted-foreground">
                     {entry.book.authors?.join(", ") ?? "Unknown author"}
                   </p>
+                  {entry.is_favorite && (
+                    <p className="flex items-center gap-1 text-xs font-medium text-primary">
+                      <Star aria-hidden="true" className="size-3.5" fill="currentColor" /> Favorite
+                    </p>
+                  )}
                   <p className="text-xs font-medium text-primary">{statusLabels[entry.status]}</p>
                   <p className="text-xs text-muted-foreground">
                     {entry.is_public ? "Public" : "Private"}

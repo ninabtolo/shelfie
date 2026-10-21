@@ -1,7 +1,10 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft, BookOpen, Star, UsersRound } from "lucide-react";
 import { BookCover } from "@/components/books/book-cover";
 import { PublicReviews, type PublicReview } from "@/components/books/public-reviews";
 import { FollowButton } from "@/components/profile/follow-button";
+import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 
 type PublicBook = {
@@ -71,32 +74,46 @@ export default async function PublicProfilePage({
   const publicBooks = (books ?? []) as PublicBook[];
 
   return (
-    <div className="space-y-8 py-8">
-      <section className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          {profile.avatar_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={profile.avatar_url} alt="" className="size-20 rounded-full object-cover" />
-          ) : (
-            <div className="flex size-20 items-center justify-center rounded-full bg-secondary text-2xl font-semibold">
-              {profile.username[0].toUpperCase()}
+    <div className="space-y-8">
+      <Button variant="ghost" asChild className="-ml-3 w-fit">
+        <Link href="/protected/profiles">
+          <ArrowLeft aria-hidden="true" /> Back to profile search
+        </Link>
+      </Button>
+      <section className="shelfie-profile-hero shelfie-surface flex flex-col gap-3 p-4 sm:p-5">
+        <div className="flex w-full items-center justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-4">
+            {profile.avatar_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={profile.avatar_url} alt="" className="size-14 rounded-full object-cover" />
+            ) : (
+              <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-secondary text-xl font-semibold">
+                {profile.username[0].toUpperCase()}
+              </div>
+            )}
+            <div className="min-w-0">
+              <h1 className="shelfie-heading truncate text-2xl font-semibold">@{profile.username}</h1>
+              <p className="mt-1 max-w-xl text-sm text-muted-foreground">{profile.bio || "No bio yet."}</p>
             </div>
-          )}
-          <div>
-            <h1 className="text-3xl font-bold">@{profile.username}</h1>
-            <p className="mt-1 max-w-xl text-muted-foreground">{profile.bio || "No bio yet."}</p>
           </div>
         </div>
-        {userData.user && ownProfile?.username !== profile.username && (
-          <FollowButton username={profile.username} initialFollowing={Boolean(followingProfile)} />
+        {userData.user && (
+          <div className="shelfie-profile-action">
+            <FollowButton
+              username={profile.username}
+              initialFollowing={ownProfile?.username === profile.username ? true : Boolean(followingProfile)}
+              disabled={ownProfile?.username === profile.username}
+            />
+          </div>
         )}
+        <div className="flex flex-wrap gap-x-8 gap-y-2 text-base">
+          <p className="flex items-center gap-2"><UsersRound aria-hidden="true" className="size-4 text-primary" /><strong>{stats?.followers_count ?? 0}</strong> followers</p>
+          <p><strong>{stats?.following_count ?? 0}</strong> following</p>
+        </div>
       </section>
-      <section className="flex gap-6 border-y py-4 text-sm">
-        <p><strong>{stats?.followers_count ?? 0}</strong> followers</p>
-        <p><strong>{stats?.following_count ?? 0}</strong> following</p>
-      </section>
+      <div className="shelfie-rule" aria-hidden="true" />
       <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Public library</h2>
+        <h2 className="shelfie-section-heading"><BookOpen aria-hidden="true" className="size-6 text-primary" /><span>Public library</span></h2>
         {publicBooks.length ? (
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {publicBooks.map((book) => (
@@ -107,8 +124,12 @@ export default async function PublicProfilePage({
                   <p className="line-clamp-2 text-sm text-muted-foreground">
                     {book.authors?.join(", ") ?? "Unknown author"}
                   </p>
+                  {book.is_favorite && (
+                    <p className="flex items-center gap-1 text-xs font-medium text-primary">
+                      <Star aria-hidden="true" className="size-3.5" fill="currentColor" /> Favorite
+                    </p>
+                  )}
                   <p className="text-xs font-medium text-primary">{statusLabels[book.status]}</p>
-                  {book.is_favorite && <p className="text-xs font-medium text-primary">★ Favorite</p>}
                 </div>
               </li>
             ))}
@@ -120,7 +141,7 @@ export default async function PublicProfilePage({
         )}
       </section>
       <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Favorite books</h2>
+        <h2 className="shelfie-section-heading"><Star aria-hidden="true" className="size-6 text-primary" fill="currentColor" /><span>Favorite books</span></h2>
         {publicBooks.filter((book) => book.is_favorite).length ? (
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {publicBooks.filter((book) => book.is_favorite).map((book) => (

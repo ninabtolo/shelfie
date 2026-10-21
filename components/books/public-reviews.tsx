@@ -1,4 +1,6 @@
 import type { BookStatus } from "@/components/books/review-form";
+import { MessageCircle } from "lucide-react";
+import { RatingStars } from "@/components/books/rating-stars";
 
 export type PublicReview = {
   review_id: string;
@@ -21,11 +23,11 @@ const statusLabels: Record<BookStatus, string> = {
 export function PublicReviews({ reviews, title = "Public reviews" }: { reviews: PublicReview[]; title?: string }) {
   return (
     <section className="space-y-4" aria-labelledby="public-reviews-title">
-      <h2 id="public-reviews-title" className="text-2xl font-semibold">{title}</h2>
+      <h2 id="public-reviews-title" className="shelfie-section-heading"><MessageCircle aria-hidden="true" className="size-6 text-primary" /><span>{title}</span></h2>
       {reviews.length ? (
         <ul className="space-y-4">
           {reviews.map((review) => (
-            <li key={review.review_id} className="rounded-xl border bg-card p-4">
+            <li key={review.review_id} className="shelfie-surface p-4 sm:p-5">
               <div className="flex items-start gap-3">
                 {review.avatar_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -39,9 +41,7 @@ export function PublicReviews({ reviews, title = "Public reviews" }: { reviews: 
                     {new Date(review.created_at).toLocaleString()} · {statusLabels[review.reading_status]}
                   </p>
                 </div>
-                <p className="text-lg text-primary" aria-label={`${review.rating} out of 5 stars`}>
-                  {"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}
-                </p>
+                <RatingStars rating={review.rating} size="sm" />
               </div>
               {review.title && (
                 <p className="mt-3 font-semibold">
@@ -53,7 +53,7 @@ export function PublicReviews({ reviews, title = "Public reviews" }: { reviews: 
           ))}
         </ul>
       ) : (
-        <p className="rounded-lg border border-dashed p-6 text-center text-muted-foreground">No public reviews yet.</p>
+        <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">No public reviews yet.</p>
       )}
     </section>
   );

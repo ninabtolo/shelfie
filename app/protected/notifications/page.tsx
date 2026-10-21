@@ -1,5 +1,6 @@
 import { NotificationsList, type Notification } from "@/components/notifications/notifications-list";
 import { createClient } from "@/lib/supabase/server";
+import { ShelfieHero } from "@/components/shelfie-hero";
 
 type NotificationRow = {
   notification_id: string;
@@ -37,11 +38,8 @@ export default async function NotificationsPage() {
   );
 
   return (
-    <div className="space-y-8 py-8">
-      <section className="space-y-2">
-        <h1 className="text-3xl font-bold">Notifications</h1>
-        <p className="text-muted-foreground">Keep up with your new followers and shared books.</p>
-      </section>
+    <div className="space-y-8">
+      <ShelfieHero title="Notifications" description="Keep up with your new followers and shared books." />
       <NotificationsList initialNotifications={notifications} />
     </div>
   );

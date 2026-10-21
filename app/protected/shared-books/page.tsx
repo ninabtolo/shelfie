@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BookCover } from "@/components/books/book-cover";
 import { createClient } from "@/lib/supabase/server";
+import { ShelfieHero } from "@/components/shelfie-hero";
 
 type ReceivedShare = {
   share_id: string;
@@ -24,14 +25,11 @@ export default async function SharedBooksPage() {
   const shares = (data ?? []) as ReceivedShare[];
 
   return (
-    <div className="space-y-8 py-8">
-      <section className="space-y-2">
-        <h1 className="text-3xl font-bold">Shared books</h1>
-        <p className="text-muted-foreground">Books your friends have shared with you.</p>
-      </section>
+    <div className="space-y-8">
+      <ShelfieHero title="Shared books" description="Books your friends have shared with you." />
       {shares.length ? (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {shares.map((share) => (
+          {shares.map((share, index) => (
             <li key={share.share_id} className="rounded-xl border bg-card p-4 shadow-sm">
               <Link
                 href={`/protected/books/${encodeURIComponent(share.google_books_id)}?from=shared-books`}
@@ -41,7 +39,7 @@ export default async function SharedBooksPage() {
                 <BookCover
                   src={share.cover_url}
                   title={share.title}
-                  priority={shares.indexOf(share) === 0}
+                  priority={index === 0}
                   className="w-20 shrink-0 self-start"
                 />
                 <div className="min-w-0 space-y-2">
@@ -55,7 +53,7 @@ export default async function SharedBooksPage() {
                 <p className="text-muted-foreground">
                   Shared by <span className="font-medium text-foreground">@{share.from_username}</span>
                 </p>
-                {share.message && <p className="rounded-md bg-muted p-3">{share.message}</p>}
+                {share.message && <p className="shelfie-message rounded-md p-3">{share.message}</p>}
                 <p className="text-xs text-muted-foreground">
                   {new Intl.DateTimeFormat("en", { dateStyle: "medium" }).format(new Date(share.shared_at))}
                 </p>

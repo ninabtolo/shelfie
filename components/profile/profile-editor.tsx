@@ -72,7 +72,7 @@ export function ProfileEditor({
   }
 
   return (
-    <form onSubmit={saveProfile} className="space-y-5 rounded-xl border p-6">
+    <form onSubmit={saveProfile} className="shelfie-surface space-y-5 p-5 sm:p-6">
       <div>
         <p className="text-sm text-muted-foreground">Username</p>
         <p className="mt-1 font-medium">@{username}</p>

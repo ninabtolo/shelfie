@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ArrowLeft } from "lucide-react";
 import { BookDetails } from "@/components/books/book-details";
+import { BookDetailsLoading } from "@/components/shelfie-loading";
 import type { PublicReview } from "@/components/books/public-reviews";
 import type { ReviewInput } from "@/components/books/review-form";
 import type { ShareRecipient } from "@/components/books/share-book-form";
@@ -105,7 +106,7 @@ export default async function BookPage({ params, searchParams }: {
           <ArrowLeft aria-hidden="true" />{fromLibrary ? "Back to library" : fromWishlist ? "Back to wishlist" : fromSharedBooks ? "Back to shared books" : "Back to search"}
         </Link>
       </Button>
-      <Suspense key={id} fallback={<p role="status" className="py-8 text-muted-foreground">Loading book details…</p>}>
+      <Suspense key={id} fallback={<BookDetailsLoading />}>
         <BookContent id={id} />
       </Suspense>
     </div>

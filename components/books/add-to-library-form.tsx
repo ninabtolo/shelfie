@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Star } from "lucide-react";
+import { BookOpen, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 import type { Book } from "@/lib/books/types";
+import { useBookWishlist } from "@/components/books/book-wishlist";
 
 const statuses = [
   { value: "reading", label: "Reading" },
@@ -18,12 +19,10 @@ type BookStatus = (typeof statuses)[number]["value"];
 export function AddToLibraryForm({
   book,
   initialStatus,
-  initialInWishlist = false,
   initialIsFavorite = false,
 }: {
   book: Book;
   initialStatus?: BookStatus;
-  initialInWishlist?: boolean;
   initialIsFavorite?: boolean;
 }) {
   const [status, setStatus] = useState<BookStatus>(initialStatus ?? "reading");
@@ -31,10 +30,10 @@ export function AddToLibraryForm({
   const [pendingAction, setPendingAction] = useState<"adding" | "removing" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isInLibrary, setIsInLibrary] = useState(initialStatus !== undefined);
-  const [isInWishlist, setIsInWishlist] = useState(initialInWishlist);
   const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
   const [checkingLibrary, setCheckingLibrary] = useState(true);
-  const pending = pendingAction !== null || checkingLibrary;
+  const { isInWishlist, pending: wishlistPending, clearWishlist } = useBookWishlist();
+  const pending = pendingAction !== null || checkingLibrary || wishlistPending;
 
   useEffect(() => {
     let active = true;
@@ -76,7 +75,6 @@ export function AddToLibraryForm({
           setIsPublic(libraryEntry?.is_public !== false);
           setIsFavorite(libraryEntry?.is_favorite === true);
           setIsInLibrary(true);
-          setIsInWishlist(false);
         } else {
           setIsInLibrary(false);
         }
@@ -90,60 +88,6 @@ export function AddToLibraryForm({
       active = false;
     };
   }, [book.google_books_id]);
-
-  async function toggleWishlist() {
-    setPendingAction("adding");
-    setError(null);
-    const supabase = createClient();
-
-    if (isInWishlist) {
-      const { data: savedBook, error: bookError } = await supabase
-        .from("books")
-        .select("id")
-        .eq("google_books_id", book.google_books_id)
-        .maybeSingle();
-
-      if (bookError || !savedBook) {
-        setError("Could not remove this book from your wishlist. Please try again.");
-        setPendingAction(null);
-        return;
-      }
-
-      const { error: deleteError } = await supabase
-        .from("wishlist")
-        .delete()
-        .eq("book_id", savedBook.id);
-      if (deleteError) {
-        setError("Could not remove this book from your wishlist. Please try again.");
-        setPendingAction(null);
-        return;
-      }
-      setIsInWishlist(false);
-    } else {
-      const { error: rpcError } = await supabase.rpc("add_book_to_wishlist", {
-        p_google_books_id: book.google_books_id,
-        p_title: book.title,
-        p_subtitle: book.subtitle,
-        p_authors: book.authors,
-        p_description: book.description,
-        p_isbn_10: book.isbn_10,
-        p_isbn_13: book.isbn_13,
-        p_publisher: book.publisher,
-        p_published_date: book.published_date,
-        p_page_count: book.page_count,
-        p_genres: book.genres,
-        p_language: book.language,
-        p_cover_url: book.cover_url,
-      });
-      if (rpcError) {
-        setError("Could not add this book to your wishlist. Please try again.");
-        setPendingAction(null);
-        return;
-      }
-      setIsInWishlist(true);
-    }
-    setPendingAction(null);
-  }
 
   async function removeFromLibrary() {
     if (!window.confirm("Remove this book from your library?")) return;
@@ -236,7 +180,7 @@ export function AddToLibraryForm({
         setPendingAction(null);
         return;
       }
-      setIsInWishlist(false);
+      clearWishlist();
     }
     setIsInLibrary(true);
     setIsFavorite(false);
@@ -276,11 +220,14 @@ export function AddToLibraryForm({
   }
 
   return (
-    <section className="space-y-3 border-y py-6" aria-labelledby="add-to-library-title">
-      <h2 id="add-to-library-title" className="font-semibold">
-        {isInLibrary ? "In my library" : "Add to library"}
+    <section className="space-y-4 py-2" aria-labelledby="add-to-library-title">
+      <h2 id="add-to-library-title" className="shelfie-section-heading">
+        <BookOpen aria-hidden="true" className="size-6 text-primary" />
+        <span>{isInLibrary ? "In my library" : "Add to library"}</span>
       </h2>
-      <div className="grid gap-4 sm:grid-cols-[minmax(180px,auto)_auto] sm:items-end sm:gap-6">
+      <div className={isInLibrary
+        ? "grid gap-4 lg:grid-cols-[minmax(220px,0.9fr)_minmax(0,1.45fr)] lg:items-end lg:gap-6"
+        : "grid gap-4 lg:grid-cols-[minmax(220px,1fr)_minmax(180px,0.72fr)_minmax(180px,0.82fr)] lg:items-end lg:gap-6"}>
         <div className="grid gap-2">
           <Label htmlFor="book-status" className="block">Status</Label>
           <select
@@ -295,8 +242,34 @@ export function AddToLibraryForm({
             ))}
           </select>
         </div>
+        {isInLibrary ? (
+          <div className="grid min-w-0 gap-2 sm:grid-cols-2">
+            <Button
+              type="button"
+              variant={isFavorite ? "default" : "outline"}
+              className="h-10 min-w-0 w-full px-2 text-xs sm:text-sm"
+              onClick={toggleFavorite}
+              disabled={pending}
+            >
+              <Star aria-hidden="true" fill={isFavorite ? "currentColor" : "none"} />
+              <span className="truncate">{isFavorite ? "Remove from favorites" : "Add to favorites"}</span>
+            </Button>
+            <Button
+              type="button"
+              className="h-10 min-w-0 w-full px-2 text-xs text-white hover:bg-primary/90 sm:text-sm"
+              onClick={removeFromLibrary}
+              disabled={pending}
+            >
+              {pendingAction === "removing" ? "Removing…" : "Remove from library"}
+            </Button>
+          </div>
+        ) : (
+          <Button type="button" className="h-10 w-full" onClick={addToLibrary} disabled={pending}>
+            {pendingAction === "adding" ? "Adding…" : "Add to library"}
+          </Button>
+        )}
         {!isInLibrary && (
-          <label className="flex items-center gap-2 text-sm sm:pb-2">
+          <label className="flex min-h-9 items-center gap-2 text-sm lg:pb-2">
             <input
               type="checkbox"
               checked={isPublic}
@@ -307,38 +280,7 @@ export function AddToLibraryForm({
             Add to my public library
           </label>
         )}
-        {isInLibrary ? (
-          <div className="grid gap-2 sm:grid-cols-2">
-            <Button
-              type="button"
-              variant={isFavorite ? "default" : "outline"}
-              className="h-9"
-              onClick={toggleFavorite}
-              disabled={pending}
-            >
-              <Star aria-hidden="true" fill={isFavorite ? "currentColor" : "none"} />
-              {isFavorite ? "Remove from favorites" : "Add to favorites"}
-            </Button>
-            <Button
-              type="button"
-              className="h-9 text-white hover:bg-primary/90"
-              onClick={removeFromLibrary}
-              disabled={pending}
-            >
-              {pendingAction === "removing" ? "Removing…" : "Remove from library"}
-            </Button>
-          </div>
-        ) : (
-          <Button type="button" className="h-9" onClick={addToLibrary} disabled={pending}>
-            {pendingAction === "adding" ? "Adding…" : "Add to library"}
-          </Button>
-        )}
       </div>
-      {(!isInLibrary || isInWishlist) && (
-        <Button type="button" variant="outline" onClick={toggleWishlist} disabled={pending}>
-          {isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
-        </Button>
-      )}
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
     </section>
   );

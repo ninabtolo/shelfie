@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { X } from "lucide-react";
+import { useEffect, useId, useState } from "react";
 
 export type FollowProfile = {
   follower_username: string;
@@ -65,19 +69,60 @@ function FollowDetails({
   emptyMessage: string;
   children: React.ReactNode;
 }) {
+  const [open, setOpen] = useState(false);
+  const titleId = useId();
+
+  useEffect(() => {
+    if (!open) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", closeOnEscape);
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
   return (
-    <details className="rounded-xl border p-4">
-      <summary className="cursor-pointer text-xl font-semibold">
-        {title} <span className="text-muted-foreground">({count})</span>
-      </summary>
-      <div className="mt-4">
-        {count ? (
-          <ul className="grid gap-3 sm:grid-cols-2">{children}</ul>
-        ) : (
-          <p className="rounded-lg border border-dashed p-6 text-center text-muted-foreground">{emptyMessage}</p>
-        )}
-      </div>
-    </details>
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="shelfie-connection-trigger flex items-baseline gap-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        aria-haspopup="dialog"
+        aria-expanded={open}
+      >
+        <span className="text-2xl font-semibold">{count}</span>
+        <span className="text-base text-muted-foreground">{title.toLowerCase()}</span>
+      </button>
+      {open && (
+        <div
+          className="shelfie-modal-backdrop"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setOpen(false);
+          }}
+        >
+          <section className="shelfie-modal" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+            <header className="shelfie-modal-header">
+              <h2 id={titleId} className="text-2xl font-semibold">{title} <span className="text-muted-foreground">({count})</span></h2>
+              <button type="button" className="shelfie-modal-close" onClick={() => setOpen(false)} aria-label={`Close ${title.toLowerCase()} list`}>
+                <X aria-hidden="true" className="size-5" />
+              </button>
+            </header>
+            <div className="p-4 sm:p-5">
+              {count ? (
+                <ul className="grid gap-3 sm:grid-cols-2">{children}</ul>
+              ) : (
+                <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">{emptyMessage}</p>
+              )}
+            </div>
+          </section>
+        </div>
+      )}
+    </>
   );
 }
 
