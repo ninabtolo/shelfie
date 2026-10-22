@@ -22,7 +22,6 @@ type ApiError = { error?: string };
 type RecommendationCache = ApiError & {
   books?: Recommendation[];
   generated_at?: string | null;
-  stale?: boolean;
   complete?: boolean;
 };
 
@@ -133,11 +132,10 @@ export default function AiRecommendations() {
     const cachedBooks = data.books ?? [];
     const generatedAt = data.generated_at ? Date.parse(data.generated_at) : NaN;
     const cacheAge = Number.isFinite(generatedAt) ? Math.max(0, Date.now() - generatedAt) : Infinity;
-    const isNewBrowserSession = window.sessionStorage.getItem("shelfie-recommendations-session") !== "active";
-    window.sessionStorage.setItem("shelfie-recommendations-session", "active");
-    const shouldRefreshForSession = isNewBrowserSession && cacheAge > GENERATION_COOLDOWN_MS;
 
-    if (cachedBooks.length > 0 && !data.stale && !shouldRefreshForSession) {
+    // Loading the page must never generate a new set. The cached set stays in
+    // place until the user explicitly clicks Refresh recommendations.
+    if (cachedBooks.length > 0) {
       setBooks(cachedBooks);
       setError("");
       if (cacheAge < GENERATION_COOLDOWN_MS) {
@@ -146,8 +144,8 @@ export default function AiRecommendations() {
       return;
     }
 
-    await generate();
-  }, [generate]);
+    setBooks([]);
+  }, []);
 
   useEffect(() => {
     // React Strict Mode can run effects twice in development. Guard against duplicate requests.
@@ -290,7 +288,7 @@ export default function AiRecommendations() {
           <EyeOff className="size-8 text-primary" aria-hidden="true" />
           <h2 className="text-2xl font-semibold">Personalization is off</h2>
           <p className="max-w-lg text-sm leading-6 text-muted-foreground">
-            Turn it on above when you want Shelfie to use your reading signals. You will always get a fresh set of up to six verified books when you return to this page.
+            Turn it on above when you want Shelfie to use your reading signals. Your saved recommendations will stay the same when you return to this page; use Refresh recommendations whenever you want a new set.
           </p>
         </section>
       )}
@@ -357,9 +355,9 @@ export default function AiRecommendations() {
           {!loading && !books.length && !error && (
             <div className="shelfie-surface flex flex-col items-center gap-3 p-10 text-center">
               <Sparkles className="size-8 text-primary" aria-hidden="true" />
-              <h2 className="text-2xl font-semibold">No verified matches yet</h2>
+              <h2 className="text-2xl font-semibold">No saved recommendations yet</h2>
               <p className="max-w-lg text-sm leading-6 text-muted-foreground">
-                Try refreshing for another mix. Books you mark Not Interested will stay out of future generations.
+                Use Refresh recommendations to generate your first set. Books you mark Not Interested will stay out of future generations.
               </p>
             </div>
           )}

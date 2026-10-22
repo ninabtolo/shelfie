@@ -222,7 +222,7 @@ export async function GET() {
     console.error('Could not load AI recommendation cache:', error.message);
     return NextResponse.json({ error: 'Could not load recommendations' }, { status: 500 });
   }
-  return NextResponse.json(data ?? { books: [], generated_at: null, stale: true }, {
+  return NextResponse.json(data ?? { books: [], generated_at: null, stale: false, complete: false }, {
     headers: { 'Cache-Control': 'no-store' },
   });
 }
@@ -281,7 +281,10 @@ export async function POST() {
     const hidden = validated.filter((book) => book.tier === 'hidden').slice(0, 3);
     const results = [...known, ...hidden, ...validated.filter((book) => !known.includes(book) && !hidden.includes(book))].slice(0, 6);
     const { error: cacheError } = await supabase.rpc('save_my_ai_recommendations', { p_books: results });
-    if (cacheError) console.error('Could not save AI recommendation cache:', cacheError.message);
+    if (cacheError) {
+      console.error('Could not save AI recommendation cache:', cacheError.message);
+      return NextResponse.json({ error: 'Could not save recommendations. Try again later.' }, { status: 500 });
+    }
     return NextResponse.json(
       { books: results, partial: results.length < 6, cooldown_seconds: GENERATION_COOLDOWN_SECONDS },
       { headers: { 'Cache-Control': 'no-store' } },
