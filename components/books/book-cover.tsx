@@ -20,11 +20,12 @@ function getCoverSrc(src: string) {
   return src;
 }
 
-export function BookCover({ src, title, className, priority = false }: {
+export function BookCover({ src, title, className, priority = false, sizes = "80px" }: {
   src: string | null;
   title: string;
   className?: string;
   priority?: boolean;
+  sizes?: string;
 }) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
   const [loadedSrc, setLoadedSrc] = useState<string | null>(null);
@@ -49,7 +50,7 @@ export function BookCover({ src, title, className, priority = false }: {
           unoptimized
           priority={priority}
           loading={priority ? "eager" : "lazy"}
-          sizes="80px"
+          sizes={sizes}
           className="object-contain"
           onLoad={() => setLoadedSrc(src)}
           onError={() => {

@@ -98,12 +98,13 @@ export default async function BookPage({ params, searchParams }: {
   const fromLibrary = search.from === "library";
   const fromWishlist = search.from === "wishlist";
   const fromSharedBooks = search.from === "shared-books";
+  const fromRecommendations = search.from === "recommendations";
 
   return (
     <div className="space-y-6 py-8">
       <Button variant="ghost" asChild>
-        <Link prefetch={false} href={fromLibrary ? "/protected/library" : fromWishlist ? "/protected/wishlist" : fromSharedBooks ? "/protected/shared-books" : bookSearchHref(query, page)}>
-          <ArrowLeft aria-hidden="true" />{fromLibrary ? "Back to library" : fromWishlist ? "Back to wishlist" : fromSharedBooks ? "Back to shared books" : "Back to search"}
+        <Link prefetch={false} href={fromLibrary ? "/protected/library" : fromWishlist ? "/protected/wishlist" : fromSharedBooks ? "/protected/shared-books" : fromRecommendations ? "/protected/recommendations" : bookSearchHref(query, page)}>
+          <ArrowLeft aria-hidden="true" />{fromLibrary ? "Back to library" : fromWishlist ? "Back to wishlist" : fromSharedBooks ? "Back to shared books" : fromRecommendations ? "Back to recommendations" : "Back to search"}
         </Link>
       </Button>
       <Suspense key={id} fallback={<BookDetailsLoading />}>

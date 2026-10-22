@@ -395,6 +395,10 @@
   color: hsl(var(--primary));
 }
 
+.shelfie-recommendation-switch[data-enabled="true"] > span {
+  transform: translateX(1.25rem);
+}
+
 .reading-donut {
   display: grid;
   width: 9rem;

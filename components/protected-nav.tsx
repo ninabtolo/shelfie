@@ -7,6 +7,7 @@ import {
   Library,
   Menu,
   Share2,
+  Sparkles,
   UsersRound,
   X,
 } from "lucide-react";
@@ -18,6 +19,7 @@ import { AccountActionsMenu } from "@/components/account-actions-menu";
 
 const links = [
   { href: "/protected", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/protected/recommendations", label: "For you", icon: Sparkles },
   { href: "/protected/library", label: "My Library", icon: Library },
   { href: "/protected/wishlist", label: "Wishlist", icon: BookHeart },
   { href: "/protected/shared-books", label: "Shared books", icon: Share2 },
