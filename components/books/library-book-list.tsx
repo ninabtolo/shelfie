@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Star } from "lucide-react";
+import { SlidersHorizontal, Star } from "lucide-react";
 import { BookCover } from "@/components/books/book-cover";
 import { RemoveFromLibraryButton } from "@/components/books/remove-from-library-button";
 import { Button } from "@/components/ui/button";
@@ -66,11 +66,16 @@ export function LibraryBookList({ books }: { books: LibraryBookWithDetails[] }) 
     <>
       <section className="shelfie-surface space-y-4 p-4 sm:p-5" aria-label="Filter your library">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
-          <div>
-            <h2 className="text-lg font-semibold">Filter your library</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Narrow your books by reading status, favorite, or visibility.
-            </p>
+          <div className="flex min-w-0 items-start gap-3">
+            <span className="reading-stat-icon mt-0.5" aria-hidden="true">
+              <SlidersHorizontal className="size-5" />
+            </span>
+            <div>
+              <h2 className="text-lg font-semibold">Filter your library</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Narrow your books by reading status, favorite, or visibility.
+              </p>
+            </div>
           </div>
           {hasActiveFilters && (
             <Button type="button" variant="ghost" size="sm" onClick={clearFilters}>

@@ -83,7 +83,7 @@ export function LoginForm({
                   <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className="h-11 rounded-xl bg-background/60 pl-10 shadow-none transition-shadow focus-visible:shadow-[0_0_0_2px_hsl(var(--ring)/0.08)]" />
                 </div>
               </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
+              {error && <p className="text-sm text-destructive">{error}</p>}
               <Button type="submit" className="h-11 w-full rounded-xl bg-primary font-semibold shadow-[0_8px_20px_hsl(var(--primary)/0.22)] transition-all hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-[0_12px_25px_hsl(var(--primary)/0.3)]" disabled={isLoading}>
                 {isLoading ? "Logging in..." : <>Open my shelf <ArrowRight className="h-4 w-4" /></>}
               </Button>

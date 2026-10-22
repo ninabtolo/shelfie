@@ -18,7 +18,7 @@
     --muted-foreground: 270 10% 48%;
     --accent: 197 62% 94%;
     --accent-foreground: 226 35% 32%;
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 329 62% 63%;
     --destructive-foreground: 0 0% 98%;
     --border: 320 22% 89%;
     --input: 320 22% 86%;
@@ -28,9 +28,9 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --shelfie-line-pink: 326 82% 75%;
-    --shelfie-line-purple: 272 75% 75%;
-    --shelfie-line-blue: 199 97% 76%;
+    --shelfie-line-pink: 314.167 100% 85.882%;
+    --shelfie-line-purple: 267 66% 89%;
+    --shelfie-line-blue: 204.375 100% 87.451%;
     --radius: 0.5rem;
   }
   .dark {
@@ -48,8 +48,8 @@
     --muted-foreground: 280 15% 72%;
     --accent: 220 35% 23%;
     --accent-foreground: 205 60% 90%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 287 63% 77%;
+    --destructive-foreground: 245 34% 11%;
     --border: 270 23% 29%;
     --input: 270 23% 32%;
     --ring: 287 63% 77%;
@@ -636,6 +636,10 @@
   border-radius: 1rem;
   background: hsl(var(--card) / 0.82);
   box-shadow: 0 10px 32px rgb(91 62 92 / 0.04);
+}
+
+.shelfie-ai-message {
+  border-style: dashed;
 }
 
 .shelfie-profile-hero {

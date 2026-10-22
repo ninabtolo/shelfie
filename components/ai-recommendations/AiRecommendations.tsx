@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowUpRight, Check, EyeOff, RefreshCw, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowUpRight, Check, EyeOff, RefreshCw, Sparkles } from "lucide-react";
 import { BookCover } from "@/components/books/book-cover";
 import { ShelfieHero } from "@/components/shelfie-hero";
 import { Button } from "@/components/ui/button";
@@ -253,17 +253,12 @@ export default function AiRecommendations() {
             <div className="shelfie-skeleton h-4 w-2/3 rounded" />
           </div>
         ) : (
-          <div className="shelfie-surface flex flex-col gap-5 p-5 sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex min-w-0 gap-4">
-              <span className="reading-stat-icon mt-0.5" aria-hidden="true">
-                <ShieldCheck className="size-5" />
-              </span>
-              <div className="min-w-0 space-y-1">
-                <h3 className="text-base font-semibold">Your reading data stays opt-in</h3>
-                <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-                  When enabled, Shelfie sends your library, wishlist, ratings, favorites and review text to Gemini only when generating recommendations. Turn it off any time; while it is off, no reading information is sent to Gemini.
-                </p>
-              </div>
+          <div className="shelfie-surface shelfie-ai-message flex flex-col gap-5 p-5 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0 space-y-1">
+              <h3 className="text-base font-semibold">Your reading data stays opt-in</h3>
+              <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
+                When enabled, Shelfie sends your library, wishlist, ratings, favorites and review text to Gemini only when generating recommendations. Turn it off any time; while it is off, no reading information is sent to Gemini.
+              </p>
             </div>
 
             <label className="flex shrink-0 cursor-pointer items-center gap-3 self-start rounded-lg border border-border/70 px-3 py-2 text-sm font-medium transition hover:border-primary/50 hover:bg-primary/5 sm:mt-0">
