@@ -30,7 +30,7 @@ export default async function SharedBooksPage() {
       {shares.length ? (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {shares.map((share, index) => (
-            <li key={share.share_id} className="rounded-xl border bg-card p-4 shadow-sm">
+            <li key={share.share_id} className="book-card rounded-xl border bg-card p-4 shadow-sm">
               <Link
                 href={`/protected/books/${encodeURIComponent(share.google_books_id)}?from=shared-books`}
                 prefetch={false}

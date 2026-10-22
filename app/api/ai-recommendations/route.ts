@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 const GENERATION_COOLDOWN_SECONDS = 20;
+const GOOGLE_BOOK_VALIDATION_CONCURRENCY = 6;
 
 type Review = {
   rating?: number;
@@ -212,6 +213,26 @@ async function resolveGoogleBook(c: Candidate): Promise<Result | null> {
   return null;
 }
 
+async function resolveGoogleBooks(candidates: Candidate[]): Promise<Result[]> {
+  const resolved: Array<Result | null> = Array.from({ length: candidates.length }, () => null);
+  let nextIndex = 0;
+
+  async function worker() {
+    while (nextIndex < candidates.length) {
+      const index = nextIndex++;
+      try {
+        resolved[index] = await resolveGoogleBook(candidates[index]);
+      } catch {
+        // One unavailable Google Books lookup should not block the rest of the set.
+      }
+    }
+  }
+
+  const workerCount = Math.min(GOOGLE_BOOK_VALIDATION_CONCURRENCY, candidates.length);
+  await Promise.all(Array.from({ length: workerCount }, () => worker()));
+  return resolved.filter((book): book is Result => book !== null);
+}
+
 export async function GET() {
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -260,21 +281,19 @@ export async function POST() {
     const candidates = await askGemini(typed);
     const usedIds = new Set<string>();
     const usedNames = new Set<string>();
-    // Validate sequentially to avoid bursts to Google Books. Stop once the balanced six are found.
+    const candidatesToValidate = candidates
+      .slice(0, 24)
+      .filter((candidate) => !excludedNames.has(identity(candidate.title, candidate.author)));
+    // Validate with a small worker pool to reduce latency without bursting Google Books.
+    const resolvedBooks = await resolveGoogleBooks(candidatesToValidate);
     const validated: Result[] = [];
-    for (const c of candidates.slice(0, 20)) {
-      if (excludedNames.has(identity(c.title, c.author))) continue;
-      let book: Result | null = null;
-      try { book = await resolveGoogleBook(c); } catch { continue; }
+    for (const book of resolvedBooks) {
       if (!book || excludedIds.has(book.google_books_id) || usedIds.has(book.google_books_id)) continue;
       const keys = bookIdentities({ title: book.title, authors: book.authors });
       if (keys.some((key) => excludedNames.has(key) || usedNames.has(key))) continue;
       usedIds.add(book.google_books_id);
       keys.forEach((key) => usedNames.add(key));
       validated.push(book);
-      const knownCount = validated.filter((item) => item.tier === 'known').length;
-      const hiddenCount = validated.filter((item) => item.tier === 'hidden').length;
-      if (knownCount >= 3 && hiddenCount >= 3) break;
     }
 
     const known = validated.filter((book) => book.tier === 'known').slice(0, 3);
