@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { Mail, UsersRound } from "lucide-react";
 import { ShelfieHero } from "@/components/shelfie-hero";
+import { AiPersonalizationSettings } from "@/components/account/ai-personalization-settings";
 import { ProfileEditor } from "@/components/profile/profile-editor";
 import {
   FollowersList,
@@ -33,6 +34,12 @@ export default async function AccountPage() {
     .eq("id", userId)
     .single();
   if (error || !profile) throw new Error("Could not load your profile.");
+  const { data: aiPreference, error: aiPreferenceError } = await supabase
+    .from("ai_recommendation_preferences")
+    .select("personalization_enabled")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (aiPreferenceError) throw new Error("Could not load AI settings.");
   const { data: followerRows, error: followersError } = await supabase.rpc("get_my_followers");
   if (followersError) throw new Error("Could not load your followers.");
   const followers = (followerRows as FollowerRow[] ?? []).map((follower) => ({
@@ -57,6 +64,7 @@ export default async function AccountPage() {
   return (
     <section className="flex flex-col gap-8">
       <ShelfieHero title="My account" description="Manage your profile and connections." />
+      <AiPersonalizationSettings initialEnabled={aiPreference?.personalization_enabled ?? false} />
       <section className="space-y-4" aria-labelledby="connections-title">
         <h2 id="connections-title" className="flex items-center gap-2 text-sm font-medium uppercase tracking-[0.16em] text-muted-foreground"><UsersRound aria-hidden="true" className="size-4 text-primary" /> My connections</h2>
         <div className="flex flex-wrap items-baseline gap-x-8 gap-y-2">

@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   Library,
   Menu,
+  MessageCircle,
   Share2,
   Sparkles,
   UsersRound,
@@ -20,6 +21,7 @@ import { AccountActionsMenu } from "@/components/account-actions-menu";
 const links = [
   { href: "/protected", label: "Dashboard", icon: LayoutDashboard },
   { href: "/protected/recommendations", label: "For you", icon: Sparkles },
+  { href: "/protected/chat", label: "AI chat", icon: MessageCircle },
   { href: "/protected/library", label: "My Library", icon: Library },
   { href: "/protected/wishlist", label: "Wishlist", icon: BookHeart },
   { href: "/protected/shared-books", label: "Shared books", icon: Share2 },

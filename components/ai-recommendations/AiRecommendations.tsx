@@ -45,7 +45,6 @@ export default function AiRecommendations() {
   const [enabled, setEnabled] = useState<boolean | null>(null);
   const [books, setBooks] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [dismissingId, setDismissingId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
@@ -166,34 +165,6 @@ export default function AiRecommendations() {
     })();
   }, [loadCachedRecommendations]);
 
-  async function changeEnabled(next: boolean) {
-    setSaving(true);
-    setError("");
-
-    try {
-      const response = await fetch("/api/ai-recommendations/settings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ enabled: next }),
-      });
-      const data = (await response.json()) as ApiError & { enabled?: boolean };
-      if (!response.ok) throw new Error(data.error ?? "Could not update setting");
-
-      setEnabled(Boolean(data.enabled));
-      if (!next) {
-        requestNumber.current++;
-        setBooks([]);
-        setLoading(false);
-      } else {
-        await loadCachedRecommendations();
-      }
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Could not update setting");
-    } finally {
-      setSaving(false);
-    }
-  }
-
   async function dismiss(book: Recommendation) {
     if (dismissingId) return;
 
@@ -237,7 +208,7 @@ export default function AiRecommendations() {
             variant="outline"
             className="shrink-0 self-start sm:self-auto"
             onClick={() => void generate()}
-            disabled={enabled !== true || loading || saving || cooldownSeconds > 0}
+            disabled={enabled !== true || loading || cooldownSeconds > 0}
           >
             <RefreshCw className={loading ? "animate-spin" : undefined} aria-hidden="true" />
             {loading ? "Finding your next reads…" : cooldownSeconds > 0 ? `Refresh in ${cooldownSeconds}s` : "Refresh recommendations"}
@@ -255,24 +226,12 @@ export default function AiRecommendations() {
             <div className="min-w-0 space-y-1">
               <h3 className="text-base font-semibold">Your reading data stays opt-in</h3>
               <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-                When enabled, Shelfie sends your library, wishlist, ratings, favorites and review text to Gemini only when generating recommendations. Turn it off any time; while it is off, no reading information is sent to Gemini.
+                Shelfie only uses your library, wishlist, ratings, favorites and review text with Gemini when AI personalization is enabled in Account. That single setting controls both automatic recommendations and the AI reading chat.
               </p>
             </div>
-
-            <label className="flex shrink-0 cursor-pointer items-center gap-3 self-start rounded-lg border border-border/70 px-3 py-2 text-sm font-medium transition hover:border-primary/50 hover:bg-primary/5 sm:mt-0">
-              <input
-                type="checkbox"
-                className="peer sr-only"
-                checked={enabled}
-                disabled={saving}
-                onChange={(event) => void changeEnabled(event.target.checked)}
-                aria-label="Enable personalized recommendations"
-              />
-              <span className="shelfie-recommendation-switch relative h-6 w-11 rounded-full bg-muted transition-colors peer-checked:bg-primary peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2" data-enabled={enabled}>
-                <span className="absolute left-1 top-1 size-4 rounded-full bg-white shadow-sm transition-transform" />
-              </span>
-              <span>{enabled ? "On" : "Off"}</span>
-            </label>
+            <Button type="button" variant="outline" className="shrink-0 self-start" asChild>
+              <Link href="/protected/account#ai-personalization">{enabled ? "Manage in Account" : "Enable in Account"}</Link>
+            </Button>
           </div>
         )}
 
