@@ -172,11 +172,12 @@ function ActivityChart({ data }: { data: ActivityRow[] }) {
 }
 
 function RankedList({ items, labelKey }: { items: NamedCount[]; labelKey: "genre" | "author" }) {
-  const max = Math.max(...items.map((item) => item.book_count), 1);
+  const visibleItems = items.slice(0, 3);
+  const max = Math.max(...visibleItems.map((item) => item.book_count), 1);
 
-  return items.length ? (
+  return visibleItems.length ? (
     <ol className="space-y-3">
-      {items.map((item, index) => (
+      {visibleItems.map((item, index) => (
         <li key={`${item[labelKey]}-${index}`} className="grid grid-cols-[1.25rem_1fr_auto] items-center gap-2 text-sm">
           <span className="text-xs text-muted-foreground">{index + 1}</span>
           <div className="min-w-0">

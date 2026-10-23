@@ -15,8 +15,8 @@ export default async function StatsPage() {
     supabase.rpc("get_my_reading_stats"),
     supabase.rpc("get_my_book_status_distribution"),
     supabase.rpc("get_my_rating_distribution"),
-    supabase.rpc("get_my_top_genres", { p_limit: 8 }),
-    supabase.rpc("get_my_top_authors", { p_limit: 8 }),
+    supabase.rpc("get_my_top_genres", { p_limit: 3 }),
+    supabase.rpc("get_my_top_authors", { p_limit: 3 }),
     supabase.rpc("get_my_reading_activity"),
   ]);
 

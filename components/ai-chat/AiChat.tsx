@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { EyeOff, Loader2, Plus, Send, Sparkles, Trash2 } from "lucide-react";
 import { BookCover } from "@/components/books/book-cover";
+import { AiPersonalizationNotice } from "@/components/ai-personalization-notice";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Button } from "@/components/ui/button";
 import { ShelfieHero } from "@/components/shelfie-hero";
@@ -289,6 +290,8 @@ export default function AiChat() {
         <div className="shelfie-surface h-40 animate-pulse" aria-busy="true" />
       )}
 
+      {enabled === true && <AiPersonalizationNotice enabled={enabled} />}
+
       {enabled === true && (
         <section className="grid min-h-[36rem] gap-4 lg:grid-cols-[16rem_minmax(0,1fr)]" aria-label="AI reading chat">
           <aside className="shelfie-surface flex flex-col p-3">
@@ -354,7 +357,7 @@ export default function AiChat() {
 
             <div className="border-t border-border/80 p-3 sm:p-4">
               {active?.user_message_count === MESSAGE_LIMIT && <p className="mb-3 text-center text-xs text-muted-foreground">This conversation reached its limit. Start a new conversation to continue.</p>}
-              <form className="flex items-end gap-2" onSubmit={(event) => void sendMessage(event)}>
+                <form className="flex items-center gap-2" onSubmit={(event) => void sendMessage(event)}>
                 <textarea
                   value={message}
                   onChange={(event) => setMessage(event.target.value)}
