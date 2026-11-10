@@ -92,7 +92,13 @@ async function BookContent({ id }: { id: string }) {
     publicReviews = (publicReviewRows ?? []) as PublicReview[];
   }
 
-  return <BookDetails book={book} libraryStatus={libraryStatus} inWishlist={inWishlist} isFavorite={isFavorite} publicReviews={publicReviews} myReviews={myReviews} shareRecipients={shareRecipients} />;
+  // Reviews from people you follow come first; each group stays newest first.
+  const followedUsernames = new Set(shareRecipients.map((recipient) => recipient.username));
+  publicReviews = publicReviews
+    .map((review) => ({ ...review, is_following: followedUsernames.has(review.username) }))
+    .sort((a, b) => Number(b.is_following) - Number(a.is_following));
+
+  return <BookDetails book={book}libraryStatus={libraryStatus} inWishlist={inWishlist} isFavorite={isFavorite} publicReviews={publicReviews} myReviews={myReviews} shareRecipients={shareRecipients} />;
 }
 
 export default async function BookPage({ params, searchParams }: {

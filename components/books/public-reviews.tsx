@@ -12,6 +12,8 @@ export type PublicReview = {
   created_at: string;
   title?: string;
   google_books_id?: string;
+  /** Set on book pages: the reviewer is someone the viewer follows. */
+  is_following?: boolean;
 };
 
 const statusLabels: Record<BookStatus, string> = {
@@ -36,7 +38,14 @@ export function PublicReviews({ reviews, title = "Public reviews" }: { reviews: 
                   <div className="flex size-9 items-center justify-center rounded-full bg-secondary font-semibold">{review.username[0]?.toUpperCase()}</div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="font-medium">@{review.username}</p>
+                  <p className="flex flex-wrap items-center gap-2 font-medium">
+                    @{review.username}
+                    {review.is_following && (
+                      <span className="inline-flex rounded-full bg-primary/10 px-2 py-0.5 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-primary">
+                        Following
+                      </span>
+                    )}
+                  </p>
                   <p className="text-xs text-muted-foreground">
                     {new Date(review.created_at).toLocaleString()} · {statusLabels[review.reading_status]}
                   </p>
