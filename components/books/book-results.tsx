@@ -1,16 +1,22 @@
 import Link from "next/link";
 import { BookCover } from "@/components/books/book-cover";
+import { RetryButton } from "@/components/books/retry-button";
 import { Button } from "@/components/ui/button";
 import { GoogleBooksError, searchBooks } from "@/lib/books/google-books";
 import { bookSearchHref } from "@/lib/books/search";
 
-export async function BookResults({ query, page }: { query: string; page: number }) {
+export async function BookResults({ query, page, userId }: { query: string; page: number; userId?: string }) {
   let result;
   try {
-    result = await searchBooks(query, page);
+    result = await searchBooks(query, page, { userId });
   } catch (error) {
     if (!(error instanceof GoogleBooksError)) throw error;
-    return <p role="alert" className="rounded-lg border p-6 text-sm text-destructive">{error.message}</p>;
+    return (
+      <div role="alert" className="flex flex-col items-start gap-3 rounded-lg border p-6 text-sm text-destructive sm:flex-row sm:items-center sm:justify-between">
+        <p>{error.message}</p>
+        {error.kind !== "config" && error.kind !== "invalid" && <RetryButton />}
+      </div>
+    );
   }
 
   const { books, hasNextPage } = result;

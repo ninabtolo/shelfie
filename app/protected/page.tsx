@@ -44,7 +44,7 @@ export default async function ProtectedPage({ searchParams }: {
       </section>
       {query ? (
         <Suspense key={`${query}:${page}`} fallback={<BookResultsLoading />}>
-          <BookResults query={query} page={page} />
+          <BookResults query={query} page={page} userId={user?.id} />
         </Suspense>
       ) : (
         <section className="shelfie-search-empty space-y-4">

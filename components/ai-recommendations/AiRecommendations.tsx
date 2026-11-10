@@ -26,7 +26,33 @@ type RecommendationCache = ApiError & {
   complete?: boolean;
 };
 
+type StreamEvent =
+  | { type: "book"; book: Recommendation }
+  | { type: "done"; books: Recommendation[]; partial?: boolean; cooldown_seconds?: number }
+  | { type: "error"; error: string };
+
 const GENERATION_COOLDOWN_MS = 20_000;
+const RECOMMENDATION_COUNT = 6;
+
+async function* readLines(body: ReadableStream<Uint8Array>) {
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let newline = buffer.indexOf("\n");
+    while (newline >= 0) {
+      const line = buffer.slice(0, newline).trim();
+      buffer = buffer.slice(newline + 1);
+      if (line) yield line;
+      newline = buffer.indexOf("\n");
+    }
+  }
+  const rest = (buffer + decoder.decode()).trim();
+  if (rest) yield rest;
+}
 
 function RecommendationSkeleton() {
   return (
@@ -53,6 +79,11 @@ export default function AiRecommendations() {
   const requestNumber = useRef(0);
   const cooldownRef = useRef(0);
   const generationInFlight = useRef<Promise<void> | null>(null);
+  const booksRef = useRef<Recommendation[]>([]);
+
+  useEffect(() => {
+    booksRef.current = books;
+  }, [books]);
 
   function startCooldown(seconds: number) {
     const next = Math.max(0, Math.ceil(seconds));
@@ -80,33 +111,57 @@ export default function AiRecommendations() {
     if (cooldownRef.current > 0) return;
 
     const requestId = ++requestNumber.current;
+    const isCurrent = () => requestId === requestNumber.current;
+    const previousBooks = booksRef.current;
     const request = (async () => {
       setLoading(true);
       setError("");
       setBooks([]);
+      const received: Recommendation[] = [];
 
       try {
         const response = await fetch("/api/ai-recommendations", {
           method: "POST",
           cache: "no-store",
         });
-        const data = (await response.json()) as ApiError & {
-          books?: Recommendation[];
-          retry_after?: number;
-          cooldown_seconds?: number;
-        };
 
-        if (!response.ok) {
+        // Errors before generation starts (auth, settings, cooldown) are plain JSON.
+        if (!response.ok || !response.body || !response.headers.get("content-type")?.includes("ndjson")) {
+          const data = (await response.json().catch(() => ({}))) as ApiError & { retry_after?: number };
           if (response.status === 429) startCooldown(data.retry_after ?? 20);
           throw new Error(data.error ?? "Could not generate recommendations");
         }
 
-        startCooldown(data.cooldown_seconds ?? 20);
-        if (requestId === requestNumber.current) {
-          setBooks(data.books ?? []);
+        startCooldown(GENERATION_COOLDOWN_MS / 1000);
+        let finalBooks: Recommendation[] | null = null;
+        let streamError = "";
+
+        for await (const line of readLines(response.body)) {
+          let event: StreamEvent;
+          try {
+            event = JSON.parse(line) as StreamEvent;
+          } catch {
+            continue;
+          }
+          if (event.type === "book") {
+            received.push(event.book);
+            if (isCurrent()) setBooks([...received]);
+          } else if (event.type === "done") {
+            finalBooks = event.books;
+          } else if (event.type === "error") {
+            streamError = event.error;
+          }
+        }
+
+        if (finalBooks) {
+          if (isCurrent()) setBooks(finalBooks);
+        } else {
+          throw new Error(streamError || "Recommendations stopped unexpectedly. Try again.");
         }
       } catch (cause) {
-        if (requestId === requestNumber.current) {
+        if (isCurrent()) {
+          // Nothing new arrived: keep showing the previous set instead of an empty grid.
+          if (received.length === 0) setBooks(previousBooks);
           setError(cause instanceof Error ? cause.message : "Unexpected error");
         }
       } finally {
@@ -245,14 +300,12 @@ export default function AiRecommendations() {
 
       {enabled && (
         <section className="space-y-5" aria-label="Recommendations">
-          {loading && (
-            <ul className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3" aria-label="Loading recommendations">
-              {Array.from({ length: 6 }, (_, index) => <RecommendationSkeleton key={index} />)}
-            </ul>
-          )}
-
-          {!loading && books.length > 0 && (
-            <ul className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          {(loading || books.length > 0) && (
+            <ul
+              className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3"
+              aria-busy={loading}
+              aria-label={loading ? `Loading recommendations, ${books.length} of ${RECOMMENDATION_COUNT} ready` : undefined}
+            >
               {books.map((book, index) => (
                 <li key={book.google_books_id} className="h-full">
                   <article className="book-card flex h-full flex-col rounded-xl border bg-card p-4">
@@ -299,6 +352,10 @@ export default function AiRecommendations() {
                   </article>
                 </li>
               ))}
+              {loading && Array.from(
+                { length: Math.max(0, RECOMMENDATION_COUNT - books.length) },
+                (_, index) => <RecommendationSkeleton key={`skeleton-${index}`} />,
+              )}
             </ul>
           )}
 

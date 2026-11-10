@@ -140,7 +140,7 @@ export async function POST(request: Request) {
     const candidatesToValidate = candidates.filter((candidate) => (
       !excluded.names.has(identity(candidate.title, candidate.author))
     ));
-    const resolved = await resolveGoogleBooks(candidatesToValidate);
+    const resolved = await resolveGoogleBooks(candidatesToValidate, { userId: user.id });
     const usedIds = new Set<string>();
     const usedNames = new Set<string>();
     const recommendations: ChatBook[] = [];

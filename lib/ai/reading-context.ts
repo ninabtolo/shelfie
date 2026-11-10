@@ -1,3 +1,5 @@
+import { norm } from "@/lib/ai/book-match";
+
 export type Review = {
   rating?: number;
   review_text?: string | null;
@@ -27,10 +29,7 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
-export function norm(value: string) {
-  return value.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
-    .replace(/[^a-z0-9]+/g, " ").trim();
-}
+export { norm };
 
 export function identity(title: string, author: string) {
   return `${norm(title)}|${norm(author)}`;

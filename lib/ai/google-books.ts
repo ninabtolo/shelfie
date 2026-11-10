@@ -1,4 +1,9 @@
-import { norm } from "@/lib/ai/reading-context";
+import "server-only";
+
+import { bestMatch, isConfidentMatch, mainTitle, surname, type VolumeMatch } from "@/lib/ai/book-match";
+import { GoogleBooksError, googleBooksRequest, quotaUserFor } from "@/lib/books/google-books-client";
+import { mapGoogleBook } from "@/lib/books/mapper";
+import type { Book } from "@/lib/books/types";
 
 export type BookCandidate = {
   title: string;
@@ -20,127 +25,107 @@ export type ResolvedBook = {
   from_wishlist?: boolean;
 };
 
-type GoogleVolumeInfo = {
-  title?: unknown;
-  authors?: unknown;
-  description?: unknown;
-  imageLinks?: unknown;
-  publishedDate?: unknown;
-};
+export type ResolveOptions = { userId?: string; signal?: AbortSignal };
 
-type GoogleVolume = { id?: unknown; volumeInfo?: GoogleVolumeInfo };
+const RESOLVE_FIELDS = "items(id,volumeInfo(title,subtitle,authors,description,publishedDate,imageLinks(thumbnail,smallThumbnail)))";
 
-async function fetchVolumes(url: URL) {
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    const response = await fetch(url, { cache: "no-store", signal: AbortSignal.timeout(8000) });
-    if (response.ok) return await response.json() as { items?: unknown[] };
-    if ((response.status !== 429 && response.status !== 503) || attempt === 2) return null;
-    await new Promise((resolve) => setTimeout(resolve, 250 * 2 ** attempt));
+function phrase(value: string) {
+  return value.replace(/["]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+async function searchVolumes(q: string, options: ResolveOptions): Promise<Book[]> {
+  const data = await googleBooksRequest({
+    op: "resolve",
+    params: { q, maxResults: "10", printType: "books", fields: RESOLVE_FIELDS },
+    priority: "background",
+    ttlMs: 24 * 60 * 60_000,
+    emptyTtlMs: 10 * 60_000,
+    isEmpty: (value) => !Array.isArray((value as { items?: unknown } | null)?.items),
+    deadlineMs: 6_000,
+    quotaUser: quotaUserFor(options.userId),
+    signal: options.signal,
+  });
+  const items = data && typeof data === "object" && Array.isArray((data as { items?: unknown }).items)
+    ? (data as { items: unknown[] }).items
+    : [];
+  return items.map(mapGoogleBook).filter((book): book is Book => book !== null);
+}
+
+type Found = { book: Book; match: VolumeMatch };
+
+function pick(candidate: BookCandidate, books: Book[]): Found | null {
+  const match = bestMatch(candidate, books.map((book) => ({
+    title: book.title,
+    subtitle: book.subtitle,
+    authors: book.authors,
+    hasCover: Boolean(book.cover_url),
+    hasDescription: Boolean(book.description),
+  })));
+  return match ? { book: books[match.index], match } : null;
+}
+
+function better(a: Found | null, b: Found | null) {
+  if (!a) return b;
+  if (!b) return a;
+  return b.match.score > a.match.score + 0.001 ? b : a;
+}
+
+function toResolved(candidate: BookCandidate, book: Book): ResolvedBook {
+  return {
+    google_books_id: book.google_books_id,
+    title: book.title,
+    authors: book.authors ?? [],
+    description: book.description ?? "",
+    cover_url: book.cover_url,
+    published_date: book.published_date,
+    reason: candidate.reason,
+    tier: candidate.tier,
+    from_wishlist: candidate.from_wishlist,
+  };
+}
+
+/**
+ * Finds the Google Books volume for an AI-suggested title and author.
+ * Tries a precise query first and only falls back to broader queries when
+ * that misses, which is what lesser-known books usually need.
+ */
+export async function resolveGoogleBook(candidate: BookCandidate, options: ResolveOptions = {}): Promise<ResolvedBook | null> {
+  const title = phrase(candidate.title);
+  const main = phrase(mainTitle(candidate.title));
+  const family = phrase(surname(candidate.author));
+  if (!title) return null;
+
+  let best: Found | null = null;
+  let lastError: unknown = null;
+
+  const precise = family ? `intitle:"${main}" inauthor:"${family}"` : `intitle:"${main}"`;
+  try {
+    best = pick(candidate, await searchVolumes(precise, options));
+  } catch (error) {
+    if (options.signal?.aborted) throw error;
+    lastError = error;
+    // Quota and configuration problems will not be fixed by more queries.
+    if (error instanceof GoogleBooksError && (error.kind === "quota" || error.kind === "config")) throw error;
   }
+  if (isConfidentMatch(best?.match ?? null)) return toResolved(candidate, best!.book);
+
+  const fallbacks = [`"${title}" ${phrase(candidate.author)}`, `intitle:${title}`];
+  const results = await Promise.allSettled(fallbacks.map((query) => searchVolumes(query, options)));
+  if (options.signal?.aborted) throw new DOMException("The operation was aborted.", "AbortError");
+  for (const result of results) {
+    if (result.status === "fulfilled") best = better(best, pick(candidate, result.value));
+    else lastError = result.reason;
+  }
+
+  if (best) return toResolved(candidate, best.book);
+  if (lastError && results.every((result) => result.status === "rejected")) throw lastError;
   return null;
 }
 
-function titleMatches(expected: string, actual: string) {
-  const expectedWords = norm(expected).split(" ").filter((word) => word.length > 2);
-  const actualWords = new Set(norm(actual).split(" ").filter((word) => word.length > 2));
-  const normalizedExpected = norm(expected);
-  const normalizedActual = norm(actual);
-  if (!normalizedExpected || !normalizedActual) return false;
-  if (normalizedExpected === normalizedActual
-    || normalizedActual.startsWith(`${normalizedExpected} `)
-    || normalizedExpected.startsWith(`${normalizedActual} `)) return true;
-  const overlap = expectedWords.filter((word) => actualWords.has(word)).length;
-  return expectedWords.length >= 2 && overlap >= Math.max(2, Math.ceil(expectedWords.length * 0.7));
-}
-
-function authorMatches(expected: string, actualAuthors: string[]) {
-  const expectedAuthors = expected.split(/\s*(?:,|&|\band\b)\s*/i).map(norm).filter(Boolean);
-  return expectedAuthors.some((expectedAuthor) => actualAuthors.some((actualAuthor) => {
-    const normalizedActual = norm(actualAuthor);
-    return normalizedActual === expectedAuthor
-      || normalizedActual.includes(expectedAuthor)
-      || expectedAuthor.includes(normalizedActual);
-  }));
-}
-
-export async function resolveGoogleBook(candidate: BookCandidate): Promise<ResolvedBook | null> {
-  const queries = [
-    { value: `intitle:${candidate.title} inauthor:${candidate.author}`, requireAuthor: true },
-    { value: `intitle:${candidate.title}`, requireAuthor: false },
-  ];
-  for (const query of queries) {
-    const url = new URL("https://www.googleapis.com/books/v1/volumes");
-    url.searchParams.set("q", query.value);
-    url.searchParams.set("maxResults", "10");
-    url.searchParams.set("printType", "books");
-    if (process.env.GOOGLE_BOOKS_API_KEY) url.searchParams.set("key", process.env.GOOGLE_BOOKS_API_KEY);
-
-    const data = await fetchVolumes(url);
-    if (!data) continue;
-    const volumes = (data.items ?? []).map((item): GoogleVolume | null => (
-      item !== null && typeof item === "object" && !Array.isArray(item) ? item as GoogleVolume : null
-    )).filter((item): item is GoogleVolume => Boolean(item));
-    const titleAndAuthorMatch = volumes.find((item) => {
-      if (!item || !item.volumeInfo || typeof item.volumeInfo !== "object") return false;
-      const info = item.volumeInfo;
-      const title = typeof info.title === "string" ? info.title : "";
-      const authors = Array.isArray(info.authors)
-        ? info.authors.filter((author): author is string => typeof author === "string")
-        : [];
-      return titleMatches(candidate.title, title)
-        && authorMatches(candidate.author, authors)
-        && !/\b(bundle|box set|boxset|omnibus|anthology)\b/i.test(title);
-    });
-    const volume = titleAndAuthorMatch ?? (!query.requireAuthor ? volumes.find((item) => {
-      if (!item || !item.volumeInfo || typeof item.volumeInfo !== "object") return false;
-      const info = item.volumeInfo;
-      const title = typeof info.title === "string" ? info.title : "";
-      return titleMatches(candidate.title, title)
-        && !/\b(bundle|box set|boxset|omnibus|anthology)\b/i.test(title);
-    }) : undefined);
-
-    if (!volume || typeof volume.id !== "string" || !volume.volumeInfo) continue;
-    const info = volume.volumeInfo;
-    const title = typeof info.title === "string" ? info.title : null;
-    if (!title) continue;
-    const authors = Array.isArray(info.authors)
-      ? info.authors.filter((author): author is string => typeof author === "string")
-      : [];
-    const imageLinks = info.imageLinks && typeof info.imageLinks === "object" && !Array.isArray(info.imageLinks)
-      ? info.imageLinks as Record<string, unknown>
-      : {};
-    const cover = typeof imageLinks.thumbnail === "string" ? imageLinks.thumbnail.replace(/^http:/, "https:") : null;
-    return {
-      google_books_id: volume.id,
-      title,
-      authors,
-      description: typeof info.description === "string" ? info.description : "",
-      cover_url: cover,
-      published_date: typeof info.publishedDate === "string" ? info.publishedDate : null,
-      reason: candidate.reason,
-      tier: candidate.tier,
-      from_wishlist: candidate.from_wishlist,
-    };
-  }
-  return null;
-}
-
-export async function resolveGoogleBooks(candidates: BookCandidate[], concurrency = 6) {
-  const resolved: Array<ResolvedBook | null> = Array.from({ length: candidates.length }, () => null);
-  let nextIndex = 0;
-
-  async function worker() {
-    while (nextIndex < candidates.length) {
-      const index = nextIndex++;
-      try {
-        resolved[index] = await resolveGoogleBook(candidates[index]);
-      } catch {
-        // One unavailable Google Books lookup should not block the rest.
-      }
-    }
-  }
-
-  const workerCount = Math.min(concurrency, candidates.length);
-  await Promise.all(Array.from({ length: workerCount }, () => worker()));
+/** Resolves many candidates; the shared client limits concurrency. */
+export async function resolveGoogleBooks(candidates: BookCandidate[], options: ResolveOptions = {}) {
+  const resolved = await Promise.all(candidates.map((candidate) => (
+    resolveGoogleBook(candidate, options).catch(() => null)
+  )));
   return resolved.filter((book): book is ResolvedBook => book !== null);
 }

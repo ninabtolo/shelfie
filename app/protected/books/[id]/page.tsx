@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ArrowLeft } from "lucide-react";
 import { BookDetails } from "@/components/books/book-details";
+import { RetryButton } from "@/components/books/retry-button";
 import { BookDetailsLoading } from "@/components/shelfie-loading";
 import type { PublicReview } from "@/components/books/public-reviews";
 import type { ReviewInput } from "@/components/books/review-form";
@@ -18,7 +19,12 @@ async function BookContent({ id }: { id: string }) {
     book = await getBook(id);
   } catch (error) {
     if (!(error instanceof GoogleBooksError)) throw error;
-    return <p role="alert" className="rounded-lg border p-6 text-sm text-destructive">{error.message}</p>;
+    return (
+      <div role="alert" className="flex flex-col items-start gap-3 rounded-lg border p-6 text-sm text-destructive sm:flex-row sm:items-center sm:justify-between">
+        <p>{error.message}</p>
+        {error.kind !== "config" && <RetryButton />}
+      </div>
+    );
   }
   if (!book) notFound();
 
