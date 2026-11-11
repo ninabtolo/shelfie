@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { Mail, UsersRound } from "lucide-react";
+import { Mail, Scale, UsersRound } from "lucide-react";
+import Link from "next/link";
 import { ShelfieHero } from "@/components/shelfie-hero";
 import { AiPersonalizationSettings } from "@/components/account/ai-personalization-settings";
 import { ProfileEditor } from "@/components/profile/profile-editor";
@@ -30,7 +31,7 @@ export default async function AccountPage() {
   if (!userId) throw new Error("Could not load your account.");
   const { data: profile, error } = await supabase
     .from("profiles")
-    .select("username, bio, avatar_url")
+    .select("username, bio, avatar_url, terms_accepted_at")
     .eq("id", userId)
     .single();
   if (error || !profile) throw new Error("Could not load your profile.");
@@ -83,6 +84,20 @@ export default async function AccountPage() {
         initialBio={profile.bio ?? ""}
         initialAvatarUrl={profile.avatar_url}
       />
+      <div className="shelfie-surface space-y-2 p-5 sm:p-6">
+        <p className="flex items-center gap-2 text-sm text-muted-foreground"><Scale aria-hidden="true" className="size-4" /> Legal &amp; privacy</p>
+        <p className="text-sm leading-6 text-muted-foreground">
+          {profile.terms_accepted_at
+            ? `You accepted the Terms of Use and Privacy Policy on ${new Date(profile.terms_accepted_at).toLocaleDateString("en-US", { dateStyle: "long" })}.`
+            : "Review how Shelfie handles your data."}{" "}
+          To download or delete your account data, see the Privacy Policy.
+        </p>
+        <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm font-medium">
+          <Link href="/legal/privacy" className="text-primary underline-offset-4 hover:underline">Privacy Policy</Link>
+          <Link href="/legal/terms" className="text-primary underline-offset-4 hover:underline">Terms of Use</Link>
+          <Link href="/legal/privacy#your-choices" className="text-primary underline-offset-4 hover:underline">Your data rights</Link>
+        </div>
+      </div>
     </section>
   );
 }

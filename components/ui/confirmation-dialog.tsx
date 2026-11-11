@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 type ConfirmationDialogProps = {
   open: boolean;
   title: string;
-  description: string;
+  description: React.ReactNode;
+  icon?: React.ReactNode;
   confirmLabel: string;
   pendingLabel?: string;
   onCancel: () => void;
@@ -19,6 +20,7 @@ export function ConfirmationDialog({
   open,
   title,
   description,
+  icon,
   confirmLabel,
   pendingLabel = "Working…",
   onCancel,
@@ -84,11 +86,11 @@ export function ConfirmationDialog({
       >
         <div className="shelfie-confirm-content">
           <div className="shelfie-confirm-icon" aria-hidden="true">
-            <AlertTriangle />
+            {icon ?? <AlertTriangle />}
           </div>
           <div className="min-w-0 space-y-2">
             <h2 id={titleId} className="text-xl font-semibold">{title}</h2>
-            <p id={descriptionId} className="text-sm leading-6 text-muted-foreground">{description}</p>
+            <div id={descriptionId} className="text-sm leading-6 text-muted-foreground">{description}</div>
           </div>
           <button
             type="button"

@@ -1,5 +1,6 @@
 import { BookOpen, Sparkles } from "lucide-react";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { LegalLinks } from "@/components/legal/legal-links";
 
 const stars = [
   ["left-[7%] top-[17%]", "h-1.5 w-1.5", "animate-[star-drift-one_11s_ease-in-out_1.8s_infinite]"],
@@ -47,6 +48,7 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
           <div className="mt-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-foreground/5 text-foreground/75 shadow-[0_8px_30px_hsl(270_20%_30%/0.12)]">
             <BookOpen className="h-6 w-6" strokeWidth={1.6} />
           </div>
+          <LegalLinks className="mt-6" />
         </div>
       </div>
     </main>

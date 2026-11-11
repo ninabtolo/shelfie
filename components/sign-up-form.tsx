@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LegalConsentCheckbox } from "@/components/legal/legal-consent-checkbox";
+import { LEGAL_VERSION, MINIMUM_AGE } from "@/lib/legal";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -24,6 +26,7 @@ export function SignUpForm({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -47,6 +50,11 @@ export function SignUpForm({
       return;
     }
 
+    if (!acceptedTerms) {
+      setError(`You must be at least ${MINIMUM_AGE} and accept the Terms of Use and Privacy Policy to create an account.`);
+      return;
+    }
+
     const supabase = createClient();
     setIsLoading(true);
 
@@ -55,8 +63,11 @@ export function SignUpForm({
         email,
         password,
         options: {
-            data: {
+          data: {
             username,
+            accepted_terms: true,
+            confirmed_age: true,
+            terms_version: LEGAL_VERSION,
           },
           emailRedirectTo: `${window.location.origin}/protected`,
         },
@@ -129,6 +140,7 @@ export function SignUpForm({
                   onChange={(e) => setRepeatPassword(e.target.value)}
                 />
               </div>
+              <LegalConsentCheckbox checked={acceptedTerms} onChange={setAcceptedTerms} />
               {error && <p className="text-sm text-destructive">{error}</p>}
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Creating an account..." : "Sign up"}

@@ -10,7 +10,11 @@ export function AiPersonalizationNotice({ enabled }: { enabled: boolean }) {
         <div className="min-w-0 space-y-1">
           <h3 id="reading-data-title" className="text-base font-semibold">Your reading data stays opt-in</h3>
           <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-            Shelfie only uses your library, wishlist, ratings, favorites and review text with Gemini when AI personalization is enabled in Account. That single setting controls both automatic recommendations and the AI reading chat.
+            {enabled
+              ? "AI personalization is on: your library, wishlist, ratings, favorites, review text and chat messages are sent to Google's Gemini API to personalize suggestions. Your email and profile details are never sent."
+              : "Shelfie only sends your library, wishlist, ratings, favorites, review text and chat messages to Google's Gemini API when you turn on AI personalization in Account."}{" "}
+            One setting controls both recommendations and the AI chat. AI suggestions can be inaccurate.{" "}
+            <Link href="/legal/privacy#ai-personalization" className="font-medium text-primary underline underline-offset-2">Privacy details</Link>
           </p>
         </div>
       </div>
