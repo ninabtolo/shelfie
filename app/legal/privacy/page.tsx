@@ -130,8 +130,9 @@ export default function PrivacyPolicyPage() {
         <h2 id="retention">8. How long we keep information</h2>
         <p>
           We keep your information while your account is active. When you delete content (for example a review or an AI conversation) it is
-          removed from the app. When your account is deleted, your profile, library, reviews, wishlist, follows, shares, notifications and AI
-          conversations are deleted as well. Copies may remain in provider backups or logs for a limited time before they are overwritten, and
+          removed from the app. You can delete your whole account at any time from{" "}
+          <Link href="/protected/account#delete-account-title">Account → Delete account</Link>. This immediately and permanently deletes your
+          profile, profile picture, library, reviews, wishlist, follows, shares, notifications, AI settings and AI conversations. Copies may remain in provider backups or logs for a limited time before they are overwritten, and
           we may keep limited information when needed to comply with the law or resolve disputes.
         </p>
         <p>
@@ -145,8 +146,9 @@ export default function PrivacyPolicyPage() {
           <li><strong>Control visibility</strong> by marking library books as private.</li>
           <li><strong>Delete</strong> reviews, books, wishlist items and AI conversations at any time.</li>
           <li><strong>Turn AI personalization on or off</strong> in Account.</li>
+          <li><strong>Delete your account</strong> and all of its data yourself, at any time, in Account → Delete account.</li>
           <li>
-            <strong>Access, correct or delete your account and data</strong> by contacting us at <LegalContact />, using the email address
+            <strong>Request a copy of your data or a correction</strong> by contacting us at <LegalContact />, using the email address
             linked to your account. We may need to confirm the request comes from you.
           </li>
         </ul>

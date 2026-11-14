@@ -11,6 +11,8 @@ type ConfirmationDialogProps = {
   description: React.ReactNode;
   icon?: React.ReactNode;
   confirmLabel: string;
+  confirmDisabled?: boolean;
+  confirmVariant?: "default" | "destructive";
   pendingLabel?: string;
   onCancel: () => void;
   onConfirm: () => void | Promise<void>;
@@ -22,6 +24,8 @@ export function ConfirmationDialog({
   description,
   icon,
   confirmLabel,
+  confirmDisabled = false,
+  confirmVariant = "default",
   pendingLabel = "Working…",
   onCancel,
   onConfirm,
@@ -106,7 +110,7 @@ export function ConfirmationDialog({
           <Button ref={cancelButtonRef} type="button" variant="outline" onClick={onCancelRef.current} disabled={pending}>
             Cancel
           </Button>
-          <Button type="button" onClick={handleConfirm} disabled={pending}>
+          <Button type="button" variant={confirmVariant} onClick={handleConfirm} disabled={pending || confirmDisabled}>
             {pending ? pendingLabel : confirmLabel}
           </Button>
         </div>

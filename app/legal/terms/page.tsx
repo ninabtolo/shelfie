@@ -81,7 +81,8 @@ export default function TermsOfUsePage() {
         <h2 id="moderation">7. Moderation, suspension and termination</h2>
         <p>
           We may remove content, limit features, or suspend or delete accounts that violate these Terms or put Shelfie or its users at risk,
-          with or without notice. You can stop using Shelfie at any time and ask us to delete your account by contacting <LegalContact />.
+          with or without notice. You can stop using Shelfie at any time and permanently delete your account yourself from Account → Delete
+          account.
         </p>
 
         <h2 id="ai-features">8. AI features</h2>

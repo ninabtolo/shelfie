@@ -3,6 +3,7 @@ import { Mail, Scale, UsersRound } from "lucide-react";
 import Link from "next/link";
 import { ShelfieHero } from "@/components/shelfie-hero";
 import { AiPersonalizationSettings } from "@/components/account/ai-personalization-settings";
+import { DeleteAccountSection } from "@/components/account/delete-account-section";
 import { ProfileEditor } from "@/components/profile/profile-editor";
 import {
   FollowersList,
@@ -89,8 +90,7 @@ export default async function AccountPage() {
         <p className="text-sm leading-6 text-muted-foreground">
           {profile.terms_accepted_at
             ? `You accepted the Terms of Use and Privacy Policy on ${new Date(profile.terms_accepted_at).toLocaleDateString("en-US", { dateStyle: "long" })}.`
-            : "Review how Shelfie handles your data."}{" "}
-          To download or delete your account data, see the Privacy Policy.
+            : "Review how Shelfie handles your data."}
         </p>
         <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm font-medium">
           <Link href="/legal/privacy" className="text-primary underline-offset-4 hover:underline">Privacy Policy</Link>
@@ -98,6 +98,7 @@ export default async function AccountPage() {
           <Link href="/legal/privacy#your-choices" className="text-primary underline-offset-4 hover:underline">Your data rights</Link>
         </div>
       </div>
+      <DeleteAccountSection username={profile.username} />
     </section>
   );
 }
