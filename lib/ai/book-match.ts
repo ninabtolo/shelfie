@@ -43,7 +43,8 @@ export function mainTitle(title: string) {
 
 /** The author's family name, used for forgiving `inauthor:` queries. */
 export function surname(author: string) {
-  const first = author.split(/\s*(?:,|&|\band\b|\be\b|\by\b)\s*/i).find((part) => part.trim()) ?? author;
+  // Connectors need spaces on both sides so initials ("V. E. Schwab") stay intact.
+  const first = author.split(/\s*[,&]\s*|\s+(?:and|e|y)\s+/i).find((part) => part.trim()) ?? author;
   const words = norm(first).split(" ").filter(Boolean);
   if (words.length === 0) return "";
   const last = words[words.length - 1];
@@ -52,6 +53,16 @@ export function surname(author: string) {
   return ["le", "de", "da", "do", "van", "von", "del", "di", "du", "la"].includes(particle)
     ? `${particle} ${last}`
     : last;
+}
+
+/**
+ * A forgiving identity for "is this the same book?": the main title without a
+ * leading article or subtitle, plus the author's family name. Different
+ * editions, subtitles and author spellings ("V. E. Schwab" / "Victoria
+ * Schwab") collapse to the same key.
+ */
+export function bookKey(title: string, author: string) {
+  return `${withoutArticle(norm(mainTitle(title)))}|${surname(author)}`;
 }
 
 function significantWords(value: string) {

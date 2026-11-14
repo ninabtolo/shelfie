@@ -46,3 +46,20 @@ test("query helpers", () => {
   assert.equal(surname("Patrick Rothfuss"), "rothfuss");
   assert.equal(surname("Neil Gaiman and Terry Pratchett"), "gaiman");
 });
+
+test("bookKey treats editions, subtitles and author spellings as the same book", async () => {
+  const { bookKey } = await import("../lib/ai/book-match.ts");
+  assert.equal(bookKey("The Name of the Wind", "Patrick Rothfuss"), bookKey("Name of the Wind: 10th Anniversary Edition", "Pat Rothfuss"));
+  assert.equal(bookKey("Piranesi", "Susanna Clarke"), bookKey("Piranesi (Portuguese Edition)", "Susanna  Clarke"));
+  assert.equal(bookKey("Vicious", "V. E. Schwab"), bookKey("Vicious", "Victoria Schwab"));
+  assert.equal(bookKey("A Mão Esquerda da Escuridão", "Ursula K. Le Guin"), bookKey("Mao Esquerda da Escuridao", "Ursula Le Guin"));
+  assert.notEqual(bookKey("Circe", "Madeline Miller"), bookKey("The Song of Achilles", "Madeline Miller"));
+  assert.notEqual(bookKey("Kindred", "Octavia E. Butler"), bookKey("Kindred", "Someone Else"));
+});
+
+test("surname keeps middle initials and still splits co-authors", () => {
+  assert.equal(surname("Octavia E. Butler"), "butler");
+  assert.equal(surname("V. E. Schwab"), "schwab");
+  assert.equal(surname("Neil Gaiman e Terry Pratchett"), "gaiman");
+  assert.equal(surname("Neil Gaiman and Terry Pratchett"), "gaiman");
+});

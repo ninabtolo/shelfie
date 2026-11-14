@@ -1,4 +1,4 @@
-import { norm } from "@/lib/ai/book-match";
+import { bookKey, norm } from "@/lib/ai/book-match";
 
 export type Review = {
   rating?: number;
@@ -32,7 +32,7 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
 export { norm };
 
 export function identity(title: string, author: string) {
-  return `${norm(title)}|${norm(author)}`;
+  return bookKey(title, author);
 }
 
 export function bookIdentities(book: Book) {
@@ -94,8 +94,8 @@ export function compactProfile(profile: ReadingProfile) {
   };
 }
 
-export function excludedBookKeys(profile: ReadingProfile) {
-  const excluded = [...(profile.library ?? []), ...(profile.dismissed ?? [])];
+export function excludedBookKeys(profile: ReadingProfile, extra: Book[] = []) {
+  const excluded = [...(profile.library ?? []), ...(profile.dismissed ?? []), ...extra];
   return {
     ids: new Set(excluded.map((book) => book.google_books_id).filter(Boolean)),
     names: new Set(excluded.flatMap(bookIdentities)),

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { generateRecommendations, RECOMMENDATION_COUNT, type Recommendation } from "@/lib/ai/recommendations";
-import type { ReadingProfile } from "@/lib/ai/reading-context";
+import type { Book, ReadingProfile } from "@/lib/ai/reading-context";
 import { createClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
@@ -19,6 +19,22 @@ type StreamEvent =
   | { type: "book"; book: Recommendation }
   | { type: "done"; books: Recommendation[]; partial: boolean; cooldown_seconds: number }
   | { type: "error"; error: string };
+
+/**
+ * Books shown in the last few refreshes, so the next set is fresh. Falls back
+ * to the current saved set if the history RPC is unavailable (for example,
+ * before its migration is applied). Never fatal.
+ */
+async function loadRecentRecommendations(supabase: Awaited<ReturnType<typeof createClient>>): Promise<Book[]> {
+  const { data, error } = await supabase.rpc("get_my_recent_ai_recommendations");
+  if (!error && Array.isArray(data)) return data as Book[];
+  console.warn("Could not load recent AI recommendations, using the current set:", error?.message);
+
+  const { data: cache, error: cacheError } = await supabase.rpc("get_my_ai_recommendation_cache");
+  if (cacheError) console.warn("Could not load AI recommendation cache:", cacheError.message);
+  const books = (cache as RecommendationCache | null)?.books;
+  return Array.isArray(books) ? books : [];
+}
 
 export async function GET() {
   const supabase = await createClient();
@@ -57,6 +73,8 @@ export async function POST() {
   const { data: profile, error: profileError } = await supabase.rpc("get_my_ai_reading_profile");
   if (profileError || !profile) return NextResponse.json({ error: "Could not load reading profile" }, { status: 500 });
 
+  const recent = await loadRecentRecommendations(supabase);
+
   const encoder = new TextEncoder();
   const stream = new ReadableStream<Uint8Array>({
     start(controller) {
@@ -75,6 +93,7 @@ export async function POST() {
         try {
           const results = await generateRecommendations(profile as ReadingProfile, {
             userId: user.id,
+            recent,
             onBook: (book) => send({ type: "book", book }),
           });
           if (results.length === 0) {
