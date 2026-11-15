@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Mail, Scale, UsersRound } from "lucide-react";
 import Link from "next/link";
 import { ShelfieHero } from "@/components/shelfie-hero";
+import { AccessibilitySettings } from "@/components/account/accessibility-settings";
 import { AiPersonalizationSettings } from "@/components/account/ai-personalization-settings";
 import { DeleteAccountSection } from "@/components/account/delete-account-section";
 import { ProfileEditor } from "@/components/profile/profile-editor";
@@ -67,6 +68,7 @@ export default async function AccountPage() {
     <section className="flex flex-col gap-8">
       <ShelfieHero title="My account" description="Manage your profile and connections." />
       <AiPersonalizationSettings initialEnabled={aiPreference?.personalization_enabled ?? false} />
+      <AccessibilitySettings />
       <section className="space-y-4" aria-labelledby="connections-title">
         <h2 id="connections-title" className="flex items-center gap-2 text-sm font-medium uppercase tracking-[0.16em] text-muted-foreground"><UsersRound aria-hidden="true" className="size-4 text-primary" /> My connections</h2>
         <div className="flex flex-wrap items-baseline gap-x-8 gap-y-2">

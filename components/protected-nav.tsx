@@ -32,6 +32,7 @@ const links = [
 export function ProtectedNav({ unreadCount }: { unreadCount: number }) {
   const pathname = usePathname();
   const navLinksRef = useRef<HTMLDivElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
   const linkRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
   const [indicator, setIndicator] = useState<{ left: number; width: number } | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -42,8 +43,59 @@ export function ProtectedNav({ unreadCount }: { unreadCount: number }) {
   })?.href ?? links[0].href;
 
   useEffect(() => {
+    // The chosen link is about to be hidden with the menu; hand focus to the new page
+    // so keyboard users don't get dropped back at the top of the document.
+    if (navLinksRef.current?.contains(document.activeElement) && toggleRef.current?.offsetParent) {
+      document.getElementById("main-content")?.focus({ preventScroll: true });
+    }
     setMenuOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const items = getMenuLinks();
+    (items.find((link) => link.getAttribute("aria-current") === "page") ?? items[0])?.focus();
+  }, [menuOpen]);
+
+  function getMenuLinks() {
+    return Array.from(navLinksRef.current?.querySelectorAll<HTMLAnchorElement>("a[href]") ?? []);
+  }
+
+  function closeMenu({ returnFocus }: { returnFocus: boolean }) {
+    setMenuOpen(false);
+    if (returnFocus) toggleRef.current?.focus();
+  }
+
+  function handleMenuKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+    if (!menuOpen) return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeMenu({ returnFocus: true });
+      return;
+    }
+
+    const items = getMenuLinks();
+    const index = items.indexOf(document.activeElement as HTMLAnchorElement);
+    const next =
+      event.key === "ArrowDown" ? items[(index + 1) % items.length]
+      : event.key === "ArrowUp" ? items[(index - 1 + items.length) % items.length]
+      : event.key === "Home" ? items[0]
+      : event.key === "End" ? items[items.length - 1]
+      : null;
+    if (next) {
+      event.preventDefault();
+      next.focus();
+    }
+  }
+
+  function handleMenuBlur(event: React.FocusEvent<HTMLDivElement>) {
+    // Close when keyboard focus moves elsewhere. A null relatedTarget (e.g. a mouse click
+    // in Safari, which doesn't focus links) must not close it before the click lands.
+    const next = event.relatedTarget;
+    if (menuOpen && next && !navLinksRef.current?.contains(next) && next !== toggleRef.current) {
+      setMenuOpen(false);
+    }
+  }
 
   useEffect(() => {
     const activeLink = linkRefs.current[activeHref];
@@ -65,6 +117,8 @@ export function ProtectedNav({ unreadCount }: { unreadCount: number }) {
         id="main-navigation"
         className={`shelfie-nav-links ${menuOpen ? "is-open" : ""}`}
         aria-label="Main navigation"
+        onKeyDown={handleMenuKeyDown}
+        onBlur={handleMenuBlur}
       >
         {indicator && (
           <span
@@ -97,8 +151,12 @@ export function ProtectedNav({ unreadCount }: { unreadCount: number }) {
         <AccountActionsMenu unreadCount={unreadCount} />
         <ThemeSwitcher />
         <button
+          ref={toggleRef}
           type="button"
           className="shelfie-mobile-menu-toggle"
+          onKeyDown={(event) => {
+            if (event.key === "Escape" && menuOpen) closeMenu({ returnFocus: true });
+          }}
           aria-controls="main-navigation"
           aria-expanded={menuOpen}
           aria-label={menuOpen ? "Close navigation" : "Open navigation"}

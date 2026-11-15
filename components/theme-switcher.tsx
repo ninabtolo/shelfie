@@ -33,7 +33,8 @@ const ThemeSwitcher = () => {
         <Button
           variant="ghost"
           size={"sm"}
-          className="border-0 bg-transparent shadow-none hover:bg-transparent focus:border-0 focus:bg-transparent focus:shadow-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
+          className="border-0 bg-transparent shadow-none hover:bg-transparent focus:bg-transparent"
+          aria-label={`Change theme (current: ${theme ?? "system"})`}
         >
           {theme === "light" ? (
             <Sun

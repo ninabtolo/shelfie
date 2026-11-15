@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { X } from "lucide-react";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { useFocusTrap } from "@/components/accessibility/use-focus-trap";
 
 export type FollowProfile = {
   follower_username: string;
@@ -71,6 +72,8 @@ function FollowDetails({
 }) {
   const [open, setOpen] = useState(false);
   const titleId = useId();
+  const dialogRef = useRef<HTMLElement>(null);
+  useFocusTrap(dialogRef, open);
 
   useEffect(() => {
     if (!open) return;
@@ -105,7 +108,7 @@ function FollowDetails({
             if (event.target === event.currentTarget) setOpen(false);
           }}
         >
-          <section className="shelfie-modal" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+          <section ref={dialogRef} tabIndex={-1} className="shelfie-modal" role="dialog" aria-modal="true" aria-labelledby={titleId}>
             <header className="shelfie-modal-header">
               <h2 id={titleId} className="text-2xl font-semibold">{title} <span className="text-muted-foreground">({count})</span></h2>
               <button type="button" className="shelfie-modal-close" onClick={() => setOpen(false)} aria-label={`Close ${title.toLowerCase()} list`}>

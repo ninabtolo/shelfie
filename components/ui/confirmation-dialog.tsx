@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AlertTriangle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useFocusTrap } from "@/components/accessibility/use-focus-trap";
 
 type ConfirmationDialogProps = {
   open: boolean;
@@ -32,6 +33,7 @@ export function ConfirmationDialog({
 }: ConfirmationDialogProps) {
   const [pending, setPending] = useState(false);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLElement>(null);
   const pendingRef = useRef(false);
   const onCancelRef = useRef(onCancel);
   const onConfirmRef = useRef(onConfirm);
@@ -40,13 +42,13 @@ export function ConfirmationDialog({
 
   onCancelRef.current = onCancel;
   onConfirmRef.current = onConfirm;
+  useFocusTrap(dialogRef, open, cancelButtonRef);
 
   useEffect(() => {
     if (!open) return;
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    cancelButtonRef.current?.focus();
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape" && !pendingRef.current) onCancelRef.current();
@@ -82,6 +84,8 @@ export function ConfirmationDialog({
       }}
     >
       <section
+        ref={dialogRef}
+        tabIndex={-1}
         className="shelfie-modal shelfie-confirm-dialog"
         role="dialog"
         aria-modal="true"

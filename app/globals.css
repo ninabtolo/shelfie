@@ -71,6 +71,12 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Visible focus for keyboard users everywhere. Components that draw their own ring
+     opt out with focus-visible:outline-none. */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
 }
 
 @layer utilities {
@@ -307,6 +313,12 @@
 .shelfie-nav-link:focus-visible {
   color: hsl(var(--foreground));
   background: hsl(var(--primary) / 0.08);
+}
+
+.shelfie-nav-link:focus-visible {
+  /* Draw the ring inside the pill: the link row scrolls (overflow clips anything
+     outside) and links sit only 0.15rem apart. */
+  outline-offset: -2px;
 }
 
 .shelfie-nav-link.is-active {
@@ -941,6 +953,63 @@
 .shelfie-app button,
 .shelfie-app a {
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Keyboard navigation */
+.shelfie-skip-link {
+  position: fixed;
+  z-index: 60;
+  top: 0.75rem;
+  left: 0.75rem;
+  border-radius: 999px;
+  padding: 0.6rem 1rem;
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgb(31 24 42 / 0.18);
+  transform: translateY(calc(-100% - 1rem));
+}
+
+.shelfie-skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+.shelfie-kbd {
+  display: inline-flex;
+  min-width: 1.6rem;
+  height: 1.6rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid hsl(var(--border));
+  border-bottom-width: 2px;
+  border-radius: 0.4rem;
+  padding: 0 0.4rem;
+  background: hsl(var(--muted));
+  color: hsl(var(--foreground));
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78rem;
+  line-height: 1;
+}
+
+.shelfie-shortcut-hint {
+  position: fixed;
+  z-index: 60;
+  bottom: 1.25rem;
+  left: 50%;
+  border: 1px solid hsl(var(--border));
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  background: hsl(var(--card));
+  box-shadow: 0 12px 28px rgb(31 24 42 / 0.16);
+  font-size: 0.85rem;
+  font-weight: 500;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.shelfie-shortcut-hint[data-visible="false"] {
+  opacity: 0;
 }
 
 @media (max-width: 980px) {

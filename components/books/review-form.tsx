@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,8 @@ const statuses: { value: BookStatus; label: string }[] = [
   { value: "read", label: "Read" },
   { value: "abandoned", label: "Abandoned" },
 ];
+
+const RATING_VALUES = [1, 2, 3, 4, 5];
 
 export type ReviewInput = {
   id: string;
@@ -45,6 +47,21 @@ export function ReviewForm({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const editing = Boolean(review);
+  const starRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  function handleRatingKeyDown(event: React.KeyboardEvent<HTMLButtonElement>) {
+    const current = rating || 1;
+    const next =
+      event.key === "ArrowRight" || event.key === "ArrowUp" ? (current % 5) + 1
+      : event.key === "ArrowLeft" || event.key === "ArrowDown" ? ((current + 3) % 5) + 1
+      : event.key === "Home" ? 1
+      : event.key === "End" ? 5
+      : null;
+    if (next === null) return;
+    event.preventDefault();
+    setRating(next);
+    starRefs.current[next - 1]?.focus();
+  }
 
   async function submit() {
     if (!rating) {
@@ -132,14 +149,20 @@ export function ReviewForm({
           </div>
           <div className="shelfie-rating-box flex min-h-20 flex-col justify-center gap-1 px-4 py-3" role="radiogroup" aria-label="Rating">
             <div className="flex items-center gap-1">
-              {[1, 2, 3, 4, 5].map((value) => (
+              {RATING_VALUES.map((value) => (
                 <button
                   key={value}
+                  ref={(node) => {
+                    starRefs.current[value - 1] = node;
+                  }}
                   type="button"
                   role="radio"
                   aria-checked={rating === value}
                   aria-label={`${value} ${value === 1 ? "star" : "stars"}`}
+                  // Roving tabindex: the group is one Tab stop, arrows change the rating.
+                  tabIndex={value === (rating || 1) ? 0 : -1}
                   onClick={() => setRating(value)}
+                  onKeyDown={handleRatingKeyDown}
                   disabled={pending}
                   className={`rounded-sm p-0.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${value <= rating ? "text-primary" : "text-muted-foreground/60"}`}
                 >
