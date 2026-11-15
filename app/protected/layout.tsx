@@ -41,7 +41,7 @@ export default async function ProtectedLayout({
   }
 
   return (
-    <div className="shelfie-app min-h-svh">
+    <div className="shelfie-app flex min-h-svh flex-col">
       <a href="#main-content" className="shelfie-skip-link">Skip to main content</a>
       <KeyboardShortcuts />
       <header className="shelfie-header">
@@ -53,7 +53,7 @@ export default async function ProtectedLayout({
           <ProtectedNav unreadCount={typeof unreadData === "number" ? unreadData : 0} />
         </nav>
       </header>
-      <main id="main-content" tabIndex={-1} className="shelfie-main mx-auto focus:outline-none flex w-full max-w-7xl flex-col px-5 py-8 sm:px-8 lg:py-10">
+      <main id="main-content" tabIndex={-1} className="shelfie-main mx-auto flex w-full flex-1 focus:outline-none max-w-7xl flex-col px-5 py-8 sm:px-8 lg:py-10">
         {children}
       </main>
       <footer className="px-5 pb-8 pt-2">

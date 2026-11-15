@@ -548,10 +548,6 @@
   letter-spacing: -0.025em;
 }
 
-.shelfie-main {
-  min-height: calc(100svh - 5rem);
-}
-
 .shelfie-heading {
   font-family: var(--font-display), Georgia, serif;
 }
