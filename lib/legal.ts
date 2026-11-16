@@ -5,19 +5,19 @@
  * meaningful way: every signed-in user will be asked to accept the new version
  * the next time they open the app.
  */
-export const LEGAL_VERSION = "2026-11-10";
+export const LEGAL_VERSION = "2026-11-16";
 
 /** Human-readable effective date shown on the legal pages. */
-export const LEGAL_EFFECTIVE_DATE = "November 10, 2026";
+export const LEGAL_EFFECTIVE_DATE = "November 16, 2026";
 
 /** Minimum age to create and use an account. */
 export const MINIMUM_AGE = 18;
 
 /**
  * Inbox for privacy, account deletion and copyright requests.
- * Set NEXT_PUBLIC_CONTACT_EMAIL in your environment (e.g. Vercel project settings).
+ * Can be overridden with NEXT_PUBLIC_CONTACT_EMAIL.
  */
-export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || "";
+export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || "support.ana.projects@gmail.com";
 
-/** US state whose laws govern the Terms. Set NEXT_PUBLIC_GOVERNING_STATE. */
-export const GOVERNING_STATE = process.env.NEXT_PUBLIC_GOVERNING_STATE?.trim() || "";
+/** US state whose laws govern the Terms. Can be overridden with NEXT_PUBLIC_GOVERNING_STATE. */
+export const GOVERNING_STATE = process.env.NEXT_PUBLIC_GOVERNING_STATE?.trim() || "Florida";
