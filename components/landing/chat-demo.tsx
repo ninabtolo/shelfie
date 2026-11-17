@@ -144,7 +144,7 @@ export function ChatDemo() {
                 <div className="landing-chat-cards">
                   {picks.slice(0, state.cards).map((pick) => (
                     <div key={pick.title} className="landing-chat-card">
-                      <MiniCover title={pick.title} hue={pick.hue} width="3rem" />
+                      <MiniCover hue={pick.hue} width="3rem" />
                       <span className="min-w-0">
                         <span className="mock-book-title">{pick.title}</span>
                         <span className="mock-book-author">{pick.author}</span>

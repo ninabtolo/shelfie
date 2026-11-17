@@ -20,12 +20,9 @@ import type { CSSProperties } from "react";
    needs no images. Animations inside them run when their `.landing-mock-host`
    wrapper is active (desktop stage) or revealed (mobile). */
 
-export function MiniCover({ title, hue, width = "2.6rem" }: { title: string; hue: number; width?: string }) {
-  return (
-    <span className="mock-cover" style={{ "--h": hue, "--cw": width } as CSSProperties}>
-      <span>{title}</span>
-    </span>
-  );
+/** A plain illustrated cover. The title always sits next to it, so the cover itself stays text-free. */
+export function MiniCover({ hue, width = "2.6rem" }: { hue: number; width?: string }) {
+  return <span className="mock-cover" style={{ "--h": hue, "--cw": width } as CSSProperties} aria-hidden="true" />;
 }
 
 function PanelHead({ icon: Icon, title, children }: { icon: typeof Library; title: string; children?: React.ReactNode }) {
@@ -59,7 +56,7 @@ export function LibraryMock() {
         </div>
         {libraryBooks.map((book, index) => (
           <div key={book.title} className="mock-book mock-stagger" style={{ "--i": index } as CSSProperties}>
-            <MiniCover title={book.title} hue={book.hue} />
+            <MiniCover hue={book.hue} />
             <span className="min-w-0">
               <span className="mock-book-title">{book.title}</span>
               <span className="mock-book-author">{book.author}</span>
@@ -76,7 +73,7 @@ export function ReviewMock() {
   return (
     <div className="mock-panel">
       <div className="mock-review-top">
-        <MiniCover title="Piranesi" hue={198} width="5.5rem" />
+        <MiniCover hue={198} width="5.5rem" />
         <div className="min-w-0 space-y-1">
           <p className="mock-review-title">Piranesi</p>
           <p className="mock-book-author">Susanna Clarke</p>
@@ -117,7 +114,7 @@ export function WishlistMock() {
         <div className="mock-wish-grid">
           {wishes.map((wish, index) => (
             <div key={wish.title} className="mock-wish mock-stagger" style={{ "--i": index } as CSSProperties}>
-              <MiniCover title={wish.title} hue={wish.hue} width="100%" />
+              <MiniCover hue={wish.hue} width="100%" />
               <span className="mock-wish-title">{wish.title}</span>
             </div>
           ))}
@@ -154,7 +151,7 @@ export function ForYouMock() {
       <div className="mock-body">
         {picks.map((pick, index) => (
           <div key={pick.title} className="mock-ai-card mock-stagger" style={{ "--i": index } as CSSProperties}>
-            <MiniCover title={pick.title} hue={pick.hue} width="3.2rem" />
+            <MiniCover hue={pick.hue} width="3.2rem" />
             <span className="min-w-0 space-y-1">
               <span className="mock-book-title">{pick.title}</span>
               <span className="mock-book-author">{pick.author}</span>
@@ -192,7 +189,7 @@ export function ReadersMock() {
         <div className="mock-share">
           <span className="mock-share-label"><MessageCircleHeart aria-hidden="true" /> @luna.reads shared a book with you</span>
           <div className="flex items-center gap-3">
-            <MiniCover title="Circe" hue={14} width="2.4rem" />
+            <MiniCover hue={14} width="2.4rem" />
             <p>&ldquo;Please read this, I need someone to talk about it with.&rdquo;</p>
           </div>
         </div>

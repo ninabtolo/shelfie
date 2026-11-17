@@ -509,6 +509,23 @@
   animation-delay: var(--delay, 600ms);
 }
 
+/*
+  Book colours: dusty, low-saturation variations of the app gradient.
+  Each book sets --h (hue), --s (saturation, unitless) and --l (lightness offset).
+*/
+.landing-spine,
+.landing-lying-book {
+  --book-mid: hsl(var(--h) calc((var(--s) + 3) * 1%) calc((69 + var(--l)) * 1%));
+  --book-outline: hsl(var(--h) calc(var(--s) * 1%) 30% / 0.2);
+  --book-band: hsl(var(--h) 30% 96% / 0.7);
+}
+
+.dark .landing-spine,
+.dark .landing-lying-book {
+  --book-mid: hsl(var(--h) calc((var(--s) + 8) * 1%) calc((31 + var(--l) * 0.7) * 1%));
+  --book-band: hsl(var(--h) 45% 85% / 0.42);
+}
+
 .landing-spine {
   position: relative;
   display: flex;
@@ -518,14 +535,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 3px 3px 1px 1px;
-  background: linear-gradient(
-    90deg,
-    hsl(var(--h) 58% 72%),
-    hsl(var(--h) 72% 85%) 36%,
-    hsl(var(--h) 60% 78%) 68%,
-    hsl(var(--h) 48% 66%)
-  );
-  box-shadow: inset 0 0 0 1px hsl(var(--h) 40% 45% / 0.16);
+  background: var(--book-mid);
+  box-shadow: inset 0 0 0 1px var(--book-outline);
   rotate: var(--tilt, 0deg);
   transform-origin: var(--origin, bottom center);
   transition: transform 450ms var(--ease-out), filter 300ms ease;
@@ -537,8 +548,8 @@
   right: 0;
   left: 0;
   height: 0.38em;
-  border-top: 1.5px solid hsl(var(--h) 60% 97% / 0.75);
-  border-bottom: 1.5px solid hsl(var(--h) 60% 97% / 0.75);
+  border-top: 1.5px solid var(--book-band);
+  border-bottom: 1.5px solid var(--book-band);
   content: "";
 }
 
@@ -546,7 +557,7 @@
 .landing-spine::after { bottom: 10%; }
 
 .landing-spine-mark {
-  color: hsl(var(--h) 60% 98% / 0.92);
+  color: hsl(var(--h) 35% 98% / 0.9);
   font-size: 0.6em;
 }
 
@@ -572,14 +583,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 1px 3px 3px 1px;
-  background: linear-gradient(
-    180deg,
-    hsl(var(--h) 58% 72%),
-    hsl(var(--h) 72% 85%) 36%,
-    hsl(var(--h) 60% 78%) 68%,
-    hsl(var(--h) 48% 66%)
-  );
-  box-shadow: inset 0 0 0 1px hsl(var(--h) 40% 45% / 0.16);
+  background: var(--book-mid);
+  box-shadow: inset 0 0 0 1px var(--book-outline);
   translate: var(--shift) 0;
 }
 
@@ -589,8 +594,8 @@
   top: 0;
   bottom: 0;
   width: 0.38em;
-  border-right: 1.5px solid hsl(var(--h) 60% 97% / 0.75);
-  border-left: 1.5px solid hsl(var(--h) 60% 97% / 0.75);
+  border-right: 1.5px solid var(--book-band);
+  border-left: 1.5px solid var(--book-band);
   content: "";
 }
 
@@ -607,53 +612,31 @@
 
 @media (hover: hover) {
   .landing-spine:hover {
-    filter: brightness(1.06) drop-shadow(0 10px 14px hsl(var(--h) 60% 50% / 0.3));
+    filter: brightness(1.06) drop-shadow(0 10px 14px hsl(var(--h) 35% 40% / 0.3));
     transform: translateY(-0.85em);
   }
 }
 
 .landing-shelf-board {
   height: 0.6rem;
-  background: linear-gradient(90deg, hsl(var(--shelfie-line-pink)), hsl(var(--shelfie-line-purple)) 48%, hsl(var(--shelfie-line-blue)));
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.55), 0 14px 34px hsl(var(--glow) / 0.22);
+  /* Deep dusty plum: same hue drift as the app gradient, but far darker and muted so it reads as wood, not sky. */
+  background: linear-gradient(90deg, hsl(322 24% 40%), hsl(282 22% 38%) 48%, hsl(238 24% 42%));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), 0 10px 26px hsl(280 30% 25% / 0.22);
 }
 
-.dark .landing-spine {
-  background: linear-gradient(
-    90deg,
-    hsl(var(--h) 34% 27%),
-    hsl(var(--h) 42% 40%) 36%,
-    hsl(var(--h) 38% 33%) 68%,
-    hsl(var(--h) 32% 23%)
-  );
-  box-shadow: inset 0 0 0 1px hsl(var(--h) 70% 80% / 0.12), 0 0 18px hsl(var(--h) 80% 65% / 0.1);
-}
-
-.dark .landing-spine::before,
-.dark .landing-spine::after,
-.dark .landing-lying-book::before,
-.dark .landing-lying-book::after {
-  border-color: hsl(var(--h) 90% 85% / 0.5);
+.dark .landing-spine,
+.dark .landing-lying-book {
+  box-shadow: inset 0 0 0 1px hsl(var(--h) 40% 80% / 0.1);
 }
 
 .dark .landing-spine-mark {
-  color: hsl(var(--h) 90% 88% / 0.85);
-  text-shadow: 0 0 8px hsl(var(--h) 90% 80% / 0.8);
-}
-
-.dark .landing-lying-book {
-  background: linear-gradient(
-    180deg,
-    hsl(var(--h) 34% 27%),
-    hsl(var(--h) 42% 40%) 36%,
-    hsl(var(--h) 38% 33%) 68%,
-    hsl(var(--h) 32% 23%)
-  );
-  box-shadow: inset 0 0 0 1px hsl(var(--h) 70% 80% / 0.12), 0 0 18px hsl(var(--h) 80% 65% / 0.1);
+  color: hsl(var(--h) 60% 88% / 0.8);
 }
 
 .dark .landing-shelf-board {
-  box-shadow: 0 0 24px hsl(var(--glow) / 0.4), 0 12px 40px hsl(var(--glow) / 0.2);
+  /* On the dark sky the board is a flat, near-neutral grey-mauve: the sky already carries the colour. */
+  background: hsl(270 8% 42%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2), 0 10px 30px hsl(0 0% 0% / 0.35);
 }
 
 /* ---------- Statement ---------- */
@@ -923,20 +906,23 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
-  border: 1px solid rgb(255 183 238 / 0.32);
+  /* Opaque, single-colour border: a translucent one let the gradient fill show through it. */
+  border: 1px solid hsl(300 55% 86%);
   border-radius: 2rem;
   background:
     radial-gradient(circle at 20% 20%, rgb(255 183 238 / 0.32), transparent 45%),
     radial-gradient(circle at 85% 80%, rgb(191 229 255 / 0.42), transparent 48%),
     linear-gradient(140deg, rgb(191 229 255 / 0.22), rgb(255 183 238 / 0.2));
+  background-clip: padding-box;
 }
 
 .dark .landing-stage-frame {
-  border-color: hsl(272 75% 76% / 0.26);
+  border-color: hsl(272 28% 34%);
   background:
     radial-gradient(circle at 20% 20%, hsl(326 82% 72% / 0.22), transparent 45%),
     radial-gradient(circle at 85% 80%, hsl(199 97% 70% / 0.18), transparent 48%),
     linear-gradient(140deg, hsl(316 35% 17% / 0.9), hsl(276 39% 20% / 0.9), hsl(226 39% 17% / 0.9));
+  background-clip: padding-box;
 }
 
 .landing-stage-orbit {
@@ -1132,14 +1118,12 @@
 
 .mock-cover {
   position: relative;
-  display: flex;
+  display: block;
   width: var(--cw, 2.6rem);
   flex: 0 0 auto;
-  align-items: flex-end;
   overflow: hidden;
   aspect-ratio: 2 / 3;
   border-radius: 0.2rem 0.4rem 0.4rem 0.2rem;
-  padding: 0.3em;
   background: linear-gradient(155deg, hsl(var(--h) 58% 72%), hsl(calc(var(--h) + 36) 52% 52%));
   box-shadow: inset 3px 0 0 rgb(0 0 0 / 0.1), 0 6px 14px hsl(var(--h) 45% 30% / 0.25);
   font-size: calc(var(--cw, 2.6rem) * 0.16);
@@ -1153,14 +1137,6 @@
   content: "✦";
   font-size: 1.3em;
   translate: -50% 0;
-}
-
-.mock-cover > span {
-  color: white;
-  font-family: var(--font-display), Georgia, serif;
-  font-weight: 700;
-  line-height: 1.02;
-  text-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
 }
 
 .dark .mock-cover {
@@ -1318,7 +1294,7 @@
 .mock-wish .mock-cover {
   --cw: 100%;
   width: 100%;
-  font-size: 0.85rem;
+  font-size: 0.85rem; /* sizes the ✦ on the cover */
 }
 
 .mock-wish-title {

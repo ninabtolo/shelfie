@@ -1,9 +1,35 @@
 import type { CSSProperties } from "react";
 import { round, seededRandom } from "./seeded-random";
 
-// Shelfie's pastel family: rose, pink, orchid, violet, periwinkle, sky, aqua, cream.
-const hues = [340, 326, 300, 282, 268, 248, 210, 198, 44];
+// Dusty variations of the app's pink → lilac → blue gradient: same hue family,
+// but much less saturated so the books sit on the background instead of matching it.
+const tones = [
+  { h: 330, s: 30 }, // dusty rose
+  { h: 316, s: 24 }, // mauve
+  { h: 300, s: 18 }, // heather
+  { h: 286, s: 26 }, // lilac
+  { h: 272, s: 22 }, // muted violet
+  { h: 256, s: 18 }, // lavender grey
+  { h: 236, s: 20 }, // periwinkle grey
+  { h: 212, s: 24 }, // misty blue
+  { h: 300, s: 9 }, // warm taupe (neutral)
+  { h: 250, s: 8 }, // cool grey (neutral)
+];
 const SPINE_COUNT = 64;
+
+// Separate seed for the colour jitter so it never reshuffles the shelf's sizes and tilts.
+const paint = seededRandom(511);
+
+/** `pick` is the layout generator's draw for this book (keeps its sequence intact). */
+function bookTone(pick: number): CSSProperties {
+  const tone = tones[Math.floor(pick * tones.length)];
+  return {
+    "--h": Math.round(tone.h + (paint() - 0.5) * 10),
+    "--s": Math.round(tone.s + (paint() - 0.5) * 8),
+    // Lightness offset: some books darker, some lighter, for a layered shelf.
+    "--l": Math.round(-11 + paint() * 17),
+  } as CSSProperties;
+}
 const STACK_POSITIONS = new Set([20, 43]);
 
 type ShelfItem =
@@ -27,7 +53,7 @@ function buildShelf(): ShelfItem[] {
         books: Array.from({ length: 3 }, (_, bookIndex) => ({
           mark: random() < 0.4,
           style: {
-            "--h": hues[Math.floor(random() * hues.length)],
+            ...bookTone(random()),
             "--w": `${round(5.6 + random() * 1.8 - bookIndex * 0.4)}em`,
             "--t": `${round(1.25 + random() * 0.55)}em`,
             "--shift": `${round((random() - 0.5) * 0.7)}em`,
@@ -46,7 +72,7 @@ function buildShelf(): ShelfItem[] {
       kind: "spine",
       mark: random() < 0.28,
       style: {
-        "--h": hues[Math.floor(random() * hues.length)],
+        ...bookTone(random()),
         "--w": `${round(1.15 + random() * 1.15)}em`,
         "--sh": `${round(5.6 + random() * 4.2)}em`,
         "--tilt": `${tilt}deg`,
