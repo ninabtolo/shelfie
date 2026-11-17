@@ -657,6 +657,60 @@
   border-style: dashed;
 }
 
+/* ---------- AI chat panel ---------- */
+
+/* Desktop: conversation list and chat share one surface, split by a single divider.
+   Below lg they stack as two separate cards. */
+@media (min-width: 1024px) {
+  .shelfie-chat-shell {
+    overflow: hidden;
+    border: 1px solid hsl(var(--border) / 0.75);
+    border-radius: 1rem;
+    background: hsl(var(--card) / 0.82);
+    box-shadow: 0 10px 32px rgb(91 62 92 / 0.04);
+  }
+
+  .dark .shelfie-chat-shell {
+    background: hsl(var(--card) / 0.88);
+    box-shadow: 0 14px 32px rgb(0 0 0 / 0.2);
+  }
+
+  /* Prefixed so it also beats `.dark .shelfie-surface`, which comes later in this file. */
+  .shelfie-app .shelfie-chat-shell > .shelfie-surface {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .shelfie-app .shelfie-chat-shell > .shelfie-chat-sidebar {
+    border-right: 1px solid hsl(var(--border) / 0.75);
+    background: hsl(var(--muted) / 0.25);
+  }
+}
+
+/* Scrolls with wheel, touch and keyboard, but draws no scrollbar. */
+.shelfie-scroll-hidden {
+  scrollbar-width: none;
+}
+
+.shelfie-scroll-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+/* Overrides the app's serif headings: a small UI title reads better in the sans face. */
+.shelfie-app .shelfie-chat-title {
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: normal;
+  line-height: 1.3;
+}
+
+.shelfie-app .shelfie-composer textarea {
+  background-color: transparent;
+}
+
 .shelfie-profile-hero {
   position: relative;
   background:

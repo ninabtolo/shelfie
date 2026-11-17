@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
-import { EyeOff, Loader2, Plus, Send, Sparkles, Trash2 } from "lucide-react";
+import { ArrowUp, EyeOff, Loader2, PanelLeftClose, PanelLeftOpen, SquarePen, Sparkles, Trash2 } from "lucide-react";
 import { BookCover } from "@/components/books/book-cover";
 import { AiPersonalizationNotice } from "@/components/ai-personalization-notice";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { ShelfieHero } from "@/components/shelfie-hero";
 
 const MESSAGE_LIMIT = 20;
+const SIDEBAR_STORAGE_KEY = "shelfie-chat-sidebar";
 
 type Recommendation = {
   google_books_id: string;
@@ -56,7 +57,8 @@ function MessageBubble({ message }: {
   const isAssistant = message.role === "assistant";
   return (
     <li className={`flex ${isAssistant ? "justify-start" : "justify-end"}`}>
-      <article className={`max-w-3xl rounded-2xl px-4 py-3 ${isAssistant ? "shelfie-surface rounded-bl-sm" : "bg-primary text-primary-foreground rounded-br-sm"}`}>
+      {/* Assistant replies read as plain text, like an AI chat; only the user's messages are bubbles. */}
+      <article className={isAssistant ? "max-w-3xl py-1" : "max-w-3xl rounded-2xl rounded-br-sm bg-primary px-4 py-3 text-primary-foreground"}>
         <p className="whitespace-pre-wrap text-sm leading-6">{message.content}</p>
       </article>
     </li>
@@ -111,7 +113,7 @@ function RecommendationMessage({ message, onDismiss, dismissingId }: {
 function ThinkingIndicator() {
   return (
     <li className="flex justify-start" role="status" aria-label="Shelfie is thinking">
-      <div className="shelfie-surface rounded-2xl rounded-bl-sm px-4 py-3">
+      <div className="py-1">
         <div className="space-y-2">
           <div className="shelfie-skeleton h-3 w-36 rounded" />
           <div className="shelfie-skeleton h-3 w-24 rounded" />
@@ -134,14 +136,42 @@ export default function AiChat() {
   const [conversationToDelete, setConversationToDelete] = useState<ConversationSummary | null>(null);
   const started = useRef(false);
   const threadRef = useRef<HTMLDivElement>(null);
+  const composerRef = useRef<HTMLTextAreaElement>(null);
+  // Desktop only: the conversation list can be collapsed. Below lg it stacks above the chat.
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // Keep the newest message in view when the thread scrolls (stacked layout only;
-  // on desktop the thread is not height-capped, so this is a no-op).
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(SIDEBAR_STORAGE_KEY) === "closed") setSidebarOpen(false);
+    } catch {
+      // Storage unavailable: keep the default.
+    }
+  }, []);
+
+  function toggleSidebar() {
+    const next = !sidebarOpen;
+    setSidebarOpen(next);
+    try {
+      localStorage.setItem(SIDEBAR_STORAGE_KEY, next ? "open" : "closed");
+    } catch {
+      // Storage unavailable: the choice just won't be remembered.
+    }
+  }
+
+  // The thread scrolls inside the chat panel: keep the newest message in view.
   const messageCount = active?.messages.length ?? 0;
   useEffect(() => {
     const thread = threadRef.current;
     if (thread) thread.scrollTop = thread.scrollHeight;
   }, [messageCount, sending, loading]);
+
+  // Grow the composer with its content (capped by its max-height in CSS).
+  useEffect(() => {
+    const composer = composerRef.current;
+    if (!composer) return;
+    composer.style.height = "auto";
+    composer.style.height = `${composer.scrollHeight}px`;
+  }, [message]);
 
   const loadConversation = useCallback(async (id: string) => {
     setLoading(true);
@@ -271,6 +301,14 @@ export default function AiChat() {
     }
   }
 
+  function handleComposerKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key !== "Enter" || event.shiftKey || event.nativeEvent.isComposing) return;
+    // On touch keyboards Enter keeps inserting a new line; the send button submits.
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+    event.preventDefault();
+    event.currentTarget.form?.requestSubmit();
+  }
+
   function startNewConversation() {
     setActive(null);
     setMessage("");
@@ -279,6 +317,7 @@ export default function AiChat() {
   }
 
   const remainingMessages = active ? Math.max(0, MESSAGE_LIMIT - active.user_message_count) : MESSAGE_LIMIT;
+  const limitReached = active?.user_message_count === MESSAGE_LIMIT;
 
   return (
     <div className="space-y-8">
@@ -302,37 +341,77 @@ export default function AiChat() {
       {enabled === true && <AiPersonalizationNotice enabled={enabled} />}
 
       {enabled === true && (
-        <section className="grid min-h-[36rem] grid-cols-1 gap-4 lg:grid-cols-[16rem_minmax(0,1fr)]" aria-label="AI reading chat">
-          <aside className="shelfie-surface flex flex-col p-3">
-            <Button type="button" variant="outline" className="mb-3 w-full justify-start" onClick={startNewConversation}>
-              <Plus aria-hidden="true" /> New conversation
+        <section className={`shelfie-chat-shell grid min-h-[36rem] grid-cols-1 gap-4 lg:h-[min(46rem,calc(100svh-7rem))] lg:gap-0 ${sidebarOpen ? "lg:grid-cols-[17rem_minmax(0,1fr)]" : "lg:grid-cols-1"}`} aria-label="AI reading chat">
+          <aside id="chat-conversations" className={`shelfie-surface shelfie-chat-sidebar flex min-h-0 flex-col p-3 ${sidebarOpen ? "" : "lg:hidden"}`} aria-label="Conversations">
+            <Button type="button" variant="outline" className="w-full justify-start gap-2.5 rounded-xl" onClick={startNewConversation}>
+              <SquarePen aria-hidden="true" /> New conversation
             </Button>
-            <div className="min-h-0 flex-1 space-y-1 overflow-y-auto" aria-label="Conversations">
-              {conversations.length === 0 && <p className="px-2 py-4 text-xs leading-5 text-muted-foreground">Your conversations will appear here.</p>}
-              {conversations.map((conversation) => (
-                <div key={conversation.id} className={`group flex items-start gap-1 rounded-lg px-2 py-2 transition ${active?.id === conversation.id ? "bg-primary/10" : "hover:bg-muted"}`}>
-                  <button type="button" className="min-w-0 flex-1 text-left" onClick={() => void loadConversation(conversation.id)}>
-                    <span className="block truncate text-sm font-medium">{conversation.title}</span>
-                    <span className="mt-0.5 block text-[0.68rem] text-muted-foreground">{formatConversationDate(conversation.updated_at)} · {conversation.user_message_count}/{MESSAGE_LIMIT}</span>
-                  </button>
-                  <Button type="button" variant="ghost" size="icon" className="size-7 shrink-0 text-muted-foreground opacity-60 hover:text-destructive group-hover:opacity-100" onClick={() => setConversationToDelete(conversation)} aria-label={`Delete ${conversation.title}`}>
-                    <Trash2 aria-hidden="true" />
-                  </Button>
-                </div>
-              ))}
+            <p className="mb-1.5 mt-5 flex items-center justify-between px-3 text-[0.66rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              <span>Recent</span>
+              {conversations.length > 0 && <span className="tabular-nums">{conversations.length}</span>}
+            </p>
+            <div className="min-h-0 flex-1 space-y-0.5 overflow-y-auto">
+              {conversations.length === 0 && <p className="px-3 py-3 text-xs leading-5 text-muted-foreground">Your conversations will appear here.</p>}
+              {conversations.map((conversation) => {
+                const isActive = active?.id === conversation.id;
+                return (
+                  <div key={conversation.id} className={`group relative flex items-center rounded-lg transition-colors ${isActive ? "bg-primary/10" : "hover:bg-muted/70"}`}>
+                    {isActive && <span className="absolute inset-y-2.5 left-0 w-[3px] rounded-full bg-primary" aria-hidden="true" />}
+                    <button type="button" className="flex min-w-0 flex-1 rounded-lg py-2.5 pl-3 pr-1 text-left" aria-current={isActive ? "true" : undefined} onClick={() => void loadConversation(conversation.id)}>
+                      <span className="min-w-0">
+                        <span className={`block truncate text-sm ${isActive ? "font-semibold" : "font-medium"}`}>{conversation.title}</span>
+                        <span className="mt-0.5 block text-[0.7rem] text-muted-foreground">{formatConversationDate(conversation.updated_at)} · {conversation.user_message_count}/{MESSAGE_LIMIT} messages</span>
+                      </span>
+                    </button>
+                    <Button type="button" variant="ghost" size="icon" className="mr-1 size-7 shrink-0 text-muted-foreground opacity-70 hover:text-destructive lg:opacity-0 lg:group-focus-within:opacity-100 lg:group-hover:opacity-100" onClick={() => setConversationToDelete(conversation)} aria-label={`Delete ${conversation.title}`}>
+                      <Trash2 aria-hidden="true" />
+                    </Button>
+                  </div>
+                );
+              })}
             </div>
           </aside>
 
-          <section className="shelfie-surface flex min-h-[36rem] min-w-0 flex-col overflow-hidden">
-            <header className="flex items-center justify-between gap-3 border-b border-border/80 px-4 py-3 sm:px-6">
-              <h2 className="min-w-0 truncate text-base font-semibold">{active?.title ?? "New conversation"}</h2>
-              <p className="shrink-0 text-xs text-muted-foreground">{remainingMessages} message{remainingMessages === 1 ? "" : "s"} left</p>
+          <section className="shelfie-surface flex min-h-[36rem] min-w-0 flex-col overflow-hidden lg:min-h-0">
+            <header className="flex items-center gap-3 border-b px-4 py-3.5 sm:px-6">
+              <div className="-ml-2 hidden shrink-0 items-center lg:flex">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="size-8 text-muted-foreground hover:text-foreground"
+                  onClick={toggleSidebar}
+                  aria-controls="chat-conversations"
+                  aria-expanded={sidebarOpen}
+                  aria-label={sidebarOpen ? "Hide conversations" : "Show conversations"}
+                  title={sidebarOpen ? "Hide conversations" : "Show conversations"}
+                >
+                  {sidebarOpen ? <PanelLeftClose aria-hidden="true" /> : <PanelLeftOpen aria-hidden="true" />}
+                </Button>
+                {!sidebarOpen && (
+                  <Button type="button" variant="ghost" size="icon" className="size-8 text-muted-foreground hover:text-foreground" onClick={startNewConversation} aria-label="New conversation" title="New conversation">
+                    <SquarePen aria-hidden="true" />
+                  </Button>
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <h2 className="shelfie-chat-title truncate">{active?.title ?? "New conversation"}</h2>
+                <p className="truncate text-xs text-muted-foreground">Shelfie AI · your reading assistant</p>
+              </div>
+              <div className="shrink-0 text-right" aria-label={`${remainingMessages} of ${MESSAGE_LIMIT} messages left`}>
+                <p className="text-xs text-muted-foreground" aria-hidden="true">
+                  <span className="font-semibold tabular-nums text-foreground">{remainingMessages}</span> of {MESSAGE_LIMIT} left
+                </p>
+                <span className="mt-1.5 block h-1 w-20 overflow-hidden rounded-full bg-muted sm:w-24" aria-hidden="true">
+                  <span className="block h-full rounded-full bg-primary transition-[width] duration-500" style={{ width: `${(remainingMessages / MESSAGE_LIMIT) * 100}%` }} />
+                </span>
+              </div>
             </header>
 
             {error && <p role="alert" className="mx-4 mt-4 rounded-lg border border-destructive/25 bg-destructive/5 px-3 py-2 text-xs text-destructive sm:mx-6">{error}</p>}
 
-            {/* Stacked layout (below lg): cap the thread so book cards scroll inside it. */}
-            <div ref={threadRef} className="max-h-[65svh] flex-1 overflow-y-auto px-4 py-5 sm:px-6 lg:max-h-none">
+            {/* Below lg the thread is height-capped; on desktop the panel has a fixed height. Either way it scrolls. */}
+            <div ref={threadRef} className="shelfie-scroll-hidden max-h-[65svh] min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6 lg:max-h-none">
               {loading && <div className="flex items-center justify-center py-20 text-sm text-muted-foreground"><Loader2 className="mr-2 size-4 animate-spin" /> Loading conversation…</div>}
               {!loading && !active && !hasStartedConversation && !sending && (
                 <div className="flex h-full min-h-[26rem] flex-col items-center justify-center text-center">
@@ -350,7 +429,7 @@ export default function AiChat() {
                 <div className="flex h-full min-h-[26rem] items-center justify-center text-center text-sm text-muted-foreground">Start with a feeling, a genre, or a book you want to move away from.</div>
               )}
               {!loading && active && active.messages.length > 0 && (
-                <ul className="space-y-4" aria-live="polite">
+                <ul className="mx-auto max-w-4xl space-y-4" aria-live="polite">
                   {active.messages.map((item) => (
                     <Fragment key={item.id}>
                       <MessageBubble message={item} />
@@ -361,28 +440,39 @@ export default function AiChat() {
                 </ul>
               )}
               {!loading && sending && (!active || active.messages.length === 0) && (
-                <ul className="space-y-4" aria-live="polite"><ThinkingIndicator /></ul>
+                <ul className="mx-auto max-w-4xl space-y-4" aria-live="polite"><ThinkingIndicator /></ul>
               )}
             </div>
 
-            <div className="border-t border-border/80 p-3 sm:p-4">
-              {active?.user_message_count === MESSAGE_LIMIT && <p className="mb-3 text-center text-xs text-muted-foreground">This conversation reached its limit. Start a new conversation to continue.</p>}
-                <form className="flex items-center gap-2" onSubmit={(event) => void sendMessage(event)}>
+            {/* Same centred column as the thread, so a wide panel never strands messages at the edges. */}
+            <div className="px-3 pb-3 pt-1 sm:px-6 sm:pb-4">
+              <div className="mx-auto max-w-4xl">
+              {limitReached && <p className="mb-3 text-center text-xs text-muted-foreground">This conversation reached its limit. Start a new conversation to continue.</p>}
+              <form
+                className="shelfie-composer flex items-end gap-2 rounded-2xl border bg-background p-2 pl-4 shadow-sm transition focus-within:border-ring focus-within:ring-1 focus-within:ring-ring"
+                onSubmit={(event) => void sendMessage(event)}
+              >
                 <textarea
+                  ref={composerRef}
                   value={message}
                   onChange={(event) => setMessage(event.target.value)}
-                  placeholder="e.g. I want a fantasy book that makes me cry…"
+                  onKeyDown={handleComposerKeyDown}
+                  placeholder="Ask for a mood, a genre, a feeling…"
                   maxLength={1200}
-                  rows={2}
-                  disabled={sending || active?.user_message_count === MESSAGE_LIMIT}
+                  rows={1}
+                  disabled={sending || limitReached}
                   aria-label="Message Shelfie"
-                  className="min-h-12 flex-1 resize-none rounded-xl border border-input bg-background px-3 py-2.5 text-sm shadow-sm outline-none transition placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
+                  className="max-h-40 min-h-9 flex-1 resize-none self-center bg-transparent py-2 text-sm leading-5 outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60"
                 />
-                <Button type="submit" size="icon" className="size-11 shrink-0 rounded-xl" disabled={sending || !message.trim() || active?.user_message_count === MESSAGE_LIMIT} aria-label="Send message">
-                  {sending ? <Loader2 className="animate-spin" aria-hidden="true" /> : <Send aria-hidden="true" />}
+                <Button type="submit" size="icon" className="size-9 shrink-0 rounded-xl" disabled={sending || !message.trim() || limitReached} aria-label="Send message">
+                  {sending ? <Loader2 className="animate-spin" aria-hidden="true" /> : <ArrowUp aria-hidden="true" />}
                 </Button>
               </form>
-              <p className="mt-2 text-[0.68rem] text-muted-foreground">{message.length}/1200 · {remainingMessages} messages left in this conversation</p>
+              <p className="mt-2 flex justify-between gap-3 px-1 text-[0.68rem] text-muted-foreground">
+                <span className="hidden lg:inline"><kbd className="font-sans font-semibold">Enter</kbd> to send · <kbd className="font-sans font-semibold">Shift + Enter</kbd> for a new line</span>
+                <span className="ml-auto tabular-nums">{message.length}/1200</span>
+              </p>
+              </div>
             </div>
           </section>
         </section>
