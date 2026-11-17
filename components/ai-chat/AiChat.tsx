@@ -133,6 +133,15 @@ export default function AiChat() {
   const [dismissingId, setDismissingId] = useState<string | null>(null);
   const [conversationToDelete, setConversationToDelete] = useState<ConversationSummary | null>(null);
   const started = useRef(false);
+  const threadRef = useRef<HTMLDivElement>(null);
+
+  // Keep the newest message in view when the thread scrolls (stacked layout only;
+  // on desktop the thread is not height-capped, so this is a no-op).
+  const messageCount = active?.messages.length ?? 0;
+  useEffect(() => {
+    const thread = threadRef.current;
+    if (thread) thread.scrollTop = thread.scrollHeight;
+  }, [messageCount, sending, loading]);
 
   const loadConversation = useCallback(async (id: string) => {
     setLoading(true);
@@ -293,7 +302,7 @@ export default function AiChat() {
       {enabled === true && <AiPersonalizationNotice enabled={enabled} />}
 
       {enabled === true && (
-        <section className="grid min-h-[36rem] gap-4 lg:grid-cols-[16rem_minmax(0,1fr)]" aria-label="AI reading chat">
+        <section className="grid min-h-[36rem] grid-cols-1 gap-4 lg:grid-cols-[16rem_minmax(0,1fr)]" aria-label="AI reading chat">
           <aside className="shelfie-surface flex flex-col p-3">
             <Button type="button" variant="outline" className="mb-3 w-full justify-start" onClick={startNewConversation}>
               <Plus aria-hidden="true" /> New conversation
@@ -322,7 +331,8 @@ export default function AiChat() {
 
             {error && <p role="alert" className="mx-4 mt-4 rounded-lg border border-destructive/25 bg-destructive/5 px-3 py-2 text-xs text-destructive sm:mx-6">{error}</p>}
 
-            <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-6">
+            {/* Stacked layout (below lg): cap the thread so book cards scroll inside it. */}
+            <div ref={threadRef} className="max-h-[65svh] flex-1 overflow-y-auto px-4 py-5 sm:px-6 lg:max-h-none">
               {loading && <div className="flex items-center justify-center py-20 text-sm text-muted-foreground"><Loader2 className="mr-2 size-4 animate-spin" /> Loading conversation…</div>}
               {!loading && !active && !hasStartedConversation && !sending && (
                 <div className="flex h-full min-h-[26rem] flex-col items-center justify-center text-center">

@@ -2209,6 +2209,29 @@
 
 /* ---------- Small screens ---------- */
 
+@media (max-width: 1023px) {
+  /* The typed prompt never wraps, so its full length became the chat's minimum width
+     and the demo grew past the screen while typing. A zero base width makes it take
+     only the space left in the input (flex: 1) and ellipsize the rest. */
+  .landing-chat-typed {
+    width: 0;
+    /* Like a real input: once the prompt is too long, keep the end (and the caret)
+       in view and let the start slide out to the left. */
+    direction: rtl;
+    text-align: left;
+  }
+
+  .landing-chat-line {
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+
+  /* `mx-auto` grid items shrink to their content; let the chat use the full column. */
+  .landing-assistant > * {
+    width: 100%;
+  }
+}
+
 @media (max-width: 640px) {
   .landing-hero {
     min-height: max(38rem, 100svh);
@@ -2236,6 +2259,14 @@
   .landing-chat-body {
     min-height: 30rem;
     padding: 1rem;
+  }
+
+  /* The same star count on a narrow sky crowds the text: keep a quarter of the dust,
+     a third of the drifting stars and half the glints. */
+  .landing-sky .landing-dust:not(:nth-child(4n of .landing-dust)),
+  .landing-sky .landing-star:not(:nth-child(3n of .landing-star)),
+  .landing-sky .landing-glint:nth-child(2n of .landing-glint) {
+    display: none;
   }
 
   .landing-mood {

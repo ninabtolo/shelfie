@@ -115,7 +115,8 @@ export default async function BookPage({ params, searchParams }: {
 
   return (
     <div className="space-y-6 py-8">
-      <Button variant="ghost" asChild>
+      {/* On small screens the arrow sits flush with the page edge, in line with the title. */}
+      <Button variant="ghost" asChild className="-ml-4 sm:ml-0">
         <Link prefetch={false} href={fromLibrary ? "/protected/library" : fromWishlist ? "/protected/wishlist" : fromSharedBooks ? "/protected/shared-books" : fromRecommendations ? "/protected/recommendations" : fromChat ? "/protected/chat" : bookSearchHref(query, page)}>
           <ArrowLeft aria-hidden="true" />{fromLibrary ? "Back to library" : fromWishlist ? "Back to wishlist" : fromSharedBooks ? "Back to shared books" : fromRecommendations ? "Back to recommendations" : fromChat ? "Back to AI chat" : "Back to search"}
         </Link>

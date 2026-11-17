@@ -155,7 +155,7 @@ function ActivityChart({ data }: { data: ActivityRow[] }) {
       <div className="reading-activity-chart" aria-label="Books added and reviews written over the last 12 months">
         {data.map((item) => (
           <div key={item.month} className="flex min-w-0 flex-1 flex-col items-center gap-2">
-            <div className="flex h-36 w-full items-end justify-center gap-1 px-0.5 sm:gap-2">
+            <div className="flex h-36 w-full items-end justify-center gap-0.5 sm:gap-2 sm:px-0.5">
               <div className="reading-activity-bar bg-primary" style={{ height: `${(item.books_added / max) * 100}%` }} title={`${item.books_added} books added`} />
               <div className="reading-activity-bar bg-[hsl(197_62%_58%)]" style={{ height: `${(item.reviews_written / max) * 100}%` }} title={`${item.reviews_written} reviews written`} />
             </div>
@@ -207,7 +207,7 @@ export function ReadingStats({ stats, statusData, ratings, genres, authors, acti
         <StatCard label="Favorites" value={formatNumber(Number(stats.favorite_books))} icon={Heart} />
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         <Card>
           <CardHeader><CardTitle>Books by status</CardTitle></CardHeader>
           <CardContent><StatusChart data={statusData} /></CardContent>

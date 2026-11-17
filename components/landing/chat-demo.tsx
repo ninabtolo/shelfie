@@ -160,8 +160,10 @@ export function ChatDemo() {
 
         <div className="landing-chat-input" aria-hidden="true">
           <span className="landing-chat-typed">
-            {state.typed > 0 ? prompt.slice(0, state.typed) : !state.sent ? <span className="landing-chat-placeholder">Tell Shelfie what you&apos;re in the mood for…</span> : null}
-            {!state.sent && <span className="landing-caret" />}
+            <span className="landing-chat-line">
+              {state.typed > 0 ? prompt.slice(0, state.typed) : !state.sent ? <span className="landing-chat-placeholder">Tell Shelfie what you&apos;re in the mood for…</span> : null}
+              {!state.sent && <span className="landing-caret" />}
+            </span>
           </span>
           <span className="landing-chat-send" data-ready={state.typed === prompt.length}><SendHorizontal /></span>
         </div>

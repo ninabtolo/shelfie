@@ -466,6 +466,13 @@
   opacity: 0.85;
 }
 
+/* Twelve months of bar pairs must fit a phone-width card. */
+@media (max-width: 639px) {
+  .reading-activity-bar {
+    width: 0.4rem;
+  }
+}
+
 .shelfie-app .book-card,
 .shelfie-app .shelfie-profile-card,
 .shelfie-app .shelfie-notification-card,
