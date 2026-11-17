@@ -1,4 +1,4 @@
-import { BookOpen, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import Link from "next/link";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { LegalLinks } from "@/components/legal/legal-links";
@@ -37,19 +37,13 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
           <h1 className="font-display text-5xl font-semibold tracking-tight text-foreground animate-[gentle-glow_5s_ease-in-out_infinite] sm:text-6xl">
             <Link href="/" className="rounded-lg">Shelfie</Link>
           </h1>
-          <p className="mt-3 max-w-xs text-sm leading-6 text-muted-foreground">
-            Keep your stories close, discover new worlds, and let your reading flourish.
-          </p>
         </div>
         {children}
         <div className="mt-8 flex flex-col items-center text-center">
           <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.28em] text-foreground/65">
             <Sparkles className="h-3.5 w-3.5" /> your personal bookshelf
           </p>
-          <div className="mt-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-foreground/5 text-foreground/75 shadow-[0_8px_30px_hsl(270_20%_30%/0.12)]">
-            <BookOpen className="h-6 w-6" strokeWidth={1.6} />
-          </div>
-          <LegalLinks className="mt-6" />
+          <LegalLinks className="mt-5" />
         </div>
       </div>
     </main>
