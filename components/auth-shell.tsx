@@ -1,4 +1,5 @@
 import { BookOpen, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { LegalLinks } from "@/components/legal/legal-links";
 
@@ -34,7 +35,7 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
       <div className="relative z-10 w-full max-w-md">
         <div className="mb-8 flex flex-col items-center text-center">
           <h1 className="font-display text-5xl font-semibold tracking-tight text-foreground animate-[gentle-glow_5s_ease-in-out_infinite] sm:text-6xl">
-            Shelfie
+            <Link href="/" className="rounded-lg">Shelfie</Link>
           </h1>
           <p className="mt-3 max-w-xs text-sm leading-6 text-muted-foreground">
             Keep your stories close, discover new worlds, and let your reading flourish.
