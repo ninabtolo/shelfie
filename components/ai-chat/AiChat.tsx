@@ -130,6 +130,8 @@ export default function AiChat() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
+  // The user's message is shown right away, before the server confirms it and the reply arrives.
+  const [pendingMessage, setPendingMessage] = useState<ChatMessage | null>(null);
   const [hasStartedConversation, setHasStartedConversation] = useState(false);
   const [error, setError] = useState("");
   const [dismissingId, setDismissingId] = useState<string | null>(null);
@@ -222,6 +224,14 @@ export default function AiChat() {
     setSending(true);
     setHasStartedConversation(true);
     setError("");
+    setPendingMessage({
+      id: `pending-${Date.now()}`,
+      role: "user",
+      content: trimmed,
+      recommendations: [],
+      created_at: new Date().toISOString(),
+    });
+    setMessage("");
     try {
       const response = await fetch("/api/ai-chat", {
         method: "POST",
@@ -252,10 +262,13 @@ export default function AiChat() {
         ...nextSummary,
         messages: [...(previous?.messages ?? []), data.user_message!, data.assistant_message!],
       }));
-      setMessage("");
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Could not get an answer");
+      // Give the text back so the user can retry without retyping it.
+      setMessage(trimmed);
+      if (!active || active.messages.length === 0) setHasStartedConversation(false);
     } finally {
+      setPendingMessage(null);
       setSending(false);
     }
   }
@@ -420,7 +433,7 @@ export default function AiChat() {
                   <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">Ask for a mood, genre, trope or emotional experience. Shelfie will use your reading signals while avoiding books you rejected.</p>
                   <div className="mt-5 flex flex-wrap justify-center gap-2">
                     {["A fantasy book that makes me cry", "Something like my favorite read, but lighter", "A short, strange mystery"].map((prompt) => (
-                      <button key={prompt} type="button" className="rounded-full border border-border px-3 py-2 text-xs text-muted-foreground transition hover:border-primary/50 hover:bg-primary/5 hover:text-foreground" onClick={() => setMessage(prompt)}>{prompt}</button>
+                      <button key={prompt} type="button" className="rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground transition hover:border-primary/50 hover:bg-primary/5 hover:text-foreground" onClick={() => setMessage(prompt)}>{prompt}</button>
                     ))}
                   </div>
                 </div>
@@ -428,19 +441,17 @@ export default function AiChat() {
               {!loading && active && active.messages.length === 0 && !sending && (
                 <div className="flex h-full min-h-[26rem] items-center justify-center text-center text-sm text-muted-foreground">Start with a feeling, a genre, or a book you want to move away from.</div>
               )}
-              {!loading && active && active.messages.length > 0 && (
+              {!loading && ((active?.messages.length ?? 0) > 0 || sending) && (
                 <ul className="mx-auto max-w-4xl space-y-4" aria-live="polite">
-                  {active.messages.map((item) => (
+                  {active?.messages.map((item) => (
                     <Fragment key={item.id}>
                       <MessageBubble message={item} />
                       <RecommendationMessage message={item} onDismiss={dismiss} dismissingId={dismissingId} />
                     </Fragment>
                   ))}
+                  {pendingMessage && <MessageBubble message={pendingMessage} />}
                   {sending && <ThinkingIndicator />}
                 </ul>
-              )}
-              {!loading && sending && (!active || active.messages.length === 0) && (
-                <ul className="mx-auto max-w-4xl space-y-4" aria-live="polite"><ThinkingIndicator /></ul>
               )}
             </div>
 

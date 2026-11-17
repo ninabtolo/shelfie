@@ -996,7 +996,7 @@
   height: 2.25rem;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
+  border-radius: 0.55rem;
   color: hsl(var(--muted-foreground));
   transition: background 180ms ease, color 180ms ease;
 }
@@ -1005,6 +1005,58 @@
 .shelfie-modal-close:focus-visible {
   background: hsl(var(--primary) / 0.1);
   color: hsl(var(--foreground));
+}
+
+/* Share book dialog */
+.shelfie-share-dialog {
+  width: min(100%, 32rem);
+  max-height: min(88svh, 44rem);
+}
+
+.shelfie-share-book {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin: 1.25rem 1.25rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .shelfie-share-book {
+    margin-inline: 1.5rem;
+  }
+}
+
+.shelfie-share-recipients {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.shelfie-share-recipient {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 0.85rem;
+  padding: 0.5rem 0.65rem;
+  text-align: left;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.shelfie-share-recipient:hover,
+.shelfie-share-recipient:focus-visible {
+  border-color: hsl(var(--primary) / 0.35);
+  background: hsl(var(--primary) / 0.08);
+  outline: none;
+}
+
+.shelfie-share-selected {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid hsl(var(--input));
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.5rem 0.5rem 0.75rem;
 }
 
 .shelfie-app button,
@@ -1018,7 +1070,7 @@
   z-index: 60;
   top: 0.75rem;
   left: 0.75rem;
-  border-radius: 999px;
+  border-radius: 0.55rem;
   padding: 0.6rem 1rem;
   background: hsl(var(--card));
   color: hsl(var(--foreground));

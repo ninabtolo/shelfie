@@ -269,7 +269,7 @@ export function AddToLibraryForm({
             </Button>
             <Button
               type="button"
-              className="h-10 min-w-0 w-full px-2 text-xs text-white hover:bg-primary/90 sm:text-sm"
+              className="h-10 min-w-0 w-full px-2 text-xs sm:text-sm"
               onClick={() => setRemoveDialogOpen(true)}
               disabled={pending}
             >

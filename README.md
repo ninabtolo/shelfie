@@ -29,6 +29,10 @@
   <a href="#-running-locally">Run it</a>
 </p>
 
+<p align="center">
+  <img src="docs/screenshots/landing.png" alt="Shelfie landing page: the Shelfie title over a starry pink and purple sky above a bookshelf" width="100%" />
+</p>
+
 <p align="center"><img src="docs/assets/divider.svg" alt="" width="60%" /></p>
 
 ## 🌙 About
@@ -55,6 +59,10 @@ Search millions of titles through the **Google Books API** right from the home p
 - cover, author, publisher, publication date and full description;
 - your actions in one place: add to your library, save to your wishlist, mark as a favorite, review, or share;
 - reviews from other readers, with **the people you follow shown first**.
+
+<p align="center">
+  <img src="docs/screenshots/search.gif" alt="Searching for a book and adding it to the library" width="80%" />
+</p>
 
 ### 📖 Your library
 
@@ -98,6 +106,10 @@ Each round gives you **six picks** made from your real reading:
 - **Not interested** removes a book for good. Books from your last five refreshes are skipped, so every refresh brings something new.
 - The current set is saved, so coming back to the page is instant.
 
+<p align="center">
+  <img src="docs/screenshots/recs.gif" alt="Personalized recommendations streaming in on the For you page" width="80%" />
+</p>
+
 ### 🤖 AI reading chat
 
 <img src="https://img.shields.io/badge/Natural%20language-DB66A3?style=flat-square" alt="" /> <img src="https://img.shields.io/badge/Verified%20book%20cards-FFB7EE?style=flat-square" alt="" /> <img src="https://img.shields.io/badge/Saved%20conversations-DB66A3?style=flat-square" alt="" />
@@ -114,6 +126,10 @@ If you're not sure what to ask, there are starter prompts like *"A fantasy book 
 - If a book can't be verified on Google Books, the assistant still names its title and author in plain text.
 - Conversations are **saved in a sidebar**, so you can return to them or delete them.
 
+<p align="center">
+  <img src="docs/screenshots/chat.gif" alt="Asking the AI reading chat for a recommendation and getting verified book cards" width="80%" />
+</p>
+
 ### 🧑‍🤝‍🧑 Readers, together
 
 <img src="https://img.shields.io/badge/Profiles-DB66A3?style=flat-square" alt="" /> <img src="https://img.shields.io/badge/Follow%20readers-FFB7EE?style=flat-square" alt="" /> <img src="https://img.shields.io/badge/Share%20books-DB66A3?style=flat-square" alt="" /> <img src="https://img.shields.io/badge/Notifications-FFB7EE?style=flat-square" alt="" />
@@ -125,6 +141,14 @@ If you're not sure what to ask, there are starter prompts like *"A fantasy book 
 - **Shared books** collects everything your friends have sent you.
 - **Notifications** let you know about new followers and shared books. They have an unread badge, "mark as read" and delete.
 
+<p align="center">
+  <img src="docs/screenshots/profiles.gif" alt="Reader profiles on Shelfie" width="80%" />
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/share.gif" alt="Sharing a book with a followed reader from the share dialog" width="80%" />
+</p>
+
 ### 📊 Reading stats
 
 <img src="https://img.shields.io/badge/12--month%20activity-DB66A3?style=flat-square" alt="" /> <img src="https://img.shields.io/badge/Top%20genres%20%26%20authors-FFB7EE?style=flat-square" alt="" /> <img src="https://img.shields.io/badge/Rating%20patterns-DB66A3?style=flat-square" alt="" />
@@ -135,6 +159,10 @@ The stats page gives you a closer look at your reading life:
 - **Books by status** and **rating distribution**;
 - **Library and review activity** over the last 12 months;
 - **Top genres** and **most-read authors**.
+
+<p align="center">
+  <img src="docs/screenshots/stats.gif" alt="The reading stats page" width="80%" />
+</p>
 
 ### ⚙️ Account
 
