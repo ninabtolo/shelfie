@@ -20,6 +20,12 @@
 </p>
 
 <p align="center">
+  <img src="docs/screenshots/landing.png" alt="Shelfie landing page: the Shelfie title over a starry pink and purple sky above a bookshelf" width="100%" />
+</p>
+
+<p align="center"><img src="docs/assets/divider.svg" alt="" width="60%" /></p>
+
+<p align="center">
   <a href="#-about">About</a> ✦
   <a href="#-features">Features</a> ✦
   <a href="#-how-recommendations-work">Recommendations</a> ✦
@@ -28,12 +34,6 @@
   <a href="#-development-process">Development</a> ✦
   <a href="#-running-locally">Run it</a>
 </p>
-
-<p align="center">
-  <img src="docs/screenshots/landing.png" alt="Shelfie landing page: the Shelfie title over a starry pink and purple sky above a bookshelf" width="100%" />
-</p>
-
-<p align="center"><img src="docs/assets/divider.svg" alt="" width="60%" /></p>
 
 ## 🌙 About
 
@@ -142,10 +142,6 @@ If you're not sure what to ask, there are starter prompts like *"A fantasy book 
 - **Notifications** let you know about new followers and shared books. They have an unread badge, "mark as read" and delete.
 
 <p align="center">
-  <img src="docs/screenshots/profiles.gif" alt="Reader profiles on Shelfie" width="80%" />
-</p>
-
-<p align="center">
   <img src="docs/screenshots/share.gif" alt="Sharing a book with a followed reader from the share dialog" width="80%" />
 </p>
 
@@ -179,23 +175,37 @@ The Account page holds your **profile editor** (photo up to 2 MB and bio), your 
 
 ## 🔮 How recommendations work
 
-```text
-  Your shelf                    Gemini                       Google Books                 You
-  ──────────                    ──────                       ────────────                 ───
-  library · statuses            reads the whole profile      every candidate is           6 verified picks,
-  ratings · favorites    ──▶    and proposes known and  ──▶  looked up and matched  ──▶   each with a reason,
-  reviews · wishlist            lesser-known books           to a real book               streamed as found
-  not interested · recent
-```
+<p align="center">
+  <img src="https://img.shields.io/badge/Your%20shelf-DB66A3?style=for-the-badge" alt="Your shelf" />
+  ➜
+  <img src="https://img.shields.io/badge/Gemini-DB66A3?style=for-the-badge&logo=googlegemini&logoColor=white" alt="Gemini" />
+  ➜
+  <img src="https://img.shields.io/badge/Google%20Books-DB66A3?style=for-the-badge&logo=googlebooks&logoColor=white" alt="Google Books" />
+  ➜
+  <img src="https://img.shields.io/badge/6%20verified%20picks-DB66A3?style=for-the-badge" alt="6 verified picks" />
+</p>
 
-1. **Reading profile.** Shelfie gathers your signals and gives each one a weight. What you **wrote in your reviews** counts the most, followed by **ratings**, **favorites** and **reading status** (abandoned counts as a negative). Recurring authors, themes and genre come after that, and the wishlist is the lightest hint. A harsh review outweighs a simple genre match.
-2. **Generation.** Gemini proposes a set of candidates, split between well-known and lesser-known books, each with a short reason. It skips anything already in your library, on your wishlist, marked *Not interested* or shown recently. If a model stalls, a fallback model takes over.
-3. **Verification.** Each candidate is matched against Google Books by title and author. Only books that match make it to your screen.
-4. **Memory.** The final set is cached until you ask for a new one, with a short cooldown between refreshes.
+<img src="https://img.shields.io/badge/1-Reading%20profile-FFB7EE?style=flat-square&labelColor=DB66A3" alt="Step 1" />
+
+Shelfie gathers your signals and gives each one a weight. What you **wrote in your reviews** counts the most, followed by **ratings**, **favorites** and **reading status** (abandoned counts as a negative). Recurring authors, themes and genre come after that, and the wishlist is the lightest hint. A harsh review outweighs a simple genre match.
+
+<img src="https://img.shields.io/badge/2-Generation-FFB7EE?style=flat-square&labelColor=DB66A3" alt="Step 2" />
+
+Gemini proposes a set of candidates, split between well-known and lesser-known books, each with a short reason. It skips anything already in your library, on your wishlist, marked *Not interested* or shown recently. If a model stalls, a fallback model takes over.
+
+<img src="https://img.shields.io/badge/3-Verification-FFB7EE?style=flat-square&labelColor=DB66A3" alt="Step 3" />
+
+Each candidate is matched against Google Books by title and author. Only books that match make it to your screen.
+
+<img src="https://img.shields.io/badge/4-Memory-FFB7EE?style=flat-square&labelColor=DB66A3" alt="Step 4" />
+
+The final set is cached until you ask for a new one, with a short cooldown between refreshes.
 
 <p align="center"><img src="docs/assets/divider.svg" alt="" width="60%" /></p>
 
 ## 🔒 Privacy & safety
+
+<img src="https://img.shields.io/badge/AI%20off%20by%20default-DB66A3?style=flat-square" alt="" /> <img src="https://img.shields.io/badge/Row%20Level%20Security-FFB7EE?style=flat-square" alt="" /> <img src="https://img.shields.io/badge/18%2B%20consent-DB66A3?style=flat-square" alt="" /> <img src="https://img.shields.io/badge/Account%20deletion-FFB7EE?style=flat-square" alt="" />
 
 - **AI is off by default.** A single switch in **Account** controls both recommendations and the chat. While it's off, none of your reading data is sent to Gemini.
 - **You choose what's public**, book by book and review by review. The wishlist is always private.
@@ -208,6 +218,8 @@ The Account page holds your **profile editor** (photo up to 2 MB and bio), your 
 <p align="center"><img src="docs/assets/divider.svg" alt="" width="60%" /></p>
 
 ## ♿ Accessibility
+
+<img src="https://img.shields.io/badge/Full%20keyboard%20navigation-DB66A3?style=flat-square" alt="" /> <img src="https://img.shields.io/badge/Focus--trapped%20dialogs-FFB7EE?style=flat-square" alt="" /> <img src="https://img.shields.io/badge/Optional%20shortcuts-DB66A3?style=flat-square" alt="" />
 
 Shelfie can be used **entirely from the keyboard**. It has visible focus states, dialogs that keep focus inside them, keyboard-friendly star ratings and labelled controls throughout.
 
@@ -225,25 +237,15 @@ For faster navigation, you can turn on **keyboard shortcuts** in Account:
 
 ## 🌱 Development process
 
-<p align="center">
-  <img src="docs/assets/timeline.png" alt="Development timeline from September 25 to November 16, 2026" width="100%" />
-</p>
+<img src="https://img.shields.io/badge/Supabase%20migrations-26-FFB7EE?style=flat-square&labelColor=DB66A3" alt="26 Supabase migrations" /> <img src="https://img.shields.io/badge/Commits-conventional-FFB7EE?style=flat-square&labelColor=DB66A3" alt="Conventional commits" />
 
-Shelfie was built **one feature at a time**. Each feature was planned, built, polished and committed before the next one started, so every stage of the project left a working app behind.
+Shelfie was built **one feature at a time**, and each step left a working app behind. It went from a secure foundation (auth and Row Level Security) to the core reading loop (search, library, reviews), then the social layer, then a full visual redesign. The AI came last, so it could build on everything readers had already added. The final stretch went into polish: legal pages, account deletion, accessibility and the landing page.
 
-- **Foundation first.** It started with authentication, unique usernames, protected routes and Row Level Security. Every feature after that was built on a secure base.
-- **The core loop.** Next came search, then the library, then reviews and favorites. These are the pieces a reader touches every day.
-- **Social layer.** Following readers, book sharing and notifications turned a personal tracker into a shared space.
-- **A visual identity.** Once the features were in place, the whole interface was redesigned around the cozy night-sky look, with new animations, a mobile layout pass and separate light and dark palettes.
-- **AI on top of real data.** Recommendations and the chat came last, so they could use everything the reader had already built: shelves, ratings and reviews.
-- **Polish for launch.** The final stretch was about making Shelfie trustworthy and pleasant: streaming results, legal pages and consent, account deletion, keyboard accessibility and the landing page.
+**Highlights:**
 
-**Engineering highlights:**
-
-- **Versioned database:** 26 Supabase migrations record every change to the schema, policies and functions.
-- **Conventional commits:** `feat`, `fix`, `style`, `refactor` and `chore` give a readable history.
-- **Defensive AI pipeline:** model output is parsed as a stream, checked, matched against Google Books, and backed by a fallback model and a deadline.
-- **Tested logic:** book matching, streaming JSON parsing and keyboard shortcuts are covered by unit tests with Node's built-in test runner.
+- **Versioned database:** every schema and policy change lives in a Supabase migration.
+- **Defensive AI pipeline:** model output is streamed, validated and matched against Google Books, with a fallback model and a deadline.
+- **Tested logic:** book matching, stream parsing and keyboard shortcuts have unit tests.
 
 <p align="center"><img src="docs/assets/divider.svg" alt="" width="60%" /></p>
 
@@ -251,16 +253,18 @@ Shelfie was built **one feature at a time**. Each feature was planned, built, po
 
 | Area | Technology |
 |---|---|
-| Framework | **Next.js** (App Router) · **React 19** · **TypeScript** |
-| Styling | **Tailwind CSS** · **shadcn/ui** (Radix) · custom CSS animations |
-| Auth & database | **Supabase**: Auth, PostgreSQL, Storage, Row Level Security |
-| Book data | **Google Books API** |
-| AI | **Google Gemini** |
-| Hosting | **Vercel** |
+| Framework | <img src="https://img.shields.io/badge/Next.js-DB66A3?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js" /> <img src="https://img.shields.io/badge/React%2019-DB66A3?style=flat-square&logo=react&logoColor=white" alt="React 19" /> <img src="https://img.shields.io/badge/TypeScript-DB66A3?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" /> |
+| Styling | <img src="https://img.shields.io/badge/Tailwind%20CSS-DB66A3?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" /> <img src="https://img.shields.io/badge/shadcn%2Fui-DB66A3?style=flat-square&logo=shadcnui&logoColor=white" alt="shadcn/ui" /> <img src="https://img.shields.io/badge/CSS%20animations-FFB7EE?style=flat-square&logo=css&logoColor=white" alt="CSS animations" /> |
+| Auth & database | <img src="https://img.shields.io/badge/Supabase-DB66A3?style=flat-square&logo=supabase&logoColor=white" alt="Supabase" /> <img src="https://img.shields.io/badge/PostgreSQL-DB66A3?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL" /> <img src="https://img.shields.io/badge/Row%20Level%20Security-FFB7EE?style=flat-square" alt="Row Level Security" /> |
+| Book data | <img src="https://img.shields.io/badge/Google%20Books%20API-DB66A3?style=flat-square&logo=googlebooks&logoColor=white" alt="Google Books API" /> |
+| AI | <img src="https://img.shields.io/badge/Google%20Gemini-DB66A3?style=flat-square&logo=googlegemini&logoColor=white" alt="Google Gemini" /> |
+| Hosting | <img src="https://img.shields.io/badge/Vercel-DB66A3?style=flat-square&logo=vercel&logoColor=white" alt="Vercel" /> |
 
 <p align="center"><img src="docs/assets/divider.svg" alt="" width="60%" /></p>
 
 ## 🛠️ Running locally
+
+<img src="https://img.shields.io/badge/Node.js-20%2B-FFB7EE?style=flat-square&labelColor=DB66A3&logo=nodedotjs&logoColor=white" alt="Node.js 20+" /> <img src="https://img.shields.io/badge/npm-run%20dev-FFB7EE?style=flat-square&labelColor=DB66A3&logo=npm&logoColor=white" alt="npm run dev" />
 
 <details>
 <summary><strong>Setup instructions</strong></summary>
