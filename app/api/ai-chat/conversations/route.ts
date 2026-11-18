@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { aiLimitError } from "@/app/api/ai-chat/_lib";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +45,8 @@ export async function POST(request: Request) {
   const { data: id, error } = await supabase.rpc("create_my_ai_conversation", {
     p_title: typeof body?.title === "string" ? body.title : null,
   });
+  const limit = aiLimitError(error);
+  if (limit) return NextResponse.json({ error: limit.error }, { status: limit.status });
   if (error || typeof id !== "string") return NextResponse.json({ error: "Could not create conversation" }, { status: 500 });
 
   return NextResponse.json({

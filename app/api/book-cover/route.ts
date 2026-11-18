@@ -28,7 +28,8 @@ export async function GET(request: NextRequest) {
     });
 
     const contentType = response.headers.get("content-type");
-    if (!response.ok || !contentType?.startsWith("image/")) {
+    // SVG can carry scripts, and this route serves it from Shelfie's own origin.
+    if (!response.ok || !contentType?.startsWith("image/") || contentType.includes("svg")) {
       return new Response("Cover unavailable", { status: 404 });
     }
 

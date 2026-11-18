@@ -278,7 +278,7 @@ Create a `.env.local` file:
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
-SUPABASE_SECRET_KEY=your_supabase_secret_key   # used for account deletion
+SUPABASE_SECRET_KEY=your_supabase_secret_key   # used for account deletion and saving books to the shared catalog
 GOOGLE_BOOKS_API_KEY=your_google_books_api_key
 GEMINI_API_KEY=your_gemini_api_key
 GEMINI_MODEL=gemini-3.5-flash-lite              # optional

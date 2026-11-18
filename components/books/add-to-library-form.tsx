@@ -5,6 +5,7 @@ import { BookOpen, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
+import { ensureBookSaved } from "@/lib/books/ensure-book";
 import type { Book } from "@/lib/books/types";
 import { useBookWishlist } from "@/components/books/book-wishlist";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
@@ -138,23 +139,19 @@ export function AddToLibraryForm({
     setPendingAction("adding");
     setError(null);
 
+    try {
+      await ensureBookSaved(book.google_books_id);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Could not add this book to your library. Please try again.");
+      setPendingAction(null);
+      return;
+    }
+
     const supabase = createClient();
     const { error: rpcError } = await supabase.rpc("add_book_to_library", {
       p_google_books_id: book.google_books_id,
-      p_title: book.title,
       p_status: status,
       p_is_public: isPublic,
-      p_subtitle: book.subtitle,
-      p_authors: book.authors,
-      p_description: book.description,
-      p_isbn_10: book.isbn_10,
-      p_isbn_13: book.isbn_13,
-      p_publisher: book.publisher,
-      p_published_date: book.published_date,
-      p_page_count: book.page_count,
-      p_genres: book.genres,
-      p_language: book.language,
-      p_cover_url: book.cover_url,
     });
 
     if (rpcError) {

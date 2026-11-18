@@ -6,6 +6,7 @@ import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
+import { ensureBookSaved } from "@/lib/books/ensure-book";
 import type { Book } from "@/lib/books/types";
 
 export type BookStatus = "reading" | "read" | "abandoned";
@@ -70,6 +71,15 @@ export function ReviewForm({
     }
     setPending(true);
     setError(null);
+    if (!review && book) {
+      try {
+        await ensureBookSaved(book.google_books_id);
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : "Could not save your review. Please try again.");
+        setPending(false);
+        return;
+      }
+    }
     const supabase = createClient();
     const result = review
       ? await supabase.rpc("update_review", {
@@ -82,22 +92,10 @@ export function ReviewForm({
       : book
         ? await supabase.rpc("add_review", {
             p_google_books_id: book.google_books_id,
-            p_title: book.title,
             p_status: status,
             p_rating: rating,
             p_review_text: reviewText,
             p_is_public: isPublic,
-            p_subtitle: book.subtitle,
-            p_authors: book.authors,
-            p_description: book.description,
-            p_isbn_10: book.isbn_10,
-            p_isbn_13: book.isbn_13,
-            p_publisher: book.publisher,
-            p_published_date: book.published_date,
-            p_page_count: book.page_count,
-            p_genres: book.genres,
-            p_language: book.language,
-            p_cover_url: book.cover_url,
           })
         : { error: new Error("Book information is required.") };
 

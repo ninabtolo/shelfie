@@ -10,7 +10,7 @@ import {
   type ReadingProfile,
 } from "@/lib/ai/reading-context";
 import { createClient } from "@/lib/supabase/server";
-import { isUuid, loadConversation, type StoredChatMessage } from "@/app/api/ai-chat/_lib";
+import { aiLimitError, isUuid, loadConversation, type StoredChatMessage } from "@/app/api/ai-chat/_lib";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -87,12 +87,16 @@ export async function POST(request: Request) {
   }
 
   let conversationId: string;
+  let createdInThisRequest = false;
   if (body?.conversation_id === undefined || body.conversation_id === null) {
     const { data: createdId, error: createError } = await supabase.rpc("create_my_ai_conversation", {
       p_title: message.slice(0, 120),
     });
+    const limit = aiLimitError(createError);
+    if (limit) return NextResponse.json({ error: limit.error }, { status: limit.status });
     if (createError || typeof createdId !== "string") return NextResponse.json({ error: "Could not create conversation" }, { status: 500 });
     conversationId = createdId;
+    createdInThisRequest = true;
   } else if (isUuid(body.conversation_id)) {
     conversationId = body.conversation_id;
   } else {
@@ -112,10 +116,14 @@ export async function POST(request: Request) {
     p_recommendations: [],
   });
   if (userMessageError) {
-    const isLimit = userMessageError.message.toLowerCase().includes("message limit");
+    // Don't leave an empty conversation behind when its first message was rejected.
+    if (createdInThisRequest) {
+      await supabase.rpc("delete_my_ai_conversation", { p_conversation_id: conversationId });
+    }
+    const limit = aiLimitError(userMessageError);
     return NextResponse.json(
-      { error: isLimit ? "This conversation reached its 20-message limit. Start a new conversation to keep going." : "Could not save your message" },
-      { status: isLimit ? 429 : 500 },
+      { error: limit?.error ?? "Could not save your message" },
+      { status: limit?.status ?? 500 },
     );
   }
 

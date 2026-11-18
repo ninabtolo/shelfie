@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { generateRecommendations, RECOMMENDATION_COUNT, type Recommendation } from "@/lib/ai/recommendations";
 import type { Book, ReadingProfile } from "@/lib/ai/reading-context";
 import { createClient } from "@/lib/supabase/server";
+import { aiLimitError } from "@/app/api/ai-chat/_lib";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -62,7 +63,13 @@ export async function POST() {
   if (!pref?.personalization_enabled) return NextResponse.json({ error: "Personalization disabled" }, { status: 403 });
 
   const { data: claimed, error: claimError } = await supabase.rpc("claim_my_ai_recommendation_generation");
-  if (claimError) return NextResponse.json({ error: "Could not start generation" }, { status: 500 });
+  if (claimError) {
+    const limit = aiLimitError(claimError);
+    if (limit) {
+      return NextResponse.json({ error: limit.error }, { status: limit.status, headers: { "Cache-Control": "no-store" } });
+    }
+    return NextResponse.json({ error: "Could not start generation" }, { status: 500 });
+  }
   if (!claimed) {
     return NextResponse.json(
       { error: `Please wait ${GENERATION_COOLDOWN_SECONDS} seconds before generating again`, retry_after: GENERATION_COOLDOWN_SECONDS },
